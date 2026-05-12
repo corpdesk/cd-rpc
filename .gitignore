@@ -31,7 +31,7 @@ temp/
 /src/.well-known/acme-challenge/
 
 # app directory has independent repositories
-/src/CdApi/app/
+/src/CdRpc/app/
 
 # log files
 corpdesk-*.log
