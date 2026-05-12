@@ -1,23 +1,72 @@
+// import config from "./config.js";
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
+import fs from "fs";
+import http from "http";
+import https from "https";
 
-const app = express();
+// import { CdInit } from "./CdRpc/init.js";
 
-app.use(cors());
-app.use(express.json());
+// import { Logger } from "./CdRpc/sys/logging/logger.js";
+import { Logging } from "./CdRpc/sys/base/winston.log";
+import config from "./config";
+import { CdInit } from "./CdRpc/init";
 
-app.get("/", (_req, res) => {
-  res.json({
-    success: true,
-    message: "cd-rpc runtime online",
-  });
-});
+export class Main {
+  private logger = new Logging();
 
-const PORT = process.env.PORT || 4010;
+  async run() {
+    const app = express();
 
-app.listen(PORT, () => {
-  console.log(`[cd-rpc] running on port ${PORT}`);
-});
+    app.use(cors(config.Cors.options));
+    app.use(express.json());
+
+    // -------------------------------------------------------------
+    // HTTP validation webroot
+    // -------------------------------------------------------------
+
+    if (config.http.enabled) {
+      http.createServer(app).listen(config.http.port, () => {
+        this.logger.logInfo(
+          `HTTP validation server running on ${config.http.port}`,
+        );
+      });
+    }
+
+    // -------------------------------------------------------------
+    // RPC Route
+    // -------------------------------------------------------------
+
+    app.post(config.rpc.route, async (req, res) => {
+      await CdInit(req, res);
+    });
+
+    // -------------------------------------------------------------
+    // HTTPS / HTTP API Server
+    // -------------------------------------------------------------
+
+    let server: http.Server | https.Server;
+
+    if (config.secure === "true") {
+      this.logger.logInfo("Starting HTTPS server");
+
+      server = https.createServer(
+        {
+          key: fs.readFileSync(config.keyPath!),
+          cert: fs.readFileSync(config.certPath!),
+        },
+        app,
+      );
+    } else {
+      this.logger.logInfo("Starting HTTP server");
+
+      server = http.createServer(app);
+    }
+
+    server.listen(config.rpc.port, () => {
+      this.logger.logInfo(`cd-rpc listening on ${config.rpc.port} in ${config.runMode} mode`);
+    });
+  }
+}

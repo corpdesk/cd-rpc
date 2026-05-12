@@ -1,0 +1,1063 @@
+06/04/2025
+By G.Oremo
+Added clientId?:any as part of ISessResp interface 
+This can be used optionally by developers to see servers view of the client.
+It was initially necesitated when starlink ISP was serving only connection with ip6 and connection to digitalocean by requred ip4 for white listing. This could not be derived from the developer side.  On the digitalocean side, it was possible to derive a working ip4.
+This clientId will now be a way of getting the ip4 in such a scenario.
+There would also be other rationale that are not discussed now.
+
+----------------------------------------
+IMPLEMENTATION:
+-------------------------------------------
+async setAppState(succ: boolean, i: IRespInfo | null, ss:? ISessResp) {
+    const sess = new SessionService();
+
+    if (succ === false) {
+      this.cdResp.data = [];
+    }
+
+    this.setClientId(ss);
+
+    this.cdResp.app_state = {
+      success: succ,
+      info: i,
+      sess: ss,
+      cache: {},
+      sConfig: {
+        usePush: config.usePolling,
+        usePolling: config.usePush,
+        useCacheStore: config.useCacheStore,
+      },
+    };
+  }
+
+  /**
+   * Under selected modes, client ip may be necessary as part of response
+   * @param ss 
+   */
+  private setClientId(ss:? ISessResp) {
+    const allowedModes = [
+      RunMode.UNRESTRICTED_DEVELOPER_MODE,
+      RunMode.VERBOSE_MONITORING,
+      RunMode.DIAGNOSTIC_TRACE,
+      RunMode.MAINTENANCE_MODE,
+    ];
+
+    if (ss && allowedModes.includes(config.runMode)) {
+      ss.clientId = this.sess[0].deviceNetId;
+    }
+  }
+
+// introducd runMode in in the config.ts
+export default {
+  runMode: RunMode.UNRESTRICTED_DEVELOPER_MODE,
+}
+
+
+// Introduce RunMode enum at the IBase
+  export enum RunMode {
+  // System is off; no operations should be performed
+  SYSTEM_SHUTDOWN = 0,
+
+  // Maintenance tasks only; no API access
+  MAINTENANCE_MODE = 1,
+
+  // Only critical functions enabled (e.g., login, health checks)
+  CRITICAL_ONLY = 2,
+
+  // Limited operations; debugging or inspection mode
+  SAFE_DEBUG_MODE = 3,
+
+  // Normal usage with standard logging
+  NORMAL_OPERATION = 4,
+
+  // Verbose logging and minor debug info
+  VERBOSE_MONITORING = 5,
+
+  // Deep tracing of request/response, DB queries, etc.
+  DIAGNOSTIC_TRACE = 6,
+
+  // Everything plus performance profiling
+  FULL_AUDIT_AND_PROFILING = 7,
+
+  // Simulate user traffic, no actual data persistence (e.g., for staging)
+  SANDBOX_SIMULATION = 8,
+
+  // Fake data, used in frontend testing environments
+  MOCK_DATA_MODE = 9,
+
+  // Completely unrestricted, may expose internals (use with caution)
+  UNRESTRICTED_DEVELOPER_MODE = 10
+}
+
+// introducde clientId as part of ISessResp
+export interface ISessResp {
+    cd_token?: string; // corpdesk token
+    userId?: number | null; // current user id
+    jwt: { jwtToken: string, checked: boolean, checkTime: number, authorized: boolean, } | null // jwt data
+    ttl: number; // server settings for session lifetime
+    initUuid?: string; // initialization guid of session
+    initTime?: string; // when the session started
+    clientId?: any; // OPtonal. for diagnosis for server view of the client.
+}
+
+-----------------------------------------------
+Organize RunMode in the level of verbosity and severity so that in the CdLogger,
+We can organize the log levels using comparison operators >, =, < where necessary.
+Then revisit CdLogger using comparison operators where appropriate.
+This can be considered as work in progres.
+You can include guiding comments on both RunMode and CdLogger so whoever comes after us can be properly guided.
+export enum RunMode {
+    // System is off; no operations should be performed
+    SYSTEM_SHUTDOWN = 0,
+  
+    // Maintenance tasks only; no API access
+    MAINTENANCE_MODE = 1,
+  
+    // Only critical functions enabled (e.g., login, health checks)
+    CRITICAL_ONLY = 2,
+  
+    // Limited operations; debugging or inspection mode
+    SAFE_DEBUG_MODE = 3,
+  
+    // Normal usage with standard logging
+    NORMAL_OPERATION = 4,
+  
+    // Verbose logging and minor debug info
+    VERBOSE_MONITORING = 5,
+  
+    // Deep tracing of request/response, DB queries, etc.
+    DIAGNOSTIC_TRACE = 6,
+  
+    // Everything plus performance profiling
+    FULL_AUDIT_AND_PROFILING = 7,
+  
+    // Simulate user traffic, no actual data persistence (e.g., for staging)
+    SANDBOX_SIMULATION = 8,
+  
+    // Fake data, used in frontend testing environments
+    MOCK_DATA_MODE = 9,
+  
+    // Completely unrestricted, may expose internals (use with caution)
+    UNRESTRICTED_DEVELOPER_MODE = 10
+  }
+
+  export class CdLogger {
+  private static readonly runMode = config.runMode;
+
+  private static shouldLog(level: RunMode): boolean {
+    return this.runMode >= level;
+  }
+
+  static log(...args: any[]) {
+    if (this.shouldLog(RunMode.NORMAL_OPERATION)) {
+      console.log("[LOG]", ...args);
+    }
+  }
+
+  static debug(...args: any[]) {
+    if (
+      this.shouldLog(RunMode.VERBOSE_MONITORING) ||
+      this.shouldLog(RunMode.UNRESTRICTED_DEVELOPER_MODE)
+    ) {
+      console.debug("[DEBUG]", ...args);
+    }
+  }
+
+  static warn(...args: any[]) {
+    if (this.shouldLog(RunMode.SAFE_DEBUG_MODE)) {
+      console.warn("[WARN]", ...args);
+    }
+  }
+
+  static error(...args: any[]) {
+    if (this.shouldLog(RunMode.CRITICAL_ONLY)) {
+      console.error("[ERROR]", ...args);
+    }
+  }
+
+  static trace(...args: any[]) {
+    if (this.shouldLog(RunMode.DIAGNOSTIC_TRACE)) {
+      console.trace("[TRACE]", ...args);
+    }
+  }
+}
+
+----------------------------------------
+Investigate and fix the following error:
+
+Request for scope update:
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"UpdateCoopMemberProfile","dat":{"f_vals":[{"query":{"update":null,"where":{"userId":1611}},"jsonUpdate":[{"path":["memberMeta","acl","coopRole"],"value":{"coopId":3,"coopRole":[{"scope":"14","geoLocationId":null}],"coopActive":true},"action":"create"}]}],"token":"00edf8f7-c101-4c79-af24-fd1786ccabba"},"args":{}}
+
+Response:
+{"app_state":{"success":false,"info":{"messages":["BaseService::validatePlData/requested property is missing","BaseService::validatePlData/requested property is missing","TypeError: Cannot read properties of undefined (reading 'acl')","TypeError: Cannot read properties of undefined (reading 'acl')"],"code":"CoopMemberService:updateCurrentUserProfile","app_msg":"Error at CoopMemberService:updateCurrentUserProfile: TypeError: Cannot read properties of undefined (reading 'acl')"},"sess":{"cd_token":"00edf8f7-c101-4c79-af24-fd1786ccabba","jwt":null,"ttl":600},"cache":{},"sConfig":{"usePush":true,"usePolling":true,"useCacheStore":true}},"data":[]}
+
+--------------------------------------------------------
+// Create a new membership application at local:
+{
+    "ctx": "App",
+    "m": "Coops",
+    "c": "CoopMember",
+    "a": "Create",
+    "dat": {
+        "f_vals": [
+            {
+                "data": {
+                    "userId": 1618,
+                    "coopMemberProfile": [
+                        {
+                            "coopId": -1,
+                            "coopActive": false,
+                            "coopRole": [
+                                {
+                                    "scope": 11,
+                                    "geoLocationId": null
+                                }
+                            ],
+                            "aclRole": {
+                                "aclRoleName": "guest",
+                                "permissions": {
+                                    "userPermissions": [
+                                        {
+                                            "cdObjId": 0,
+                                            "hidden": true,
+                                            "field": "",
+                                            "read": false,
+                                            "write": false,
+                                            "execute": false
+                                        }
+                                    ],
+                                    "groupPermissions": [
+                                        {
+                                            "cdObjId": 0,
+                                            "hidden": true,
+                                            "field": "",
+                                            "read": false,
+                                            "write": false,
+                                            "execute": false
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "coopId": 3,
+                            "coopRole": [
+                                {
+                                    "scope": 20,
+                                    "geoLocationId": null
+                                }
+                            ],
+                            "coopActive": true
+                        }
+                    ],
+                    "coopId": 3,
+                    "coopMemberName": "accosca-6@empservices.co.ke"
+                }
+            }
+        ],
+        "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+    },
+    "args": {}
+}
+
+// Response:
+-------------------------------------------------------------------------------------
+{
+        "memberProfile": {
+            "fieldPermissions": {
+                "userPermissions": [
+                    {
+                        "userId": 1000,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "userId": 1611,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    }
+                ],
+                "groupPermissions": [
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    },
+                    {
+                        "groupId": 0,
+                        "field": "userName",
+                        "hidden": false,
+                        "read": true,
+                        "write": false,
+                        "execute": false
+                    }
+                ]
+            },
+            "userData": {
+                "userId": 1611,
+                "userGuid": "885d9c58-3570-4f48-9d3a-6e2d6bda5786",
+                "userName": "accosca-6",
+                "email": "accosca-6@empservices.co.ke",
+                "companyId": null,
+                "docId": 22861,
+                "mobile": null,
+                "gender": null,
+                "birthDate": null,
+                "postalAddr": null,
+                "fName": null,
+                "mName": null,
+                "lName": null,
+                "nationalId": null,
+                "passportId": null,
+                "userEnabled": true,
+                "zipCode": null,
+                "activationKey": "d3cf6895-6a1f-48c0-b8f5-5cc18eada66d",
+                "userTypeId": null
+            },
+            "memberMeta": [
+                {
+                    "coopId": -1,
+                    "aclRole": {
+                        "aclRoleName": "guest",
+                        "permissions": {
+                            "userPermissions": [
+                                {
+                                    "read": false,
+                                    "field": "",
+                                    "write": false,
+                                    "hidden": true,
+                                    "cdObjId": 0,
+                                    "execute": false
+                                }
+                            ],
+                            "groupPermissions": [
+                                {
+                                    "read": false,
+                                    "field": "",
+                                    "write": false,
+                                    "hidden": true,
+                                    "cdObjId": 0,
+                                    "execute": false
+                                }
+                            ]
+                        }
+                    },
+                    "coopActive": false,
+                    "coopRole": []
+                }
+            ]
+        },
+        "coopMemberData": [
+            {
+                "coopId": -1,
+                "userId": -1,
+                "coopActive": false,
+                "coopMemberProfile": "{\"fieldPermissions\":{\"userPermissions\":[{\"userId\":1000,\"field\":\"userName\",\"hidden\":false,\"read\":true,\"write\":false,\"execute\":false}],\"groupPermissions\":[{\"groupId\":0,\"field\":\"userName\",\"hidden\":false,\"read\":true,\"write\":false,\"execute\":false}]},\"userData\":{\"userName\":\"\",\"fName\":\"\",\"lName\":\"\"},\"memberMeta\":[{\"coopId\":-1,\"aclRole\":{\"aclRoleName\":\"guest\",\"permissions\":{\"userPermissions\":[{\"read\":false,\"field\":\"\",\"write\":false,\"hidden\":true,\"cdObjId\":0,\"execute\":false}],\"groupPermissions\":[{\"read\":false,\"field\":\"\",\"write\":false,\"hidden\":true,\"cdObjId\":0,\"execute\":false}]}},\"coopActive\":false,\"coopRole\":[]}]}"
+            }
+        ]
+    }
+
+References:
+export interface ICoopMembership {
+  memberProfile: ICoopMemberProfile; // affiliation with various SACCOS (privilege-related data in various SACCOS)
+  coopMemberData?: CoopMemberViewModel[]; // affilication with various SACCOS(selection of coop_member_view where the current user appears)
+}
+
+export interface ICoopMemberProfile extends IUserProfile {
+  memberMeta: MemberMeta[]; // affiliation with various SACCOS (privilege-related data in various SACCOS)
+}
+
+export interface MemberMeta {
+  coopId: number | null;
+  coopActive: boolean;
+  coopRole: ICoopRole;
+  aclRole?: IAclRole;
+}
+
+----------------------------------------------------
+Create a new membership application:
+Request:
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"Create","dat":{"f_vals":[{"data":{"userId":1611,"coopMemberProfile":[{"coopId":-1,"aclRole":{"aclRoleName":"guest","permissions":{"userPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}],"groupPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}]}},"coopActive":false,"coopRole":[]}],"coopId":3,"coopMemberName":"accosca-6@empservices.co.ke"}}],"token":"64e3c77c-7dcf-45f2-afad-db69a3531d75"},"args":{}}
+
+Response:
+{"app_state": {"success": true,"info": {"messages": [],"code": "","app_msg": ""},"sess": {"cd_token": "","jwt": null,"ttl": 600},"cache": {},"sConfig": {"usePush": true,"usePolling": true,"useCacheStore": true}},"data": [{"coopMemberId": 129950,"coopMemberGuid": "1159e01c-50ee-41b8-a9d7-94a50e723430","coopMemberTypeId": 108,"userId": 1611,"docId": 23440,"coopMemberEnabled": true,"coopId": 3,"coopMemberApproved": null,"coopActive": null,"coopMemberProfile": "[{\"coopId\":-1,\"aclRole\":{\"aclRoleName\":\"guest\",\"permissions\":{\"userPermissions\":[{\"read\":false,\"field\":\"\",\"write\":false,\"hidden\":true,\"cdObjId\":0,\"execute\":false}],\"groupPermissions\":[{\"read\":false,\"field\":\"\",\"write\":false,\"hidden\":true,\"cdObjId\":0,\"execute\":false}]}},\"coopActive\":false,\"coopRole\":[]}]"}]}
+
+
+-------------------------------------------------------
+update seem to work on the front end only but is not updating backend.
+- corrected.
+--------------------------------------------------------
+Do another test for membership application
+    - confirm that a new scope of 20 (applicant) is added to profile
+    - also confirm that coopId is part of MemberMeta data
+Use karl to add admin scope then confirm that a all scopes have been added and are accurate
+    - the original should be 20(member applicant) when scope for the same coop is promoted, record for 20 should be replaced with the new one. Not extra record. There should not be duplicate of coopId records.
+    - On successful member application, there should be message to confirm success or failure.
+Confirm that activeCoop is working as expected:
+    - capacity of switching activCoop
+    - scope manager button should be visible based on selected activeCoop
+    - create policy narrative for sacco admin then confirm policy has been implemented.
+
+----------------------------------------------------
+Issue: When creating new membership, the coopId is left out (sorted)
+
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"Create","dat":{"f_vals":[{"data":{"userId":1611,"coopMemberProfile":[{"coopId":-1,"aclRole":{"aclRoleName":"guest","permissions":{"userPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}],"groupPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}]}},"coopActive":false,"coopRole":[]}],"coopId":3,"coopMemberName":"accosca-6@empservices.co.ke"}}],"token":"823665e5-91d2-4f17-9f81-507d5184db41"},"args":{}}
+
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"UpdateCoopMemberProfile","dat":{"f_vals":[{"query":{"update":null,"where":{"userId":1611}},"jsonUpdate":[{"path":["memberProfile","memberMeta",["coopId"]],"value":{"coopRole":[{"scope":20,"geoLocationId":null}],"coopActive":false},"action":"create"}]}],"token":"823665e5-91d2-4f17-9f81-507d5184db41"},"args":{}}
+
+----------------------------------------------------
+Issue: When creating new membership, the coopId should not be duplicated but replaced/updated
+    - create new application at localhost
+    - update scope as applicant
+    - try to set scope and confirm how the anomaly is generated
+
+// 1. Create new membership application:
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"Create","dat":{"f_vals":[{"data":{"userId":1618,"coopMemberProfile":[{"coopId":-1,"aclRole":{"aclRoleName":"guest","permissions":{"userPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}],"groupPermissions":[{"read":false,"field":"","write":false,"hidden":true,"cdObjId":0,"execute":false}]}},"coopActive":false,"coopRole":[]}],"coopId":3,"coopMemberName":"accosca-6@empservices.co.ke"}}],"token":"6c7b1143-eafe-4841-bcd5-e75a7342d684"},"args":{}}
+
+// 2. Update scope as applicant
+{"ctx": "App","m": "Coops","c": "CoopMember","a": "UpdateCoopMemberProfile","dat": {"f_vals": [{"query": {"update": null,"where": {"userId": 1618}},"jsonUpdate": [{"path": ["memberProfile","memberMeta",["coopId"]],"value": {"coopId": 3,"coopRole": [{"scope": 20,"geoLocationId": null}],"coopActive": false},"action": "create"}]}],"token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"},"args": {}}
+
+// 3. Try to set scope and confirm how the anomaly is generated
+{"ctx":"App","m":"Coops","c":"CoopMember","a":"UpdateCoopMemberProfile","dat":{"f_vals":[{"query":{"update":null,"where":{"userId":1618}},"jsonUpdate":[{"path":["memberProfile","memberMeta",["coopId"]],"value":{"coopId":3,"coopRole":[{"scope":"14","geoLocationId":null}],"coopActive":true},"action":"create"}]}],"token":"6c7b1143-eafe-4841-bcd5-e75a7342d684"},"args":{}}
+
+// I have used code comments to explain the issue with JMorph.createEntry().
+// Guide on how we can fix the issue
+// -----------------------------------------------
+/**
+ * JMorph aim is to modify json data based on json formated instructions.
+ * We need to focus only on the action create in order to fix a bug.
+ * The bug being, when action = create, multiple entries are created.
+ * Requirements with focus to the action 'create':
+ * Below is example of JSON instruction.
+ * In this case, the instruction are:
+ * 1. Look for the <instruction>[i].path, in this case <target-json-data>/memberProfile/membeMeta, in this case is an array where a key for use has been provided as 'coopId'.
+ * 2. In the array, use the key 'coopId' to modify the array. Below is how to use the key
+ * 3. Pick the value of the key from the <instruction>[i].value , in this case coopId = 3 as the constraint guide for modifying the data.
+ * 4. When the guide is given as coopId=3, it means, on the <target-json-data>/memberProfile/membeMeta array, do the following:
+ *      (i) search if item exist by that name
+ *      (ii) based on <instruction>[i].action given, in this case 'create':
+ *      (iii) create a new(by the constraint guide)
+ *      (iv) no duplicates allowed
+ *      (v) when entry exists, replace
+ *      (vi) Replacement is only done for the target by the given constraint.
+ * 
+ */
+
+
+// instructions
+[
+    {
+      "path": [
+        "memberProfile",
+        "memberMeta",
+        [
+          "coopId"
+        ]
+      ],
+      "value": {
+        "coopId": 3,
+        "coopRole": [
+          {
+            "scope": "14",
+            "geoLocationId": null
+          }
+        ],
+        "coopActive": true
+      },
+      "action": "create"
+    }
+  ]
+
+
+// Target data
+[
+    {
+      "coopId": -1,
+      "aclRole": {
+        "aclRoleName": "guest",
+        "permissions": {
+          "userPermissions": [
+            {
+              "read": false,
+              "field": "",
+              "write": false,
+              "hidden": true,
+              "cdObjId": 0,
+              "execute": false
+            }
+          ],
+          "groupPermissions": [
+            {
+              "read": false,
+              "field": "",
+              "write": false,
+              "hidden": true,
+              "cdObjId": 0,
+              "execute": false
+            }
+          ]
+        }
+      },
+      "coopRole": [],
+      "coopActive": false
+    },
+    {
+      "coopId": 3,
+      "coopRole": [
+        {
+          "scope": 20,
+          "geoLocationId": null
+        }
+      ],
+      "coopActive": false
+    }
+  ]
+
+  /**
+   * Below is the current implementation...which as some bugs:
+   * General unexpected behaviour at the method JMorph.createEntry():
+   * 1. When we monitor console.log("JMorph::applyUpdate()/lastKey:", lastKey);, it appears that the process is 
+   * acting on all the lastKey it encounters and actually tries to add them to the 'target' array.
+   * From the logs, it logs 'JMorph::createEntry()/key: userName' twice before loging 'JMorph::createEntry()/key: coopId'
+   * What should happen is that it should focus on the constraint where key=coopId then use constraint rules against coopId=3. 
+   * All the other keys should be ignored.
+   * 2. When action=create, it should either add is not exist or replace where key and value matches coopId=3\.
+   */
+  export class JMorph{
+
+    /**
+   * Applies a list of update instructions to the given JSON data.
+   * @param jsonData - The JSON object to be modified.
+   * @param jsonUpdate - An array of update instructions.
+   * @returns The modified JSON data.
+   */
+  static applyUpdates(jsonData: any, jsonUpdate: JUpdateInstruction[]): any {
+    for (const instruction of jsonUpdate) {
+      this.applyUpdate(jsonData, instruction);
+    }
+    return jsonData;
+  }
+
+  /**
+   * Applies a single update instruction to the JSON data.
+   * @param jsonData - The JSON object to be modified.
+   * @param instruction - The update instruction.
+   */
+  private static applyUpdate(
+    jsonData: any,
+    instruction: JUpdateInstruction
+  ): void {
+    console.log("JMorph::applyUpdate()/01");
+    console.log("JMorph::applyUpdate()/jsonData:", JSON.stringify(jsonData));
+    console.log(
+      "JMorph::applyUpdate()/instruction:",
+      JSON.stringify(instruction)
+    );
+
+    const { path, value, action } = instruction;
+    console.log("JMorph::applyUpdate()/02");
+
+    let target = jsonData;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      console.log(`JMorph::applyUpdate()/03/${i}`);
+      let key = path[i];
+
+      if (Array.isArray(key)) {
+        console.log(
+          `JMorph::applyUpdate()/Error: Array Detected at ${i}:`,
+          key
+        );
+        throw new Error(
+          `Invalid path at ${i}: Arrays cannot be used as keys directly.`
+        );
+      }
+
+      if (!(key in target)) {
+        console.log(
+          `JMorph::applyUpdate()/Key missing: Creating ${key} at level ${i}`
+        );
+        target[key] = typeof path[i + 1] === "number" ? [] : {};
+      }
+
+      target = target[key]; // Move deeper into the object
+
+      if (target === undefined) {
+        console.log(`JMorph::applyUpdate()/Undefined target at level ${i}`);
+        throw new Error(
+          `Path error: ${key} does not exist in the provided JSON structure.`
+        );
+      }
+    }
+
+    const lastKey = path[path.length - 1];
+    console.log("JMorph::applyUpdate()/target:", target);
+    console.log("JMorph::applyUpdate()/lastKey:", lastKey);
+
+    if (Array.isArray(target) && !Array.isArray(lastKey)) {
+      console.log(
+        "JMorph::applyUpdate()/Error: Attempting to modify an array without key reference"
+      );
+      throw new Error(
+        `Cannot update array at '${path.join(
+          "."
+        )}' without specifying a unique identifier.`
+      );
+    }
+
+    // Delegate actions to separate methods
+    switch (action) {
+      case "create":
+        JMorph.createEntry(target, lastKey, value);
+        break;
+      case "update":
+        JMorph.updateEntry(target, lastKey, value);
+        break;
+      case "delete":
+        JMorph.deleteEntry(target, lastKey);
+        break;
+      default:
+        JMorph.createEntry(target, lastKey, value);
+    }
+
+    console.log("JMorph::applyUpdate()/Completed");
+    console.log("JMorph::applyUpdate()/target2:", target);
+  }
+
+    /**
+     * 
+     * @param target 
+     * @param key 
+     * @param value 
+     */
+    private static createEntry(
+        target: any,
+        key: string | number,
+        value: any
+      ): void {
+        console.log(`JMorph::createEntry()/target1: ${JSON.stringify(target)}`);
+        console.log(`JMorph::createEntry()/key: ${key}`);
+        console.log(`JMorph::createEntry()/value: ${JSON.stringify(value)}`);
+    
+        if (Array.isArray(target)) {
+          // Ensure the value contains a valid unique identifier
+          const keyField = Object.keys(value)[0]; // Example: "coopId"
+          console.log(
+            `JMorph::createEntry()/keyField: ${JSON.stringify(keyField)}`
+          );
+          if (!(keyField in value)) {
+            console.log(
+              `JMorph::createEntry()/Error: Key '${keyField}' not found in value.`
+            );
+            throw new Error(`Missing unique key in the object.`);
+          }
+    
+          const keyValue = value[keyField];
+          console.log(
+            `JMorph::createEntry()/keyValue1: ${JSON.stringify(keyValue)}`
+          );
+    
+          // Use .find() to check if an entry with the same keyField value already exists
+          const alreadyExists = target.some(
+            (item: any) => item[keyField] === keyValue
+          );
+          console.log(
+            `JMorph::createEntry()/keyValue2: ${JSON.stringify(keyValue)}`
+          );
+          console.log(`JMorph::createEntry()/target2: ${target}`);
+          console.log(`JMorph::createEntry()/alreadyExists: ${alreadyExists}`);
+    
+          if (alreadyExists) {
+            console.warn(
+              `JMorph::createEntry()/[WARNING]1: Entry with ${keyField}=${keyValue} already exists.`
+            );
+            // throw new Error(
+            //   `Duplicate entry: ${keyField}=${keyValue} already exists.`
+            // );
+          } else {
+            console.log(`JMorph::createEntry()/value: ${JSON.stringify(value)}`);
+            // Push the new object directly into the array
+            target.push(value);
+            console.log(
+              `JMorph::createEntry()/[SUCCESS]: Entry added value: ${JSON.stringify(
+                value
+              )} to the target:`,
+              JSON.stringify(target)
+            );
+          }
+        } else {
+          console.log(`JMorph::createEntry()/[WARNING]2: Target is not an array.`);
+          throw new Error(`Target is not an array, cannot add a new entry.`);
+        }
+      }
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * Investigate issue in ActivateUser where the 'personal' menu is not being loaded
+   */
+
+  // 1. remove user
+  const purgeUserRequest = {
+    "ctx": "Sys",
+    "m": "User",
+    "c": "User",
+    "a": "PugeUser",
+    "dat": {
+        "f_vals": [
+            {
+                "query": {
+                    "where": {
+                        "userGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5"
+                    }
+                }
+            }
+        ],
+        "token": "08f45393-c10e-4edd-af2c-bae1746247a1"
+    },
+    "args": null
+}
+
+  // 2. insert user
+  // const registerRequest = {"ctx": "Sys","m": "User","c": "User","a": "Register","dat": {"f_vals": [{"data": {"userName": "goremo05","email": "goremo05@gmail.com","password": "yrhuiak","consumerGuid": "B0B3DA99-1859-A499-90F6-1E3F69575DCD"}}],"token": ""},"args": {}};
+  INSERT INTO user (
+    user_guid,
+    user_name,
+    password,
+    email,
+    user_enabled,
+    activation_key
+  ) VALUES (
+    'f933eecc-e413-4f49-b924-0f1ce29823c5',
+    'asdap-admin',
+    '$2b$10$jvHgCdA8SZW/tWUMighAH.TiuskQg7zppJkSFJdKWPhBrEpbqRuma',
+    'asdap-admin@empservices.co.ke',
+    0,
+    '739e1fa7-f821-4d8f-9793-4becfb985716'
+  );
+  
+
+  // 3. request from frontend
+  const activationRequest = {"ctx":"Sys","m":"User","c":"User","a":"ActivateUser","dat":{"f_vals":[{"query":{"where":{"activationKey":"739e1fa7-f821-4d8f-9793-4becfb985716"}}}],"docproc":{}},"args":null};
+  {
+    "ctx": "Sys",
+    "m": "User",
+    "c": "User",
+    "a": "ActivateUser",
+    "dat": {
+        "f_vals": [
+            {
+                "data": {
+                    "consumerGuid": "B0B3DA99-1859-A499-90F6-1E3F69575DCD"
+                },
+                "query": {
+                    "where": {
+                        "activationKey": "739e1fa7-f821-4d8f-9793-4becfb985716"
+                    }
+                }
+            }
+        ],
+        "docproc": {}
+    },
+    "args": null
+}
+  
+  const cdObjItem = {
+    "cdObjName": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "objGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "cdObjTypeGuid": "a237cc2b-e895-4596-a963-9b6e74d0f7b2",
+    "parentModuleGuid": "00e7c6a8-83e4-40e2-bd27-51fcff9ce63b"
+  }
+
+  const savedCdObj = {
+    "cdObjDispName": null,
+    "cdObjEnabled": null,
+    "cdObjGuid": "b735ba53-2963-4b15-b016-30e1cf7d103b",
+    "cdObjId": 93141,
+    "cdObjName": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "cdObjTypeGuid": "a237cc2b-e895-4596-a963-9b6e74d0f7b2",
+    "currVal": null,
+    "docId": 21738,
+    "icon": null,
+    "jDetails": null,
+    "lastModificationDate": null,
+    "lastSyncDate": null,
+    "objGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "objId": 1621,
+    "parentClassGuid": null,
+    "parentModuleGuid": "00e7c6a8-83e4-40e2-bd27-51fcff9ce63b",
+    "parentModuleId": 99,
+    "parentObj": null,
+    "showIcon": null,
+    "showName": null
+  }
+
+  const getCdObj = [
+    {
+      "cdObjId": 93141,
+      "cdObjGuid": "b735ba53-2963-4b15-b016-30e1cf7d103b",
+      "cdObjName": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+      "cdObjTypeGuid": "a237cc2b-e895-4596-a963-9b6e74d0f7b2",
+      "lastSyncDate": null,
+      "lastModificationDate": null,
+      "parentModuleGuid": "00e7c6a8-83e4-40e2-bd27-51fcff9ce63b",
+      "parentModuleId": 99,
+      "parentClassGuid": null,
+      "parentObj": null,
+      "cdObjDispName": null,
+      "objId": 1621,
+      "objGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+      "docId": 21738,
+      "showName": null,
+      "icon": null,
+      "showIcon": null,
+      "currVal": null,
+      "cdObjEnabled": null,
+      "jDetails": null
+    }
+  ] 
+
+  const consumerResourceData = {
+    "cdObjTypeGuid": "a237cc2b-e895-4596-a963-9b6e74d0f7b2",
+    "consumerGuid": "AFFDA1E9-9EB0-E4BB-773B-14D14A477CE0",
+    "consumerId": 29,
+    "cdObjGuid": "b735ba53-2963-4b15-b016-30e1cf7d103b",
+    "cdObjId": 93141,
+    "consumerResourceTypeId": 6,
+    "consumerResourceName": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "objId": 1621,
+    "consumerResourceEnabled": true
+  }
+
+  const createResourceResponse = {
+    "cdObjGuid": "b735ba53-2963-4b15-b016-30e1cf7d103b",
+    "cdObjId": 93141,
+    "cdObjTypeGuid": "a237cc2b-e895-4596-a963-9b6e74d0f7b2",
+    "cdObjTypeId": null,
+    "consumerGuid": "AFFDA1E9-9EB0-E4BB-773B-14D14A477CE0",
+    "consumerId": 29,
+    "consumerResourceEnabled": true,
+    "consumerResourceGuid": "265b69a9-e561-475a-86fb-7d0ea0b5e818",
+    "consumerResourceId": 149,
+    "consumerResourceName": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "consumerResourceTypeGuid": null,
+    "consumerResourceTypeId": 6,
+    "docId": 21739,
+    "objGuid": null,
+    "objId": 1621
+  }
+
+  // join personal group member
+  const groupData = {
+    "groupMemberGuid": "1fb64d2b-54f6-4308-8200-e37facf0b9cc",
+    "userIdMember": 1621,
+    "memberGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "groupGuidParent": "d5270988-cb1a-427b-977f-4a78e709fda9",
+    "cdObjTypeId": 9,
+    "groupMemberEnabled": true
+  }
+
+  const respCreateGroupMember = {
+    "cdObjTypeId": 9,
+    "docId": 21740,
+    "groupGuidParent": "d5270988-cb1a-427b-977f-4a78e709fda9",
+    "groupIdParent": null,
+    "groupInvitationId": null,
+    "groupMemberEnabled": true,
+    "groupMemberGuid": "1fb64d2b-54f6-4308-8200-e37facf0b9cc",
+    "groupMemberId": 129875,
+    "groupMemberParentId": null,
+    "memberGuid": "f933eecc-e413-4f49-b924-0f1ce29823c5",
+    "memberId": null,
+    "userIdMember": 1621
+  }
+  // 4. check menu output after activating the user:
+  const loginRequest = {"ctx":"Sys","m":"User","c":"User","a":"Login","dat":{"f_vals":[{"data":{"userName":"asdap-admin","password":"FDrv9-Bm*qqH","consumerGuid":"B0B3DA99-1859-A499-90F6-1E3F69575DCD"}}],"token":null},"args":null};
+
+  // 5. login respons (No 'personal' menu item)
+  const loginResponse = {"app_state":{"success":true,"info":{"messages":[],"code":"","app_msg":"1 record/s updated"},"sess":{"cd_token":"416f48e4-3528-4610-b328-d44733d7f722","jwt":null,"ttl":0},"cache":{},"sConfig":{"usePush":true,"usePolling":true,"useCacheStore":true}},"data":[{"userId":1614,"userGuid":"f933eecc-e413-4f49-b924-0f1ce29823c5","userName":"asdap-admin","password":"$2b$10$jvHgCdA8SZW/tWUMighAH.TiuskQg7zppJkSFJdKWPhBrEpbqRuma","email":"asdap-admin@empservices.co.ke","companyId":null,"docId":23507,"mobile":null,"gender":null,"birthDate":null,"postalAddr":null,"fName":null,"mName":null,"lName":null,"nationalId":null,"passportId":null,"userEnabled":true,"zipCode":null,"activationKey":"739e1fa7-f821-4d8f-9793-4becfb985716","userTypeId":null,"userProfile":null}]};
+
+  /**
+   * We need to keep a cycle of purge user, registerUser,  activate user, check logs, login, check menu items until the issue is fixed.
+   */
+
+  // During registration of consumer resource, consumerId and consumerGuid are wrong 
+  // AFFDA1E9-9EB0-E4BB-773B-14D14A477CE0
+  // 29
+
+  /**
+   * During account activation, token is undefined. This makes the query resolves to where: [{}], which then returns all the data
+   * The consuming process is set to pick the first data in the item, so it pick the first item in all the outputs
+   */
+
+  /**
+   * REMEDY:
+   * - getSession should switch to default when token is invalid (null, undefined, a type that is not string, or empty string, number of characters are invalid) 
+   * - Make sure the IQuery never accepts {} as an input.
+   * - define default session
+   * 
+   * - modify cd-shell to send both activation key and consumerGuid
+   * - modify cd-api to pick the activation key and consumerGuid
+   * - validate against invalid consumerGuid
+   * - validate against invalid activationKey
+   * - use current user information to create session before starting post activatin process
+   * 
+   * RUN TESTS:
+   * - confirm that front end is sending the right activationKey and consumerGuid during user activation
+   * - confirm that api is able to interpret the sent activationKey and consimerGuid
+   * - confirm that activationKey and consumerGuid is properly processed
+   * 
+   * 
+   */
+  {
+    "ctx": "Sys",
+    "m": "Moduleman",
+    "c": "CdLog",
+    "a": "Get",
+    "dat": {
+        "f_vals": [
+            {
+                "query": {
+                    "where": {
+                        "select": [
+                            "message",
+                            "timestamp"
+                        ],
+                        "phrase": "UserService::activateUser()",
+                        "since": {
+                            "unit": "min",
+                            "value": "20"
+                        }
+                    }
+                }
+            }
+        ],
+        "token": "f7ead73f-3db9-4011-96a2-31d2a11dee86"
+    },
+    "args": null
+}
+  const defaultSession: SessionModel = {
+    sessionId: -1,
+    currentUserId: 1000,
+    cdToken: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+    startTime: 2000-01-01T01:00:00.000Z,
+    accTime: null,
+    ttl: 600,
+    active: false,
+    deviceNetId: null,
+    consumerGuid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx'
+  }
+
+  {
+    "ctx": "Sys",
+    "m": "User",
+    "c": "User",
+    "a": "ActivateUser",
+    "dat": {
+        "f_vals": [
+            {
+                "data": {
+                    "consumerToken": "B0B3DA99-1859-A499-90F6-1E3F69575DCD"
+                },
+                "query": {
+                    "where": {
+                        "activationKey": "739e1fa7-f821-4d8f-9793-4becfb985716"
+                    }
+                }
+            }
+        ],
+        "docproc": {}
+    },
+    "args": null
+}

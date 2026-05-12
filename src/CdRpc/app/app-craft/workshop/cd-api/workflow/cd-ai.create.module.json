@@ -1,0 +1,270 @@
+{
+    "ctx": "app",
+    "name": "cd-ai",
+    "cdModuleType": {
+        "typeName": "cd-api"
+    },
+    "description": "module for processing ai auto development of corpdesk module at the backend",
+    "controllers": [
+        {
+            "name": "cd-ai",
+            "type": "controller",
+            "methods": [
+                {
+                    "name": "PromptQuery",
+                    "isDefault": true,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "Promise<void>",
+                        "description": "Processes an AI prompt and returns a response"
+                    },
+                    "parameters": [
+                        {
+                            "name": "req",
+                            "type": "Request"
+                        },
+                        {
+                            "name": "res",
+                            "type": "Response"
+                        }
+                    ],
+                    "behavior": {
+                        "isAsync": true,
+                        "isPure": false,
+                        "returnsPromise": true
+                    }
+                },
+                {
+                    "name": "CheckTokenBalance",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "Promise<void>",
+                        "description": "Returns the remaining token balance for the user"
+                    },
+                    "parameters": [
+                        {
+                            "name": "req",
+                            "type": "Request"
+                        },
+                        {
+                            "name": "res",
+                            "type": "Response"
+                        }
+                    ],
+                    "behavior": {
+                        "isAsync": true,
+                        "isPure": false,
+                        "returnsPromise": true
+                    }
+                },
+                {
+                    "name": "GetUserProfile",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "Promise<void>",
+                        "description": "Fetches AI user profile details"
+                    },
+                    "parameters": [
+                        {
+                            "name": "req",
+                            "type": "Request"
+                        },
+                        {
+                            "name": "res",
+                            "type": "Response"
+                        }
+                    ],
+                    "behavior": {
+                        "isAsync": true,
+                        "isPure": false,
+                        "returnsPromise": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cd-ai-usage-logs",
+            "type": "controller",
+            "methods": [
+                {
+                    "name": "LogUsage",
+                    "isDefault": true,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "Promise<void>",
+                        "description": "Logs an AI request/response usage entry"
+                    },
+                    "parameters": [
+                        {
+                            "name": "req",
+                            "type": "Request"
+                        },
+                        {
+                            "name": "res",
+                            "type": "Response"
+                        }
+                    ],
+                    "behavior": {
+                        "isAsync": true,
+                        "isPure": false,
+                        "returnsPromise": true
+                    }
+                },
+                {
+                    "name": "GetUsageSummary",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "Promise<void>",
+                        "description": "Returns summarized AI usage logs"
+                    },
+                    "parameters": [
+                        {
+                            "name": "req",
+                            "type": "Request"
+                        },
+                        {
+                            "name": "res",
+                            "type": "Response"
+                        }
+                    ],
+                    "behavior": {
+                        "isAsync": true,
+                        "isPure": false,
+                        "returnsPromise": true
+                    }
+                }
+            ]
+        }
+    ],
+    "services": [
+        {
+            "name": "cd-ai",
+            "type": "service",
+            "methods": [
+                {
+                    "name": "promptQuery",
+                    "isDefault": true,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "CdFxReturn<AiResponse>",
+                        "description": "Executes an AI query and returns structured result"
+                    }
+                },
+                {
+                    "name": "checkTokenBalance",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "CdFxReturn<TokenStatus>",
+                        "description": "Returns user's token usage status"
+                    }
+                },
+                {
+                    "name": "getUserProfile",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "CdFxReturn<UserProfile>",
+                        "description": "Retrieves AI-specific user profile"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cd-ai-usage-logs",
+            "type": "service",
+            "methods": [
+                {
+                    "name": "LogUsage",
+                    "isDefault": true,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "CdFxReturn<null>",
+                        "description": "Records a usage log entry in the database"
+                    }
+                },
+                {
+                    "name": "GetUsageSummary",
+                    "isDefault": false,
+                    "scope": {
+                        "visibility": "public",
+                        "static": false
+                    },
+                    "output": {
+                        "returnType": "CdFxReturn<UsageStats[]>",
+                        "description": "Returns AI usage statistics grouped by time or user"
+                    }
+                }
+            ]
+        }
+    ],
+    "models": [
+        {
+            "name": "cd-ai",
+            "fields": []
+        },
+        {
+            "name": "cd-ai-usage-logs",
+            "fields": []
+        }
+    ],
+    "projectGuid": "REPLACE_WITH_GUID",
+    "versionControl": [
+        {
+            "name": "GitHub Source",
+            "repository": {
+                "name": "cd-api",
+                "url": "https://github.com/corpdesk/cd-api.git",
+                "type": "git",
+                "enabled": true,
+                "isPrivate": false,
+                "credentials": {
+                    "username": "your-github-username",
+                    "token": "your-token"
+                },
+                "directories": []
+            }
+        }
+    ],
+    "contributors": {
+        "vendor": {
+            "name": "emp services ltd"
+        },
+        "developers": [
+            {
+                "name": "g.oremo",
+                "contact": "george.oremo@gmail.com"
+            }
+        ]
+    }
+}

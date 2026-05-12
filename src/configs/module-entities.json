@@ -1,0 +1,62 @@
+[
+  {
+    "moduleName": "user",
+    "ctx": "sys",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "moduleman",
+    "ctx": "sys",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "comm",
+    "ctx": "sys",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "scheduler",
+    "ctx": "sys",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "cd-dev",
+    "ctx": "sys",
+    "enabled": true,
+    "toSync": false
+  },
+  {
+    "moduleName": "cd-accts",
+    "ctx": "app",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "coops",
+    "ctx": "app",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "cd-geo",
+    "ctx": "app",
+    "enabled": true,
+    "syncable": false
+  },
+  {
+    "moduleName": "cd-ai",
+    "ctx": "app",
+    "enabled": true,
+    "syncable": true
+  },
+  {
+    "moduleName": "cd-bio-engine",
+    "ctx": "app",
+    "enabled": true,
+    "syncable": true
+  }
+]

@@ -1,0 +1,67 @@
+// Request for company data
+{
+  "ctx": "Sys",
+  "m": "Moduleman",
+  "c": "Company",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "companyId",
+            "companyGuid",
+            "companyName",
+            "searchTags",
+            "companyTypeId",
+            "postalAddress",
+            "phone",
+            "mobile",
+            "email",
+            "website",
+            "city",
+            "country",
+            "physicalLocation",
+            "logo",
+            "companyEnabled"
+          ],
+          "where": {},
+          "take": 5,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "e46effa2-9c47-4f82-bc80-3865aec16443"
+  },
+  "args": {}
+}
+
+// Response:
+{
+    "app_state": {
+      "success": false,
+      "info": {
+        "messages": [
+          "Error: Field \"companyTypeId\" does not exist in the registered mapping for entity: CompanyViewModel"
+        ],
+        "code": "BaseService:readQB",
+        "app_msg": "Error at BaseService:readQB: Error: Field \"companyTypeId\" does not exist in the registered mapping for entity: CompanyViewModel"
+      },
+      "sess": {
+        "cd_token": "e46effa2-9c47-4f82-bc80-3865aec16443",
+        "jwt": null,
+        "ttl": 600
+      },
+      "cache": {},
+      "sConfig": {
+        "usePush": true,
+        "usePolling": true,
+        "useCacheStore": true
+      }
+    },
+    "data": []
+  }
+ 
+  //There seem to be some inconsistent reference of CompanyTypeId/CompanyTypeGuid when saving.
+// Remedy: on the api end, when CompanyTypeId is not provided, derive CompanyTypeGuid and vice-versa.
+  {"ctx":"Sys","m":"Moduleman","c":"Company","a":"Create","dat":{"f_vals":[{"data":{"companyName":"Tanzania-Dar-SACCO-05","searchTags":"Sacco","companyTypeGuid":"0bce0fdf-f2f9-4482-80bd-b1c1252e91db","postalAddress":"130 Xyz","phone":"07143111144","mobile":"07143111144","email":"tz-dar-sacco-05@tz-sacco.org","website":"www.tz-sacco-5.org","city":"Dodoma","country":"Tanzania","physicalLocation":"Bin Al Azaar St.","logo":"http://xx.logo"}}],"token":"1bdbcae5-316b-48e3-9b3c-b26ba4192b5d"},"args":{}}

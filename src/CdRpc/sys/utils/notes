@@ -1,0 +1,1278 @@
+orWhere: [
+      { name: "Like('%john%')" },
+      { email: "Like('%john%')" }
+    ],
+    andWhere: [
+      { coopId: "= 'abc123'" },
+      { geoLocationId: "= 456" }
+    ]
+ 
+ 
+ {
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {
+            "orWhere": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+            "andWhere": [
+              {
+                "userId": "= 1010"
+              },
+              {
+                "userName": "= 'karl'"
+              }
+            ]
+          },
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6ccbf1b9-7f56-409a-a456-fd1157b9b20c"
+  },
+  "args": {}
+}
+    
+{
+    "ctx": "Sys",
+    "m": "User",
+    "c": "User",
+    "a": "GetCount",
+    "dat": {
+        "f_vals": [
+            {
+                "query": {
+                    "select": [
+                        "userId",
+                        "email"
+                    ],
+                    "where": [
+                        {
+                            "userId": "Like('%tanz%')"
+                        },
+                        {
+                            "userName": "Like('%tanz%')"
+                        },
+                        {
+                            "email": "Like('%tanz%')"
+                        },
+                        {
+                            "fName": "Like('%tanz%')"
+                        },
+                        {
+                            "mName": "Like('%tanz%')"
+                        },
+                        {
+                            "lName": "Like('%tanz%')"
+                        }
+                    ],
+                    "take": 10,
+                    "skip": 0
+                }
+            }
+        ],
+        "token": "6ccbf1b9-7f56-409a-a456-fd1157b9b20c"
+    },
+    "args": {}
+}
+
+------------------------------------------------------------------
+I am encountering an sql error:
+Unknown column 'userId' in 'where clause'.
+The user id on the entity is defined as:
+@ViewColumn(
+        {
+            name: 'user_id'
+        }
+    )
+    userId: number;
+    
+This would mean that we have not included the capacity to translate from the field entity name (userId) to database name (user_id).
+But this is only happening for the where clause section. Note that the rest are sorted.
+
+The resulting sql statement is like so:
+SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE userId = 1010 AND userName = 'karl' OR userId Like('%ka%') OR userName Like('%ka%') OR email Like('%ka%') LIMIT 10
+
+I have included the old and new version of processObjectWhereClause() and processArrayWhereClause().
+You can see that the old version the translation considered.
+
+Suggest how we can fix this issue.
+
+// api request with the "query" payload:
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {
+            "orWhere": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+            "andWhere": [
+              {
+                "userId": "= 1010"
+              },
+              {
+                "userName": "= 'karl'"
+              }
+            ]
+          },
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+// new
+  private processObjectWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    whereObject: any
+  ) {
+    const entries = Object.entries(whereObject);
+    entries.forEach(([field, expr], index) => {
+      if (index === 0) {
+        queryBuilder.where(`${field} ${expr}`);
+      } else {
+        queryBuilder.andWhere(`${field} ${expr}`);
+      }
+    });
+  }
+  
+  // old
+  private processObjectWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    where: any
+  ): void {
+    Object.keys(where).forEach((key, index) => {
+      const [field, operator] = key.split("%"); // Split field and operator
+      const dbField = `${
+        this.repository.metadata.name
+      }.${this.getDatabaseColumnName(field)}`;
+      const value = where[key];
+
+      const sqlOperator = this.getSqlOperator(operator); // Map symbol to SQL operator
+      const condition =
+        operator === "BETWEEN" && typeof value === "object"
+          ? `${dbField} BETWEEN :${field}Start AND :${field}End`
+          : `${dbField} ${sqlOperator} :${field}`;
+
+      const params =
+        operator === "BETWEEN" && typeof value === "object"
+          ? { [`${field}Start`]: value.start, [`${field}End`]: value.end }
+          : { [field]: value };
+
+      if (index === 0) {
+        queryBuilder.where(condition, params);
+      } else {
+        queryBuilder.andWhere(condition, params);
+      }
+    });
+  }
+  
+  -----------------------------------
+  // new
+  private processArrayWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    whereArray: Array<any>
+  ) {
+    whereArray.forEach((condition, index) => {
+      const clause = Object.entries(condition)[0];
+      const [field, expr] = clause;
+      if (index === 0) {
+        queryBuilder.where(`${field} ${expr}`);
+      } else {
+        queryBuilder.orWhere(`${field} ${expr}`);
+      }
+    });
+  }
+  
+  // old
+  private processArrayWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    whereArray: any[]
+  ): void {
+    console.log("QueryBuilderHelper::processArrayWhereClause()/01");
+    console.log(
+      "QueryBuilderHelper::processArrayWhereClause()/whereArray:",
+      whereArray
+    );
+    whereArray.forEach((condition, index) => {
+      const key = Object.keys(condition)[0];
+      const value = condition[key];
+      const dbField = `${
+        this.repository.metadata.name
+      }.${this.getDatabaseColumnName(key)}`;
+      console.log("QueryBuilderHelper::processArrayWhereClause()/key:", key);
+      console.log(
+        "QueryBuilderHelper::processArrayWhereClause()/value:",
+        value
+      );
+      console.log(
+        "QueryBuilderHelper::processArrayWhereClause()/dbField:",
+        dbField
+      );
+      console.log("QueryBuilderHelper::processArrayWhereClause()/02");
+      if (
+        typeof value === "string" &&
+        value.startsWith("Like(") &&
+        value.endsWith(")")
+      ) {
+        console.log("QueryBuilderHelper::processArrayWhereClause()/03");
+        const match = value.match(/^Like\((.*)\)$/);
+        console.log(
+          "QueryBuilderHelper::processArrayWhereClause()/dbField:",
+          dbField
+        );
+        if (match) {
+          console.log("QueryBuilderHelper::processArrayWhereClause()/04");
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/match:",
+            match
+          );
+          let likeValue = match[1];
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/likeValue:",
+            likeValue
+          );
+          if (likeValue.startsWith("'") && likeValue.endsWith("'")) {
+            likeValue = likeValue.slice(1, -1);
+          }
+          if (index === 0) {
+            console.log("QueryBuilderHelper::processArrayWhereClause()/05");
+            console.log(
+              "QueryBuilderHelper::processArrayWhereClause()/likeValue:",
+              likeValue
+            );
+            console.log(
+              "QueryBuilderHelper::processArrayWhereClause()/`${dbField} LIKE :${key}`:",
+              `${dbField} LIKE :${key}`
+            );
+            console.log(
+              "QueryBuilderHelper::processArrayWhereClause()/{ [key]: likeValue }:",
+              { [key]: likeValue }
+            );
+            queryBuilder.where(`${dbField} LIKE :${key}`, { [key]: likeValue });
+          } else {
+            console.log("QueryBuilderHelper::processArrayWhereClause()/06");
+            console.log(
+              "QueryBuilderHelper::processArrayWhereClause()/`${dbField} LIKE :${key}`:",
+              `${dbField} LIKE :${key}`
+            );
+            console.log(
+              "QueryBuilderHelper::processArrayWhereClause()/{ [key]: likeValue }:",
+              { [key]: likeValue }
+            );
+            queryBuilder.orWhere(`${dbField} LIKE :${key}`, {
+              [key]: likeValue,
+            });
+          }
+        }
+      } else {
+        console.log("QueryBuilderHelper::processArrayWhereClause()/07");
+        if (index === 0) {
+          console.log("QueryBuilderHelper::processArrayWhereClause()/08");
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/`${dbField} LIKE :${key}`:",
+            `${dbField} LIKE :${key}`
+          );
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/{ [key]: likeValue }:",
+            { [key]: value }
+          );
+          queryBuilder.where(`${dbField} = :${key}`, { [key]: value });
+        } else {
+          console.log("QueryBuilderHelper::processArrayWhereClause()/09");
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/`${dbField} LIKE :${key}`:",
+            `${dbField} LIKE :${key}`
+          );
+          console.log(
+            "QueryBuilderHelper::processArrayWhereClause()/{ [key]: likeValue }:",
+            { [key]: value }
+          );
+          queryBuilder.orWhere(`${dbField} = :${key}`, { [key]: value });
+        }
+      }
+    });
+  }
+  
+  ----------------------------------------------------------------
+  {
+  "orWhere": [
+    {
+      "userId": "Like('%ka%')"
+    },
+    {
+      "userName": "Like('%ka%')"
+    },
+    {
+      "email": "Like('%ka%')"
+    }
+  ],
+  "andWhere": [
+    {
+      "userId": "= 1010"
+    },
+    {
+      "userName": "= 'karl'"
+    }
+  ]
+}
+
+
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {
+            "orWhere": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+            "andWhere": [
+              {
+                "userId": "= 1010"
+              },
+              {
+                "userName": "= 'karl'"
+              }
+            ]
+          },
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {"userId":"=1010", "userName":"=karl"},
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+QueryBuilderHelper::processObjectWhereClause()/dbField: UserViewModel.user_name
+BaseService::readQB/sql: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` 1010 AND `UserViewModel`.`user_name` karl LIMIT 10
+query: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` 1010 AND `UserViewModel`.`user_name` karl LIMIT 10
+query failed: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` 1010 AND `UserViewModel`.`user_name` karl LIMIT 10
+error: Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1010 AND `UserViewModel`.`user_name` karl LIMIT 10' at line 1
+
+---------------------------------------------------------------
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {"userId":"=1010", "userName":"='karl'"},
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+QueryBuilderHelper::processSmartWhereClause()/01
+QueryBuilderHelper::processSmartWhereClause()/where: {"userId":"=1010","userName":"='karl'"}
+QueryBuilderHelper::processSmartWhereClause()/04
+QueryBuilderHelper::processObjectWhereClause()/01
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processObjectWhereClause()/dbField: UserViewModel.user_id
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processObjectWhereClause()/dbField: UserViewModel.user_name
+BaseService::readQB/sql: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` =1010 AND `UserViewModel`.`user_name` ='karl' LIMIT 10
+query: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` =1010 AND `UserViewModel`.`user_name` ='karl' LIMIT 10
+BaseService::readQB()/items: [ { user_id: 1010, email: 'karl.lulu@anon.com', f_name: 'Karl' } ]
+BaseService::readQB()/Fetched-Items: [ { userId: 1010, email: 'karl.lulu@anon.com', fName: 'Karl' } ]
+query: SELECT COUNT(1) AS `cnt` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` =1010 AND `UserViewModel`.`user_name` ='karl'
+
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+QueryBuilderHelper::processSmartWhereClause()/01
+QueryBuilderHelper::processSmartWhereClause()/where: [{"userId":"Like('%ka%')"},{"userName":"Like('%ka%')"},{"email":"Like('%ka%')"}]
+QueryBuilderHelper::processSmartWhereClause()/02
+QueryBuilderHelper::processArrayWhereClause()/01
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processArrayWhereClause()/dbField: UserViewModel.user_id
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processArrayWhereClause()/dbField: UserViewModel.user_name
+QueryBuilderHelper::getDatabaseColumnName()/entityField: email
+QueryBuilderHelper::processArrayWhereClause()/dbField: UserViewModel.email
+QueryBuilderHelper::processSmartWhereClause()/03
+BaseService::readQB/sql: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` Like('%ka%') OR `UserViewModel`.`user_name` Like('%ka%') OR `UserViewModel`.`email` Like('%ka%') LIMIT 10
+query: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` Like('%ka%') OR `UserViewModel`.`user_name` Like('%ka%') OR `UserViewModel`.`email` Like('%ka%') LIMIT 10
+BaseService::readQB()/items: [
+  { user_id: 1010, email: 'karl.lulu@anon.com', f_name: 'Karl' },
+  {
+    user_id: 1154,
+    email: 'cleo.misri@empservices.co.ke',
+    f_name: 'Kasi'
+  }
+]
+BaseService::readQB()/Fetched-Items: [
+  { userId: 1010, email: 'karl.lulu@anon.com', fName: 'Karl' },
+  {
+    userId: 1154,
+    email: 'cleo.misri@empservices.co.ke',
+    fName: 'Kasi'
+  }
+]
+query: SELECT COUNT(1) AS `cnt` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` Like('%ka%') OR `UserViewModel`.`user_name` Like('%ka%') OR `UserViewModel`.`email` Like('%ka%')
+Fetched Count: 2
+
+
+-------------------------------------------------------------------------------
+Below are working api requests and the last one which is failing.
+From the logs of the failing request, you can see that at the line:
+console.log("QueryBuilderHelper::processSmartWhereClause()/c:", c);
+You can see that we are yet to integrate the facility getDatabaseColumnName(field);
+Peruse through and recommend the fix.
+// working api request
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {"userId":"=1010", "userName":"='karl'"},
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+// working api request
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+
+
+// failing api request
+// Current codes for the method and logs have been shared below.
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {
+            "orWhere": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+            "andWhere": [
+              {
+                "userId": "= 1010"
+              },
+              {
+                "userName": "= 'karl'"
+              }
+            ]
+          },
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+
+// method with log points
+private processSmartWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    where: IQueryWhere | Array<{ [field: string]: string }>
+  ) {
+    console.log("QueryBuilderHelper::processSmartWhereClause()/01");
+    console.log("QueryBuilderHelper::processSmartWhereClause()/where:", JSON.stringify(where));
+    if (Array.isArray(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/02");
+      this.processArrayWhereClause(queryBuilder, where); // OR logic
+      console.log("QueryBuilderHelper::processSmartWhereClause()/03");
+    } else if (this.isPlainWhereObject(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/04");
+      this.processObjectWhereClause(queryBuilder, where); // AND logic
+    } else {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/05");
+      const typed = where as IQueryWhere;
+      if (typed.andWhere && Array.isArray(typed.andWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/06");
+        typed.andWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/07");
+          console.log("QueryBuilderHelper::processSmartWhereClause()/c:", c);
+          const [field, expr] = Object.entries(c)[0];
+          if (i === 0 && !queryBuilder.expressionMap.wheres.length) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/08");
+            queryBuilder.where(`${field} ${expr}`);
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/09");
+            queryBuilder.andWhere(`${field} ${expr}`);
+          }
+        });
+      }
+      console.log("QueryBuilderHelper::processSmartWhereClause()/10");
+      if (typed.orWhere && Array.isArray(typed.orWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/11");
+        typed.orWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/12");
+          const [field, expr] = Object.entries(c)[0];
+          if (queryBuilder.expressionMap.wheres.length === 0 && i === 0) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/13");
+            queryBuilder.where(`${field} ${expr}`);
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/14");
+            queryBuilder.orWhere(`${field} ${expr}`);
+          }
+        });
+      }
+    }
+  }
+
+// logs
+QueryBuilderHelper::processSmartWhereClause()/01
+QueryBuilderHelper::processSmartWhereClause()/where: {"orWhere":[{"userId":"Like('%ka%')"},{"userName":"Like('%ka%')"},{"email":"Like('%ka%')"}],"andWhere":[{"userId":"= 1010"},{"userName":"= 'karl'"}]}
+QueryBuilderHelper::processSmartWhereClause()/05
+QueryBuilderHelper::processSmartWhereClause()/06
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userId: '= 1010' }
+QueryBuilderHelper::processSmartWhereClause()/08
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userName: "= 'karl'" }
+QueryBuilderHelper::processSmartWhereClause()/09
+QueryBuilderHelper::processSmartWhereClause()/10
+QueryBuilderHelper::processSmartWhereClause()/11
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::processSmartWhereClause()/14
+BaseService::readQB/sql: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE userId = 1010 AND userName = 'karl' OR userId Like('%ka%') OR userName Like('%ka%') OR email Like('%ka%') LIMIT 10
+query: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE userId = 1010 AND userName = 'karl' OR userId Like('%ka%') OR userName Like('%ka%') OR email Like('%ka%') LIMIT 10
+query failed: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE userId = 1010 AND userName = 'karl' OR userId Like('%ka%') OR userName Like('%ka%') OR email Like('%ka%') LIMIT 10
+error: Error: Unknown column 'userId' in 'where clause'
+
+-----------------------------------------------------------------------
+The query is now working...But:
+A matter of design: Refering to the request query below, there are two items in the object. 
+What should be the conjunction(AND or OR). At the moment it is being intepreted as OR.
+My suggestion is for the instruction below to be interpreted with AND as the conjunction.
+If we need OR, the two items should be housed in an array.
+I am adopting from what is already a trend where {a:1, b:2} are joined with AND then [{a:1},{b:2}] is joined by OR.
+{
+  "orWhere": [
+    {
+      "userId": "Like('%ka%')"
+    },
+    {
+      "userName": "Like('%ka%')"
+    },
+    {
+      "email": "Like('%ka%')"
+    }
+  ],
+  "andWhere": [
+    {
+      "userId": "= 1010"
+    },
+    {
+      "userName": "= 'karl'"
+    }
+  ]
+}
+
+QueryBuilderHelper::processSmartWhereClause()/01
+QueryBuilderHelper::processSmartWhereClause()/where: {"orWhere":[{"userId":"Like('%ka%')"},{"userName":"Like('%ka%')"},{"email":"Like('%ka%')"}],"andWhere":[{"userId":"= 1010"},{"userName":"= 'karl'"}]}
+QueryBuilderHelper::processSmartWhereClause()/05
+QueryBuilderHelper::processSmartWhereClause()/06
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userId: '= 1010' }
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processSmartWhereClause()/08
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userName: "= 'karl'" }
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processSmartWhereClause()/09
+QueryBuilderHelper::processSmartWhereClause()/10
+QueryBuilderHelper::processSmartWhereClause()/11
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: email
+QueryBuilderHelper::processSmartWhereClause()/14
+BaseService::readQB/sql: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` = 1010 AND `UserViewModel`.`user_name` = 'karl' OR `UserViewModel`.`user_id` Like('%ka%') OR `UserViewModel`.`user_name` Like('%ka%') OR `UserViewModel`.`email` Like('%ka%') LIMIT 10
+query: SELECT `UserViewModel`.`user_id`, `UserViewModel`.`email`, `UserViewModel`.`f_name` FROM `user_view` `UserViewModel` WHERE `UserViewModel`.`user_id` = 1010 AND `UserViewModel`.`user_name` = 'karl' OR `UserViewModel`.`user_id` Like('%ka%') OR `UserViewModel`.`user_name` Like('%ka%') OR `UserViewModel`.`email` Like('%ka%') LIMIT 10
+BaseService::readQB()/items: [
+  { user_id: 1010, email: 'karl.lulu@anon.com', f_name: 'Karl' },
+  {
+    user_id: 1154,
+    email: 'cleo.misri@empservices.co.ke',
+    f_name: 'Kasi'
+  }
+]
+
+// current state of processSmartWhereClause()
+private processSmartWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    where: IQueryWhere | Array<{ [field: string]: string }>
+  ) {
+    console.log("QueryBuilderHelper::processSmartWhereClause()/01");
+    console.log(
+      "QueryBuilderHelper::processSmartWhereClause()/where:",
+      JSON.stringify(where)
+    );
+
+    if (Array.isArray(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/02");
+      this.processArrayWhereClause(queryBuilder, where); // OR logic
+      console.log("QueryBuilderHelper::processSmartWhereClause()/03");
+    } else if (this.isPlainWhereObject(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/04");
+      this.processObjectWhereClause(queryBuilder, where); // AND logic
+    } else {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/05");
+      const typed = where as IQueryWhere;
+
+      if (typed.andWhere && Array.isArray(typed.andWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/06");
+        typed.andWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/07");
+          console.log("QueryBuilderHelper::processSmartWhereClause()/c:", c);
+          const [field, expr] = Object.entries(c)[0];
+
+          // FIX: Map to database column name
+          const dbField = `${
+            this.repository.metadata.name
+          }.${this.getDatabaseColumnName(field)}`;
+
+          if (i === 0 && !queryBuilder.expressionMap.wheres.length) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/08");
+            queryBuilder.where(`${dbField} ${expr}`);
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/09");
+            queryBuilder.andWhere(`${dbField} ${expr}`);
+          }
+        });
+      }
+
+      console.log("QueryBuilderHelper::processSmartWhereClause()/10");
+      if (typed.orWhere && Array.isArray(typed.orWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/11");
+        typed.orWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/12");
+          const [field, expr] = Object.entries(c)[0];
+
+          // FIX: Map to database column name
+          const dbField = `${
+            this.repository.metadata.name
+          }.${this.getDatabaseColumnName(field)}`;
+
+          if (queryBuilder.expressionMap.wheres.length === 0 && i === 0) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/13");
+            queryBuilder.where(`${dbField} ${expr}`);
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/14");
+            queryBuilder.orWhere(`${dbField} ${expr}`);
+          }
+        });
+      }
+    }
+  }
+  
+  ------------------------------------------------------------------------------
+  The query is now working...But:
+A matter of design: Refering to the request query below, there are two items in the object. 
+What should be the conjunction(AND or OR). At the moment it is being intepreted as OR.
+My suggestion is for the instruction below to be interpreted with AND as the conjunction.
+If we need OR, the two items should be housed in an array.
+I am adopting from what is already a trend where {a:1, b:2} are joined with AND then [{a:1},{b:2}] is joined by OR.
+{
+  "orWhere": [
+    {
+      "userId": "Like('%ka%')"
+    },
+    {
+      "userName": "Like('%ka%')"
+    },
+    {
+      "email": "Like('%ka%')"
+    }
+  ],
+  "andWhere": [
+    {
+      "userId": "= 1010"
+    },
+    {
+      "userName": "= 'karl'"
+    }
+  ]
+}
+
+QueryBuilderHelper::processSmartWhereClause()/01
+QueryBuilderHelper::processSmartWhereClause()/where: {"orWhere":[{"userId":"Like('%ka%')"},{"userName":"Like('%ka%')"},{"email":"Like('%ka%')"}],"andWhere":[{"userId":"= 1010"},{"userName":"= 'karl'"}]}
+QueryBuilderHelper::processSmartWhereClause()/05
+QueryBuilderHelper::processSmartWhereClause()/06
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userId: '= 1010' }
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processSmartWhereClause()/08
+QueryBuilderHelper::processSmartWhereClause()/07
+QueryBuilderHelper::processSmartWhereClause()/c: { userName: "= 'karl'" }
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processSmartWhereClause()/09
+QueryBuilderHelper::processSmartWhereClause()/10
+QueryBuilderHelper::processSmartWhereClause()/11
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userId
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: userName
+QueryBuilderHelper::processSmartWhereClause()/14
+QueryBuilderHelper::processSmartWhereClause()/12
+QueryBuilderHelper::getDatabaseColumnName()/entityField: email
+QueryBuilderHelper::processSmartWhereClause()/14
+BaseService::readQB/sql: SELECT UserViewModel.user_id, UserViewModel.email, UserViewModel.f_name FROM user_view UserViewModel WHERE UserViewModel.user_id = 1010 AND UserViewModel.user_name = 'karl' OR UserViewModel.user_id Like('%ka%') OR UserViewModel.user_name Like('%ka%') OR UserViewModel.email Like('%ka%') LIMIT 10
+query: SELECT UserViewModel.user_id, UserViewModel.email, UserViewModel.f_name FROM user_view UserViewModel WHERE UserViewModel.user_id = 1010 AND UserViewModel.user_name = 'karl' OR UserViewModel.user_id Like('%ka%') OR UserViewModel.user_name Like('%ka%') OR UserViewModel.email Like('%ka%') LIMIT 10
+BaseService::readQB()/items: [
+  { user_id: 1010, email: 'karl.lulu@anon.com', f_name: 'Karl' },
+  {
+    user_id: 1154,
+    email: 'cleo.misri@empservices.co.ke',
+    f_name: 'Kasi'
+  }
+]
+
+// current state of processSmartWhereClause()
+private processSmartWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    where: IQueryWhere | Array<{ [field: string]: string }>
+  ) {
+    console.log("QueryBuilderHelper::processSmartWhereClause()/01");
+    console.log(
+      "QueryBuilderHelper::processSmartWhereClause()/where:",
+      JSON.stringify(where)
+    );
+
+    if (Array.isArray(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/02");
+      this.processArrayWhereClause(queryBuilder, where); // OR logic
+      console.log("QueryBuilderHelper::processSmartWhereClause()/03");
+    } else if (this.isPlainWhereObject(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/04");
+      this.processObjectWhereClause(queryBuilder, where); // AND logic
+    } else {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/05");
+      const typed = where as IQueryWhere;
+
+      if (typed.andWhere && Array.isArray(typed.andWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/06");
+        typed.andWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/07");
+          console.log("QueryBuilderHelper::processSmartWhereClause()/c:", c);
+          const [field, expr] = Object.entries(c)[0];
+
+          // FIX: Map to database column name
+          const dbField = ${
+            this.repository.metadata.name
+          }.${this.getDatabaseColumnName(field)};
+
+          if (i === 0 && !queryBuilder.expressionMap.wheres.length) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/08");
+            queryBuilder.where(${dbField} ${expr});
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/09");
+            queryBuilder.andWhere(${dbField} ${expr});
+          }
+        });
+      }
+
+      console.log("QueryBuilderHelper::processSmartWhereClause()/10");
+      if (typed.orWhere && Array.isArray(typed.orWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/11");
+        typed.orWhere.forEach((c, i) => {
+          console.log("QueryBuilderHelper::processSmartWhereClause()/12");
+          const [field, expr] = Object.entries(c)[0];
+
+          // FIX: Map to database column name
+          const dbField = ${
+            this.repository.metadata.name
+          }.${this.getDatabaseColumnName(field)};
+
+          if (queryBuilder.expressionMap.wheres.length === 0 && i === 0) {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/13");
+            queryBuilder.where(${dbField} ${expr});
+          } else {
+            console.log("QueryBuilderHelper::processSmartWhereClause()/14");
+            queryBuilder.orWhere(${dbField} ${expr});
+          }
+        });
+      }
+    }
+  }
+ChatGPT said:
+
+You're absolutely right — from a design perspective, it's clearer and more consistent with common query structures (like MongoDB or even SQL parsing conventions) to assume that:
+
+    Object conditions (e.g., { a: 1, b: 2 }) should be ANDed.
+
+    Array of objects (e.g., [ { a: 1 }, { b: 2 } ]) should be ORed.
+
+And similarly for the special fields like andWhere and orWhere:
+
+    andWhere: join with AND
+
+    orWhere: join with OR
+
+    But if someone supplies both andWhere and orWhere, the combination must be logically grouped properly (i.e., parentheses), otherwise operator precedence will mess up the intent.
+
+🔧 The Real Problem
+
+In the generated SQL:
+
+WHERE user_id = 1010 AND user_name = 'karl' OR user_id LIKE ('%ka%') OR ...
+
+That ends up being interpreted by SQL as:
+
+(user_id = 1010 AND user_name = 'karl') OR user_id LIKE ('%ka%') OR ...
+
+Only if you're lucky. But often, without parentheses, SQL doesn't guarantee order the way you mean.
+✅ Recommended Fix
+
+You need to wrap andWhere and orWhere parts in grouped Brackets so that TypeORM generates the SQL with correct parentheses:
+
+Here’s how you fix your processSmartWhereClause():
+
+import { Brackets } from "typeorm";
+
+Then update your method:
+
+if (typed.andWhere && Array.isArray(typed.andWhere)) {
+  console.log("QueryBuilderHelper::processSmartWhereClause()/06");
+  queryBuilder.andWhere(new Brackets(qb => {
+    typed.andWhere!.forEach((c, i) => {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/07");
+      const [field, expr] = Object.entries(c)[0];
+      const dbField = `${this.repository.metadata.name}.${this.getDatabaseColumnName(field)}`;
+      if (i === 0) {
+        qb.where(`${dbField} ${expr}`);
+      } else {
+        qb.andWhere(`${dbField} ${expr}`);
+      }
+    });
+  }));
+}
+
+if (typed.orWhere && Array.isArray(typed.orWhere)) {
+  console.log("QueryBuilderHelper::processSmartWhereClause()/11");
+  queryBuilder.andWhere(new Brackets(qb => {
+    typed.orWhere!.forEach((c, i) => {
+      const [field, expr] = Object.entries(c)[0];
+      const dbField = `${this.repository.metadata.name}.${this.getDatabaseColumnName(field)}`;
+      if (i === 0) {
+        qb.where(`${dbField} ${expr}`);
+      } else {
+        qb.orWhere(`${dbField} ${expr}`);
+      }
+    });
+  }));
+}
+
+🚀 Result
+
+This now produces:
+
+WHERE (user_id = 1010 AND user_name = 'karl') AND 
+      (user_id LIKE '%ka%' OR user_name LIKE '%ka%' OR email LIKE '%ka%')
+
+This honors your intention.
+✅ Summary of Design Rules Going Forward
+Input Format	Interpretation
+{ a: 1, b: 2 }	a AND b
+[ { a: 1 }, { b: 2 } ]	a OR b
+{ andWhere: [...], orWhere: [...] }	Grouped AND/OR
+Multiple groups? Use Brackets to enforce
+
+
+------------------------------------------------------
+Now everything is working as expected except one preference.
+The new codes as modified now, requires that we add a symbol before a given value eg "='karl'".
+In the earlier codes we just needed to apply the value.  
+But I also see an opportunity where we can also use > or < that can work to our advantage.
+To resolve this, I recommend we have "='karl'" as a default when no symbol is supplied. 
+One should be able to supply:
+"where": {"userId":"1010", "userName":"karl"} to represent "where": {"userId":"=1010", "userName":"='karl'"}
+When the value is a number, it should also be ok to supply: "where": {"userId":1010, "userName":"karl"} 
+The process should also allow {"userId":"<1010" to have its logical meaning where < can be replaced by any sql comparison symbol.
+
+// This is currently working but may break ealier codes where comparison symbol was not a requirement
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {"userId":"=1010", "userName":"='karl'"},
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+// This is also currently working but may break ealier codes where comparison symbol was not a requirement
+{
+  "ctx": "Sys",
+  "m": "User",
+  "c": "User",
+  "a": "GetCount",
+  "dat": {
+    "f_vals": [
+      {
+        "query": {
+          "select": [
+            "userId",
+            "email",
+            "fName"
+          ],
+          "where": {
+            "orWhere": [
+              {
+                "userId": "Like('%ka%')"
+              },
+              {
+                "userName": "Like('%ka%')"
+              },
+              {
+                "email": "Like('%ka%')"
+              }
+            ],
+            "andWhere": [
+              {
+                "userId": "= 1010"
+              },
+              {
+                "userName": "= 'karl'"
+              }
+            ]
+          },
+          "take": 10,
+          "skip": 0
+        }
+      }
+    ],
+    "token": "6c7b1143-eafe-4841-bcd5-e75a7342d684"
+  },
+  "args": {}
+}
+
+-------------------------------------------------------
+Below is the current state of processSmartWhereClause().
+I have already added the method normalizeExpr().
+You have suggested addition of:
+const rawExpr = Object.entries(c)[0][1];
+const normalizedExpr = this.normalizeExpr(rawExpr);
+queryBuilder.andWhere(`${dbField} ${normalizedExpr}`);
+Just to avoid any misplacement, give me the full processSmartWhereClause() with the new additional lines.
+
+private processSmartWhereClause(
+    queryBuilder: SelectQueryBuilder<any>,
+    where: IQueryWhere | Array<{ [field: string]: string }>
+  ) {
+    console.log("QueryBuilderHelper::processSmartWhereClause()/01");
+    console.log(
+      "QueryBuilderHelper::processSmartWhereClause()/where:",
+      JSON.stringify(where)
+    );
+
+    if (Array.isArray(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/02");
+      this.processArrayWhereClause(queryBuilder, where); // OR logic
+      console.log("QueryBuilderHelper::processSmartWhereClause()/03");
+    } else if (this.isPlainWhereObject(where)) {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/04");
+      this.processObjectWhereClause(queryBuilder, where); // AND logic
+    } else {
+      console.log("QueryBuilderHelper::processSmartWhereClause()/05");
+      const typed = where as IQueryWhere;
+
+      
+      if (typed.andWhere && Array.isArray(typed.andWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/06");
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            typed.andWhere!.forEach((c, i) => {
+              console.log("QueryBuilderHelper::processSmartWhereClause()/07");
+              const [field, expr] = Object.entries(c)[0];
+              const dbField = `${
+                this.repository.metadata.name
+              }.${this.getDatabaseColumnName(field)}`;
+              if (i === 0) {
+                qb.where(`${dbField} ${expr}`);
+              } else {
+                qb.andWhere(`${dbField} ${expr}`);
+              }
+            });
+          })
+        );
+      }
+
+      if (typed.orWhere && Array.isArray(typed.orWhere)) {
+        console.log("QueryBuilderHelper::processSmartWhereClause()/11");
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            typed.orWhere!.forEach((c, i) => {
+              const [field, expr] = Object.entries(c)[0];
+              const dbField = `${
+                this.repository.metadata.name
+              }.${this.getDatabaseColumnName(field)}`;
+              if (i === 0) {
+                qb.where(`${dbField} ${expr}`);
+              } else {
+                qb.orWhere(`${dbField} ${expr}`);
+              }
+            });
+          })
+        );
+      }
+    }
+  }
+
+
+  
+  
+  

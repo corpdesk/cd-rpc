@@ -1,0 +1,151 @@
+import { CdAssertReturn, CdFxReturn, IQuery } from '../../../sys/base/i-base.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
+// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
+import { TestBedService } from '../services/test-bed.service.js';
+import { VersionControlDescriptor } from '../../../sys/dev-descriptor/index.js';
+import { GenDbSchemaService } from '../services/gen-db-schema.service.js';
+import { DbMigrationService } from '../services/do-migration.service.js';
+// import { ModuleRegisterService } from '../../../sys/moduleman/services/module-register.service.js';
+import { CrudTestService } from '../services/crud-test.service.js';
+import { Logging } from '../../../sys/base/winston.log.js';
+
+export class TestBedController {
+  logger!: Logging;
+  svTestBed: TestBedService;
+  svGenDBSchema = new GenDbSchemaService();
+  svDbMigration = new DbMigrationService();
+  // svModuleRegister = new ModuleRegisterService();
+  svCrudTest = new CrudTestService();
+  constructor() {
+    this.svTestBed = new TestBedService();
+    this.svTestBed.init();
+    this.logger = new Logging();
+  }
+
+  /**
+   * Create a new module
+   *
+   * @param moduleDescriptor
+   * @returns
+   */
+  // async create(
+  //   d: CdModuleDescriptor,
+  //   model: DevModeModel,
+  // ): Promise<CdFxReturn<null>> {
+  //   CdLog.debug('Starting TestBedController::create()');
+  //   return this.svTestBed.create(d, model);
+  // }
+
+  // name, type, cdToken
+  // async create(
+  //   actionTargetName: string,
+  //   moduleName: string,
+  //   oEnv: string,
+  //   repoName: string,
+  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+  //   this.logger.logDebug('Starting TestBedController::create()');
+  //   return this.svTestBed.create(actionTargetName, moduleName, oEnv, repoName);
+  // }
+
+  // async read(q?: IQuery): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+  //   return this.svTestBed.read(q);
+  // }
+
+  // async update(
+  //   actionTargetName: string,
+  //   moduleName: string,
+  //   moduleType: string,
+  //   cdToken: string,
+  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+  //   return this.svTestBed.update(actionTargetName, moduleName, moduleType, cdToken);
+  // }
+
+  // async upgrade(
+  //   actionTargetName: string,
+  //   moduleName: string,
+  //   oEnv: string,
+  //   repoName: string,
+  //   version: string,
+  //   testTasks?: boolean,
+  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+  //   this.logger.logDebug('Starting TestBedController::upgrade()');
+  //   return this.svTestBed.upgrade(
+  //     actionTargetName,
+  //     moduleName,
+  //     oEnv,
+  //     repoName,
+  //     version,
+  //     testTasks !== undefined ? String(testTasks) : undefined,
+  //   );
+  // }
+
+  // async delete(
+  //   actionTargetName: string,
+  //   moduleName: string,
+  //   moduleType: string,
+  //   cdToken: string,
+  // ): Promise<CdFxReturn<null | CdAssertReturn[]>>{
+  //   this.logger.logDebug('Starting TestBedController::delete()');
+  //   return this.svTestBed.delete(actionTargetName, moduleName, moduleType, cdToken);
+  // }
+
+  // // Get all applications
+  // async getAllModules(): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+  //   return await this.svTestBed.getAllModules();
+  // }
+
+  // // Get a single module by name
+  // async getModuleByName(name: string): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+  //   return this.svTestBed.getModuleByName(name);
+  // }
+
+  // async CreateModuleDirectories(moduleDir: string): Promise<CdFxReturn<null>> {
+  //   return await this.svTestBed.createModuleDirectories(moduleDir);
+  // }
+
+  // async PushFromOutput(
+  //   versionControl: VersionControlDescriptor,
+  //   dirName: string,
+  // ): Promise<CdFxReturn<null>> {
+  //   return await this.svTestBed.pushFromOutput(versionControl, dirName);
+  // }
+
+  // async CloneToTestBed(versionControl: VersionControlDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svTestBed.cloneToTestBed(versionControl);
+  // }
+
+  // async PullToTestBed(versionControl: VersionControlDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svTestBed.pullToTestBed(versionControl);
+  // }
+
+  // async AddModuleToEntities(module: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svTestBed.addModuleToEntities(module);
+  // }
+
+  // async SyncDatabaseSchema(module: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svGenDBSchema.syncDbSchema(module);
+  // }
+
+  async MigrateDatabaseSchema(module: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+    await this.svDbMigration.init();
+    return await this.svDbMigration.migrateFromModel(module);
+  }
+
+  // async RegisterModuleInCdInstance(moduleData: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svModuleRegister.registerModuleInCdInstance(moduleData);
+  // }
+
+
+  // async DeRegisterModuleInCdInstance(moduleData: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+  //   return await this.svModuleRegister.deRegisterModuleFromCdInstance(moduleData);
+  // }
+
+  async PurgeModuleFromDb(moduleData: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+    return await this.svDbMigration.purgeModuleFromDatabase(moduleData);
+  }
+
+  // async RunCRUDTests(moduleData: CdModuleDescriptor): Promise<CdFxReturn<null>> {
+  //   this.svCrudTest.init();
+  //   return await this.svCrudTest.runAllTests(moduleData);
+  // }
+}
