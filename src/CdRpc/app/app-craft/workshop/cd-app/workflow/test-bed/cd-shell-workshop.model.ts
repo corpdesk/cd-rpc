@@ -1,7 +1,7 @@
 // src/CdCli/app/app-craft/workshop/cd-app/workflow/test-bed/cd-shell-workshop.model.ts
 import { DevModeAction, getCreateRegistry, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index.js";
 import { AppType, envCdShell, envCdShellApp, envCdShellSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index.js";
-import { CdFxReturn } from "../../../../../../sys/base/i-base.js";
+import { CdFxReturn } from "../../../../../../sys/base/i-base";
 
 export const cdApiVersionControl: VersionControlDescriptor = {
   name: 'CdShell',

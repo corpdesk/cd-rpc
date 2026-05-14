@@ -1,7 +1,7 @@
-import type { FunctionDescriptor } from './function-descriptor.model';
-import type { BaseDescriptor } from './base-descriptor.model';
-import { ComponentDescriptor, ComponentType } from './component-descriptor.model';
-import type { DependencyDescriptor } from './dependancy-descriptor.model';
+import type { FunctionDescriptor } from './function-descriptor.model.js';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import { ComponentDescriptor, ComponentType } from './component-descriptor.model.js';
+import type { DependencyDescriptor } from './dependancy-descriptor.model.js';
 
 
 export interface CdServiceDescriptor extends ComponentDescriptor {

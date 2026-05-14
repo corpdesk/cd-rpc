@@ -1,6 +1,6 @@
-import { ICdRequest } from '../../base/i-base';
-import { DependencyDescriptor } from '../index';
-import type { BaseDescriptor } from './base-descriptor.model';
+import { ICdRequest } from '../../base/i-base.js';
+import { DependencyDescriptor } from '../index.js';
+import type { BaseDescriptor } from './base-descriptor.model.js';
 
 export interface FunctionDescriptor extends BaseDescriptor {
   name: string; // override the BaseDescriptor, which is optional
@@ -16,6 +16,98 @@ export interface FunctionDescriptor extends BaseDescriptor {
   isDefault: boolean; // Indicates if the function is a default export
   assert?: ICdRequest; // Optional assertion for testing purposes
   dependancy?: DependencyDescriptor[]
+}
+
+export interface RuntimeDescriptor {
+
+  /**
+   * Execution strategy inside the host system
+   */
+  mode: 'sync' | 'async' | 'deferred' | 'stream' | 'unknown';
+
+  /**
+   * Concurrency model for execution
+   */
+  concurrency?: {
+    type: 'single' | 'multi' | 'parallel' | 'worker-pool' | 'event-loop';
+    limit?: number;
+  };
+
+  /**
+   * Isolation boundary
+   * - useful for AI agents, sandboxed execution, plugins
+   */
+  isolation?: {
+    level: 'none' | 'process' | 'thread' | 'container' | 'vm' | 'sandbox';
+  };
+
+  /**
+   * Execution priority within runtime scheduler
+   */
+  priority?: 'low' | 'normal' | 'high' | 'critical';
+
+  /**
+   * Lifecycle behavior of execution
+   */
+  lifecycle?: {
+    ephemeral?: boolean;     // destroyed after execution
+    persistent?: boolean;    // long-running context
+    reusable?: boolean;      // cached execution context
+  };
+}
+
+export interface TracingDescriptor {
+
+  /**
+   * Enable or disable tracing entirely
+   */
+  enabled: boolean;
+
+  /**
+   * Correlation identity (critical for distributed CdWire → CdRpc → CdApi flows)
+   */
+  correlation?: {
+    traceId?: string;
+    spanId?: string;
+    parentId?: string;
+  };
+
+  /**
+   * Logging behavior
+   */
+  logging?: {
+    level: 'debug' | 'info' | 'warn' | 'error' | 'silent';
+    includePayload?: boolean;
+    includeHeaders?: boolean;
+    sanitize?: boolean;
+  };
+
+  /**
+   * Metrics collection
+   */
+  metrics?: {
+    enabled: boolean;
+    namespace?: string;
+    tags?: Record<string, string>;
+  };
+
+  /**
+   * Distributed tracing export targets
+   */
+  exporters?: {
+    console?: boolean;
+    otel?: boolean;        // OpenTelemetry
+    endpoint?: string;      // custom collector
+  };
+
+  /**
+   * Timing capture behavior
+   */
+  timing?: {
+    enabled: boolean;
+    captureStartEnd?: boolean;
+    captureBreakdown?: boolean;
+  };
 }
 
 // Scope Descriptor

@@ -1,8 +1,8 @@
-import { CdFxReturn } from '../../../sys/base/i-base.js';
+import { CdFxReturn } from '../../../sys/base/i-base';
 import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-// import { DevModeAction } from '../../../sys/dev-mode/models/dev-mode.model.js';
-import { GenControllerService } from '../services/gen-controller.service.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { DevModeAction } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { GenControllerService } from '../services/gen-controller.service';
+import { BaseService } from '../../../sys/base/base.service';
 
 export class GenControllerController {
   b = new BaseService();
@@ -11,12 +11,12 @@ export class GenControllerController {
     this.svGenController = new GenControllerService();
   }
 
-  // async GenerateAllControllers(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  //   path: string,
-  // ): Promise<CdFxReturn<null>> {
-  //   // this.b.logWithContext(this, `GenerateAllControllers:`, { action, moduleData });
-  //   return await this.svGenController.generateAllControllers(action, moduleData);
-  // }
+  async GenerateAllControllers(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+    path: string,
+  ): Promise<CdFxReturn<null>> {
+    // this.b.logWithContext(this, `GenerateAllControllers:`, { action, moduleData });
+    return await this.svGenController.generateAllControllers(action, moduleData);
+  }
 }

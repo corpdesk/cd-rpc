@@ -16,8 +16,117 @@ import {
   ObjectLiteral,
   UpdateResult,
 } from "typeorm";
-import { UiSystemDescriptor } from "../dev-descriptor/models/ui-system-descriptor.model";
+// import { UiSystemDescriptor } from "../dev-descriptor/models/ui-system-descriptor.model";
 import { LogLevel } from "./winston.log";
+
+export const SYS_CTX = 'Sys';
+export const DEFAULT_DAT: EnvelopDat = {
+  f_vals: [
+    {
+      query: null,
+      data: null,
+    },
+  ],
+  token: null,
+};
+
+export const DEFAULT_ARGS = {};
+
+export const DEFAULT_ENVELOPE_CREATE: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'Create',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export const DEFAULT_ENVELOPE_GET: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'Get',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export const DEFAULT_ENVELOPE_GET_PAGED: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'GetCount',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export const DEFAULT_ENVELOPE_GET_TYPE: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'GetCount',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export const DEFAULT_ENVELOPE_UPDATE: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'Update',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export const DEFAULT_ENVELOPE_DELETE: ICdRequest = {
+  ctx: SYS_CTX,
+  m: '',
+  c: '',
+  a: 'Delete',
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
+export interface CdResponse {
+  app_state: IAppState;
+  data: any[];
+}
+
+////////////////////
+
+// export const DEFAULT_CD_RESPONSE: ICdResponse = {
+//   app_state: {
+//     success: false,
+//     info: {
+//       messages: [],
+//       code: '',
+//       app_msg: '',
+//     },
+//     sess: {
+//       cd_token: '',
+//       jwt: null,
+//       ttl: 600,
+//     },
+//     cache: {},
+//   },
+//   data: [],
+// };
+
+// export const DEFAULT_CD_REQUEST: ICdRequest = {
+//   ctx: 'Sys',
+//   m: '',
+//   c: '',
+//   a: '',
+//   dat: DEFAULT_DAT,
+//   args: DEFAULT_ARGS,
+// };
+
+export interface IAppState {
+  success: boolean;
+  info: IRespInfo | null;
+  sess: ISessResp | null;
+  cache: object | null;
+  sConfig?: IServerConfig;
+}
 
 export interface BaseServiceInterface<T> {
   create: (

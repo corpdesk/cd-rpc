@@ -1,7 +1,7 @@
 import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
 import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
-import CdLog from '../../../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdFxStateLevel } from '../../../../../../sys/base/i-base.js';
+import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
+import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { inspect } from 'util';
 import { AppType } from '../../../../../../sys/dev-descriptor/index.js';
 

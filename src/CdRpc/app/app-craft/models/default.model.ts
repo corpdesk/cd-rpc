@@ -13,7 +13,7 @@ import {
   CdServiceDescriptor,
   LanguageDescriptor,
 } from '../../../sys/dev-descriptor/index.js';
-import { CdFxReturn } from '../../../sys/base/i-base.js';
+import { CdFxReturn } from '../../../sys/base/i-base';
 
 // Simulate __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -80,13 +80,13 @@ export const MOD_CRAFT_WORKSHOP_DIR = resolve(HOME, 'cd-cli', 'dist/CdCli/app/ap
 // export const MOD_CRAFT_CD_API_TEMPLATE = resolve(
 //   HOME,
 //   'cd-cli',
-//   'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/controllers/abcd.controller.js',
+//   'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/controllers/abcd.controller',
 // );
 
 export const MOD_CRAFT_CONTROLLERS_TEMPLATE = resolve(
   HOME,
   'cd-cli',
-  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/controllers/abcd.controller.js',
+  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/controllers/abcd.controller',
 );
 
 export const MOD_CRAFT_MODEL_TEMPLATE = resolve(
@@ -98,7 +98,7 @@ export const MOD_CRAFT_MODEL_TEMPLATE = resolve(
 export const MOD_CRAFT_SERVICES_TEMPLATE = resolve(
   HOME,
   'cd-cli',
-  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/services/abcd.service.js',
+  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/services/abcd.service',
 );
 
 export const CD_API_TEST_BED_DIR = resolve(HOME, 'cd-projects', 'cd-api');

@@ -1,5 +1,5 @@
-import { UiSystemDescriptor } from "../../dev-descriptor/models/ui-system-descriptor.model";
-import { UiThemeDescriptor } from "../../dev-descriptor/models/ui-theme-descriptor.model";
+// import { UiSystemDescriptor } from "../../dev-descriptor/models/ui-system-descriptor.model";
+// import { UiThemeDescriptor } from "../../dev-descriptor/models/ui-theme-descriptor.model";
 import { BaseUiAdapter } from "../services/base-ui-adapter.service";
 
 export interface IUiSystemAdapter {

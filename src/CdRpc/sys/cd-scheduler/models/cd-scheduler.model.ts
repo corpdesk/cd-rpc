@@ -5,7 +5,7 @@ import {
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseDescriptor, BashScriptDescriptor, MigrationDescriptor, TestingFrameworkDescriptor } from '../../dev-descriptor/index.js';
-import { CdFxStateLevel, FxStateSemantics, ICdRequest } from '../../base/i-base.js';
+import { CdFxStateLevel, FxStateSemantics, ICdRequest } from '../../base/i-base';
 import { CdVaultItem } from '../../cd-cli/models/cd-cli-vault.model.js';
 
 @Entity({

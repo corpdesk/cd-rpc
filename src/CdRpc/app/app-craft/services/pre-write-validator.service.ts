@@ -1,5 +1,5 @@
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
+import { BaseService } from '../../../sys/base/base.service';
 
 export class PreWriteValidatorService {
   b = new BaseService();

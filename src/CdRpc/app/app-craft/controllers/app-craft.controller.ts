@@ -8,16 +8,15 @@ import * as path from 'node:path';
 import { join } from 'node:path';
 // import { fileURLToPath } from 'node:url';
 import util, { promisify } from 'node:util';
-// import { CONFIG_FILE_PATH } from '../../../../config.js';
-// import inquirer from 'inquirer';
-// import { SSH_TO_DEV_PROMPT_DATA, workshopConfig } from '../models/app-craft.model.js';
-// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
-// import { ProfileContainer, ProfileModel } from '../../../sys/cd-cli/models/cd-cli-profile.model.js';
-// import CdCliVaultController from '../../../sys/cd-cli/controllers/cd-cli-vault.controller.js';
+import { CONFIG_FILE_PATH } from '../../../../config.js';
+import inquirer from 'inquirer';
+import { SSH_TO_DEV_PROMPT_DATA, workshopConfig } from '../models/app-craft.model.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
+import { ProfileContainer, ProfileModel } from '../../../sys/cd-cli/models/cd-cli-profile.model.js';
+import CdCliVaultController from '../../../sys/cd-cli/controllers/cd-cli-vault.controller';
 import { AppType } from '../../../sys/dev-descriptor/index.js';
-import { CdFxReturn } from '../../../sys/base/i-base.js';
-import { AppCraftService } from '../services/app-craft.service.js';
-import { Logging } from '../../../sys/base/winston.log.js';
+import { CdFxReturn } from '../../../sys/base/i-base';
+import { AppCraftService } from '../services/app-craft.service';
 
 const execPromise = promisify(exec);
 // Construct __dirname for ES Modules
@@ -25,7 +24,6 @@ const execPromise = promisify(exec);
 // const __dirname = path.dirname(__filename);
 
 export class AppCraftController {
-  logger!: Logging;
   svAppCraft = new AppCraftService();
 
   async PreCreateCleanup(appType: AppType, cdObjName: string,oEnv: string,): Promise<CdFxReturn<boolean>> {
@@ -39,64 +37,52 @@ export class AppCraftController {
    * @param templateType
    * @param gitRepo
    */
-  // async initTemplate(templateType: string, gitRepo: string) {
-  //   try {
-  //     if (!templateType || !gitRepo) {
-  //       throw new Error('Both --type and --url options are required.');
-  //     }
+  async initTemplate(templateType: string, gitRepo: string) {
+    try {
+      if (!templateType || !gitRepo) {
+        throw new Error('Both --type and --url options are required.');
+      }
 
-  //     // Resolve the project root dynamically
-  //     // const __filename = fileURLToPath(import.meta.url);
-  //     const projectRoot = path.resolve(path.dirname(__filename), './..'); // Adjusts based on current directory depth
+      // Resolve the project root dynamically
+      // const __filename = fileURLToPath(import.meta.url);
+      const projectRoot = path.resolve(path.dirname(__filename), './..'); // Adjusts based on current directory depth
 
-  //     // Use configuration parameter for templates directory
-  //     // const templatesRelativePath = './src/templates';
-  //     const templatesRelativePath = workshopConfig(null, null).moduleTemplatePath;
-  //     const templatesDir = path.resolve(projectRoot, templatesRelativePath, templateType);
+      // Use configuration parameter for templates directory
+      // const templatesRelativePath = './src/templates';
+      const templatesRelativePath = workshopConfig(null, null).moduleTemplatePath;
+      const templatesDir = path.resolve(projectRoot, templatesRelativePath, templateType);
 
-  //     const moduleName = path.basename(gitRepo, '.git');
-  //     const targetDir = path.resolve(templatesDir, moduleName);
+      const moduleName = path.basename(gitRepo, '.git');
+      const targetDir = path.resolve(templatesDir, moduleName);
 
-  //     // Ensure the template directory exists
-  //     if (!existsSync(templatesDir)) {
-  //       mkdirSync(templatesDir, { recursive: true });
-  //     }
+      // Ensure the template directory exists
+      if (!existsSync(templatesDir)) {
+        mkdirSync(templatesDir, { recursive: true });
+      }
 
-  //     // Check if the target directory already exists
-  //     if (existsSync(targetDir)) {
-  //       throw new Error(`Module directory ${moduleName} already exists.`);
-  //     }
+      // Check if the target directory already exists
+      if (existsSync(targetDir)) {
+        throw new Error(`Module directory ${moduleName} already exists.`);
+      }
 
-  //     // Clone the repository
-  //     this.logger.logInfo(`Cloning template from ${gitRepo}...`, {
-  //       module: 'moduleman',
-  //       controller: 'ModCraftController',
-  //       action: 'initTemplate',
-  //     });
-  //     await execPromise(`git clone ${gitRepo} ${targetDir}`);
-  //     this.logger.logInfo(`Template cloned to ${targetDir}.`, {
-  //       module: 'moduleman',
-  //       controller: 'ModCraftController',
-  //       action: 'initTemplate',
-  //     }); 
+      // Clone the repository
+      CdLog.info(`Cloning template from ${gitRepo}...`, {
+        module: 'moduleman',
+        controller: 'ModCraftController',
+        action: 'initTemplate',
+      });
+      await execPromise(`git clone ${gitRepo} ${targetDir}`);
+      CdLog.info(`Template cloned to ${targetDir}.`);
 
-  //     // Update configuration files if necessary
-  //     console.log(`Configuring the module...`);
-  //     this.updateConfigFiles(targetDir, moduleName);
+      // Update configuration files if necessary
+      console.log(`Configuring the module...`);
+      this.updateConfigFiles(targetDir, moduleName);
 
-  //     this.logger.logInfo(`✨ Module ${moduleName} initialized successfully.`, {
-  //       module: 'moduleman',
-  //       controller: 'ModCraftController',
-  //       action: 'initTemplate',
-  //     });
-  //   } catch (error) {
-  //     this.logger.logError(`Error initializing module: ${(error as Error).message}`, {
-  //       module: 'moduleman',
-  //       controller: 'ModCraftController',
-  //       action: 'initTemplate',
-  //     });
-  //   }
-  // }
+      CdLog.success(`✨ Module ${moduleName} initialized successfully.`);
+    } catch (error) {
+      CdLog.error(`Error initializing module: ${(error as Error).message}`);
+    }
+  }
 
   private async runCommand(command: string) {
     return new Promise<void>((resolve, reject) => {
@@ -145,96 +131,96 @@ export class AppCraftController {
    */
   // import { checkProfileAndLogin } from '../../utils/profileHelper'; // Assuming the helper is in utils
 
-  // async initModuleFromRepo(gitRepo: string, profileName?: string) {
-  //   CdLog.debug(`initModuleFromRepo()/gitRepo:${gitRepo}`);
-  //   CdLog.debug(`initModuleFromRepo()/profileName:${profileName}`);
-  //   CdLog.debug(`initModuleFromRepo()/CONFIG_FILE_PATH:${CONFIG_FILE_PATH}`);
+  async initModuleFromRepo(gitRepo: string, profileName?: string) {
+    CdLog.debug(`initModuleFromRepo()/gitRepo:${gitRepo}`);
+    CdLog.debug(`initModuleFromRepo()/profileName:${profileName}`);
+    CdLog.debug(`initModuleFromRepo()/CONFIG_FILE_PATH:${CONFIG_FILE_PATH}`);
 
-  //   try {
-  //     // Step 1: Load configurations from ~/.cd-cli.profiles.json
-  //     if (!existsSync(CONFIG_FILE_PATH)) {
-  //       throw new Error('Configuration file not found. Please set up your CLI.');
-  //     }
+    try {
+      // Step 1: Load configurations from ~/.cd-cli.profiles.json
+      if (!existsSync(CONFIG_FILE_PATH)) {
+        throw new Error('Configuration file not found. Please set up your CLI.');
+      }
 
-  //     const config: ProfileContainer = JSON.parse(fs.readFileSync(CONFIG_FILE_PATH, 'utf-8'));
-  //     const profiles: ProfileModel[] = config.items;
+      const config: ProfileContainer = JSON.parse(fs.readFileSync(CONFIG_FILE_PATH, 'utf-8'));
+      const profiles: ProfileModel[] = config.items;
 
-  //     if (!profiles || config.count === 0) {
-  //       throw new Error('No profiles found. Please create a profile first.');
-  //     }
+      if (!profiles || config.count === 0) {
+        throw new Error('No profiles found. Please create a profile first.');
+      }
 
-  //     // Step 2: Locate the specified profile or use prompts
-  //     let profileDetails: any = null;
+      // Step 2: Locate the specified profile or use prompts
+      let profileDetails: any = null;
 
-  //     if (profileName) {
-  //       const profile = config.items.find((p: any) => p.cdCliProfileName === profileName);
-  //       if (!profile) {
-  //         throw new Error(`Profile '${profileName}' not found.`);
-  //       }
-  //       profileDetails = profile.cdCliProfileData?.details;
-  //       CdLog.debug('profileDetails:', profileDetails);
+      if (profileName) {
+        const profile = config.items.find((p: any) => p.cdCliProfileName === profileName);
+        if (!profile) {
+          throw new Error(`Profile '${profileName}' not found.`);
+        }
+        profileDetails = profile.cdCliProfileData?.details;
+        CdLog.debug('profileDetails:', profileDetails);
 
-  //       // Decrypt sensitive data using CdCliVaultController
-  //       if (profileDetails?.['cd-vault']) {
-  //         profileDetails.sshKey = CdCliVaultController.getSensitiveData(profileDetails['cd-vault']);
-  //       }
-  //       CdLog.info(`Using profile: ${profileName}`);
-  //     }
+        // Decrypt sensitive data using CdCliVaultController
+        if (profileDetails?.['cd-vault']) {
+          profileDetails.sshKey = CdCliVaultController.getSensitiveData(profileDetails['cd-vault']);
+        }
+        CdLog.info(`Using profile: ${profileName}`);
+      }
 
-  //     CdLog.debug(`profileDetails: ${JSON.stringify(profileDetails)}`);
-  //     // If no profile or details found, prompt the user
-  //     if (!profileDetails) {
-  //       // const inquirer: any = await import('inquirer');
-  //       const answers = await inquirer.prompt(SSH_TO_DEV_PROMPT_DATA);
+      CdLog.debug(`profileDetails: ${JSON.stringify(profileDetails)}`);
+      // If no profile or details found, prompt the user
+      if (!profileDetails) {
+        // const inquirer: any = await import('inquirer');
+        const answers = await inquirer.prompt(SSH_TO_DEV_PROMPT_DATA);
 
-  //       profileDetails = {
-  //         devServer: answers.devServer,
-  //         remoteUser: answers.remoteUser,
-  //         sshKey: answers.sshKey,
-  //         cdApiDir: answers.cdApiDir,
-  //       };
-  //     }
+        profileDetails = {
+          devServer: answers.devServer,
+          remoteUser: answers.remoteUser,
+          sshKey: answers.sshKey,
+          cdApiDir: answers.cdApiDir,
+        };
+      }
 
-  //     // Step 3: Construct SSH command
-  //     const { remoteUser, sshKey, devServer, cdApiDir } = profileDetails;
-  //     CdLog.debug(`remoteUser: ${remoteUser}, devServer: ${devServer}`);
+      // Step 3: Construct SSH command
+      const { remoteUser, sshKey, devServer, cdApiDir } = profileDetails;
+      CdLog.debug(`remoteUser: ${remoteUser}, devServer: ${devServer}`);
 
-  //     const command = sshKey
-  //       ? `ssh -i "${sshKey}" "${remoteUser}@${devServer}" "sudo -H -u ${remoteUser} bash -c 'git clone ${gitRepo} ${cdApiDir}/src/CdApi/app/cd-geo'"`
-  //       : `ssh "${remoteUser}@${devServer}" "sudo -H -u ${remoteUser} bash -c 'git clone ${gitRepo} ${cdApiDir}/src/CdApi/app/cd-geo'"`;
+      const command = sshKey
+        ? `ssh -i "${sshKey}" "${remoteUser}@${devServer}" "sudo -H -u ${remoteUser} bash -c 'git clone ${gitRepo} ${cdApiDir}/src/CdApi/app/cd-geo'"`
+        : `ssh "${remoteUser}@${devServer}" "sudo -H -u ${remoteUser} bash -c 'git clone ${gitRepo} ${cdApiDir}/src/CdApi/app/cd-geo'"`;
 
-  //     // Step 4: Execute SSH command and log output
-  //     CdLog.info(
-  //       `Executing SSH command to clone repository from ${gitRepo} on server ${devServer}...`,
-  //     );
+      // Step 4: Execute SSH command and log output
+      CdLog.info(
+        `Executing SSH command to clone repository from ${gitRepo} on server ${devServer}...`,
+      );
 
-  //     const process = exec(command);
+      const process = exec(command);
 
-  //     process.stdout?.on('data', (data) => {
-  //       if (data.includes('Cloning into') || data.includes('Receiving objects')) {
-  //         console.log(`stdout: ${data}`);
-  //       } else {
-  //         console.error(`stderr: ${data}`);
-  //       }
-  //     });
+      process.stdout?.on('data', (data) => {
+        if (data.includes('Cloning into') || data.includes('Receiving objects')) {
+          console.log(`stdout: ${data}`);
+        } else {
+          console.error(`stderr: ${data}`);
+        }
+      });
 
-  //     process.stderr?.on('data', (data) => {
-  //       if (data.includes('Cloning into') || data.includes('Receiving objects')) {
-  //         console.log(`stdout: ${data}`);
-  //       } else {
-  //         console.error(`stderr: ${data}`);
-  //       }
-  //     });
+      process.stderr?.on('data', (data) => {
+        if (data.includes('Cloning into') || data.includes('Receiving objects')) {
+          console.log(`stdout: ${data}`);
+        } else {
+          console.error(`stderr: ${data}`);
+        }
+      });
 
-  //     process.on('close', (code) => {
-  //       if (code === 0) {
-  //         CdLog.success(`Module successfully cloned into ${cdApiDir}/src/CdApi/app.`);
-  //       } else {
-  //         CdLog.error(`Git clone process exited with code ${code}.`);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     CdLog.error(`Error initializing module from repository: ${(error as Error).message}`);
-  //   }
-  // }
+      process.on('close', (code) => {
+        if (code === 0) {
+          CdLog.success(`Module successfully cloned into ${cdApiDir}/src/CdApi/app.`);
+        } else {
+          CdLog.error(`Git clone process exited with code ${code}.`);
+        }
+      });
+    } catch (error) {
+      CdLog.error(`Error initializing module from repository: ${(error as Error).message}`);
+    }
+  }
 }

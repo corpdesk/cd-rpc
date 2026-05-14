@@ -1,7 +1,7 @@
 // import type { ServiceProviderDescriptor } from './app-descriptor.model';
 
-import type { BaseDescriptor } from './base-descriptor.model';
-import type { BaseServiceDescriptor } from './service-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { BaseServiceDescriptor } from './service-descriptor.model.js';
 
 export interface ServiceProviderDescriptor extends BaseDescriptor {
   providerName: string; // Name of the service provider (e.g., AWS, Google Cloud, Azure)

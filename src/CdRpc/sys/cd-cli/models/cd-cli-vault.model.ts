@@ -26,6 +26,8 @@ export interface EncryptionMeta {
   encryptedToken?: string;
 }
 
+export const VAULT_REGEX = /#cdVault\[['"](.+?)['"]\]/g;
+
 // Encryption configurations
 export const ENCRYPTION_CONFIGS: EncryptionMeta[] = [
   {

@@ -1,6 +1,6 @@
 import { DevModeAction, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index.js";
 import { AppType, envCdApi, envCdApiApp, envCdApiSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index.js";
-import { CdFxReturn } from "../../../../../../sys/base/i-base.js";
+import { CdFxReturn } from "../../../../../../sys/base/i-base";
 
 export const cdAiVersionControl: VersionControlDescriptor = {
   name: 'CdAi',

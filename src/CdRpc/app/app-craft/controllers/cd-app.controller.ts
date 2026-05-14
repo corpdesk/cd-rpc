@@ -1,13 +1,11 @@
 // src/CdCli/app/app-craft/controllers/cd-app.controller.ts
-import { CdAssertReturn, CdFxReturn, ICdResponse, IQuery } from '../../../sys/base/i-base.js';
+import { CdAssertReturn, CdFxReturn, ICdResponse, IQuery } from '../../../sys/base/i-base';
 import { CdAppDescriptor } from '../../../sys/dev-descriptor/models/cd-app.model.js';
-// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdAppService } from '../services/cd-app.service.js';
-import { CdModuleService } from '../services/cd-module.service.js';
-import { Logging } from '../../../sys/base/winston.log.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
+import { CdAppService } from '../services/cd-app.service';
+import { CdModuleService } from '../services/cd-module.service';
 
 export class CdAppController {
-  logger!: Logging;
   svCdApp: CdAppService;
   svCdModule: CdModuleService;
   constructor() {
@@ -28,7 +26,7 @@ export class CdAppController {
     moduleType: string,
     cdToken: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdAppController::create()');
+    CdLog.debug('Starting CdAppController::create()');
     return this.svCdApp.create(actionTargetName, moduleName, moduleType, cdToken);
   }
 
@@ -71,7 +69,7 @@ export class CdAppController {
     version: string,
     testTasks?: boolean,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdAppController::upgrade()');
+    CdLog.debug('Starting CdAppController::upgrade()');
     return this.svCdApp.upgrade(
       actionTargetName,
       moduleName,
@@ -88,7 +86,7 @@ export class CdAppController {
     oEnv: string,
     cdToken: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdAppController::derive()');
+    CdLog.debug('Starting CdAppController::derive()');
     return this.svCdApp.derive(actionTargetName, cdObjName, oEnv, cdToken);
   }
 
@@ -98,7 +96,7 @@ export class CdAppController {
     cdObjTypeName: string,
     cdToken: string,
   ): Promise<CdFxReturn<ICdResponse>> {
-    this.logger.logDebug('Starting CdAppController::scan()');
+    CdLog.debug('Starting CdAppController::scan()');
     return this.svCdApp.scan(actionTargetName, cdObjName, cdObjTypeName, cdToken);
   }
 }

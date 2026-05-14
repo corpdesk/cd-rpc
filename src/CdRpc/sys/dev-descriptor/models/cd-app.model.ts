@@ -1,22 +1,24 @@
-// import type { CdRequest, ICdRequest } from '../../base/i-base';
-import type { BaseDescriptor } from './base-descriptor.model';
-import type { CdModuleDescriptor } from './cd-module-descriptor.model';
-import type { CiCdDescriptor } from './cicd-descriptor.model';
-import type { EnvironmentDescriptor } from './environment.model';
-// import CdLog from '../../cd-comm/controllers/cd-logger.controller';
-import { LanguageDescriptor } from './language.model';
-import { LicenseDescriptor } from './license.model';
+// src/CdCli/sys/dev-descriptor/models/cd-app.model.ts
+import type { CdRequest, ICdRequest } from '../../base/i-base.js';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { CdModuleDescriptor } from './cd-module-descriptor.model.js';
+import type { CiCdDescriptor } from './cicd-descriptor.model.js';
+import type { EnvironmentDescriptor } from './environment.model.js';
+import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
+import { LanguageDescriptor } from './language.model.js';
+import { LicenseDescriptor } from './license.model.js';
 import {
   CdControllerDescriptor,
   CdModelDescriptor,
   CdServiceDescriptor,
   ContributorDescriptor,
   VersionControlDescriptor,
-} from '../index';
+} from '../index.js';
 
 export interface CdAppDescriptor extends BaseDescriptor {
   $schema?: string;
   name: string;
+  type: AppType;
   projectGuid?: string;
   parentProjectGuid: string | null;
   modules: CdModuleDescriptor[];
@@ -25,6 +27,7 @@ export interface CdAppDescriptor extends BaseDescriptor {
   language?: LanguageDescriptor; // getLanguageByName(name: string,languages: LanguageDescriptor[],)
   environments?: EnvironmentDescriptor[]; // Development environment settings
   versionControl?: VersionControlDescriptor; // Version control details
+  directorySignature?: DirectorySignatureDescriptor;
 }
 
 export enum AppType {
@@ -49,6 +52,105 @@ export enum AppType {
   Microservice = 'microservice', // Small, modular backend services
   SDN = 'sdn', // Software-Defined Networking applications
   CbO = 'cbo', // CloudBrix Orchestrator
+}
+
+export interface DirectorySignatureDescriptor extends BaseDescriptor {
+  /** The root label of this signature (e.g., 'cd-api-v1-standard') */
+  signatureName: string;
+  /** The root node of the tree */
+  root: DirectoryNode;
+  /** Global variables used across the signature (e.g., Namespace, Scope) */
+  variables?: Record<string, string>;
+
+  // 🔥 NEW — Graph edges
+  edges?: CdGraphEdge[];
+}
+
+export interface DirectoryNode extends BaseDescriptor {
+  /** The segment name. Can be a literal 'src' or a variable '${slug}' */
+  name: string;
+  /** corpdesk cd-obj-guid used for unique id */
+  cdObjGuid: string;
+  /** As per corpdesk database. Represents the architectural role (S, A, U, Leaf, Genome, etc.) */
+  cdObjRoleName?: string;
+  /** As per corpdesk database. Represents the architectural role (S, A, U, Leaf, Genome, etc.) */
+  cdObjRoleGuid?: string;
+  /** As per corpdesk database. Represents the parent object */
+  parentObj?: string;
+  /** Weighting for the Auditor/Scanner logic */
+  weight?: number;
+  /** If true, this node is a file; otherwise, it is a directory */
+  isFile?: boolean;
+  /** Optional: Template reference for file content generation */
+  templateRef?: string;
+  /** Recursive children (for directories) */
+  children?: DirectoryNode[];
+
+  // 🔥 NEW — Audit Classification
+  classification?: 'expected' | 'omega-valid' | 'omega-invalid';
+
+  classificationReason?: string;
+
+  /**
+   * lastUpdated can be used for:
+   * Incremental scanning
+   * scan only nodes where lastUpdated changed
+   * ✅ Selective AI execution
+   * apply fix only to selected branch
+   * ✅ Version-aware evolution
+   * compare snapshots over time
+   */
+  lastUpdated?: number; // ISO timestamp of last update
+
+  isSelected?: boolean;
+
+  // ✅ CD compliance system
+  isCdCompliant?: boolean;
+  isCdForeign?: boolean;
+
+  // 🔥 recommended (future-safe)
+  cdState?: 'compliant' | 'foreign' | 'unknown';
+  origin?: 'generated' | 'scanned' | 'external';
+}
+
+export interface ScanNode {
+  path: string;
+  name: string;
+  isFile: boolean;
+  extension?: string;
+
+  role?: string;
+  module?: string;
+
+  lastModified: number;
+
+  children?: ScanNode[];
+
+  // 🔥 NEW: compliance tracking
+  isCdCompliant?: boolean;
+  isCdForeign?: boolean;
+  cdState: 'compliant' | 'foreign' | 'unknown';
+}
+
+export interface ComplianceMetrics {
+  CR: number;
+  infectionRatio: number;
+
+  totalNodes: number;
+  expectedNodes: number;
+  unknownNodes: number;
+}
+
+/**
+ * Add capacity for:
+ * cross-module references
+ * dependency mapping
+ * future AI reasoning
+ */
+export interface CdGraphEdge {
+  from: string; // cdObjGuid
+  to: string; // cdObjGuid
+  type: 'hierarchy' | 'dependency' | 'reference';
 }
 
 export interface AppFrontendDescriptor extends BaseDescriptor {
@@ -141,6 +243,6 @@ export interface AppPluginDescriptor extends CdAppDescriptor {
 
 export interface AppMicroserviceDescriptor extends CdAppDescriptor {
   interServiceCommunication?: 'CdWire' | 'REST' | 'gRPC' | 'Message Queue' | 'unknown'; // How it talks to other services
-  scalingMethod?:  'CloudBix'| 'Kubernetes' | 'Serverless'; // How it scales
+  scalingMethod?: 'CloudBix' | 'Kubernetes' | 'Serverless'; // How it scales
   dependencies?: { databases?: string[]; messageQueues?: string[] }; // Services it relies on
 }

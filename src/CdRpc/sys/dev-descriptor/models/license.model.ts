@@ -1,7 +1,7 @@
 // import type { ServiceCost } from './service.model';
 
-import type { BaseDescriptor } from './base-descriptor.model';
-import type { ServiceCost } from './service-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { ServiceCost } from './service-descriptor.model.js';
 
 // // LicenseDescriptor Definition
 export interface LicenseDescriptor extends BaseDescriptor {

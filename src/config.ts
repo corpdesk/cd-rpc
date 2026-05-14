@@ -5,11 +5,17 @@ import * as fs from "fs";
 import * as dotenv from "dotenv";
 import "reflect-metadata";
 import { DataSource, DataSourceOptions, DatabaseType } from "typeorm";
-import path from "path";
+import path, { dirname, join } from "path";
 import { RunMode } from "./CdRpc/sys/base/i-base";
 import { inspect } from "util";
 import { ModuleConfig } from "./CdRpc/sys/moduleman/models/module.model";
+import { fileURLToPath } from "url";
 dotenv.config();
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+export const CONFIG_FILE_PATH = join(process.env.HOME || '~/', '.cd-cli/cd-cli.profiles.json');
 
 // 1. Define strict types for your configuration
 type RedisMode = 'PUSH_CLUSTER' | 'PUSH_SENTINEL' | 'PUSH_SINGLE';
@@ -254,6 +260,7 @@ export const empMailConfig = {
   smtpPort: 465,
 };
 export default {
+  cdApiLocal: 'cd-api-local',
   runMode: RunMode.UNRESTRICTED_DEVELOPER_MODE,
   ds: {
     sqlite: new DataSource(sqliteConfig),

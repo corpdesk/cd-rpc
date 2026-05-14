@@ -1,6 +1,6 @@
-import type { BaseServiceDescriptor, VendorDescriptor } from './service-descriptor.model';
+import type { BaseServiceDescriptor, VendorDescriptor } from './service-descriptor.model.js';
 // import type { ServiceDescriptor } from './app-descriptor.model';
-import type { BaseDescriptor } from './base-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
 // import type { ServiceDescriptor } from './service-provider.model';
 
 // import type { VersionControlDescriptor } from './dev-descriptor.model';
@@ -12,8 +12,8 @@ import {
   EnvironmentDescriptor,
   envTestBed,
   envWorkshop,
-} from './environment.model';
-import { AppType, CdAppDescriptor, CICdHistory, CICdPipeline, CICdTask } from '../index';
+} from './environment.model.js';
+import { AppType, CdAppDescriptor, CICdHistory, CICdPipeline, CICdTask } from '../index.js';
 // Example Usage
 
 /**
@@ -308,7 +308,7 @@ export const repoRegistry: VersionControlDescriptor[] = [
         {
           name: 'CdAppDescriptor',
           environment: envCdApi,
-          path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptoron',
+          path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptor.json',
           purpose: 'cd-api root directory',
         },
       ],
@@ -317,7 +317,7 @@ export const repoRegistry: VersionControlDescriptor[] = [
   {
     repository: {
       name: 'cd-cli',
-      description: 'Node CLI for Corpdesk',
+      description: 'Node.js CLI for Corpdesk',
       url: 'https://github.com/corpdesk/cd-cli-nodejs/',
       type: 'git',
       enabled: true,

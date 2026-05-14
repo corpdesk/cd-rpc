@@ -1,12 +1,12 @@
 import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model.js';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
+import { BaseService } from '../../../sys/base/base.service';
 import { toPascalCase } from '../../../sys/utils/cd-naming.util.js';
-import { GenComponentService } from './gen-component.service.js';
+import { GenComponentService } from './gen-component.service';
 import { ComponentAttributes } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
 import { MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model.js';
 import { CdControllerDescriptor, CdServiceDescriptor } from '../../../sys/dev-descriptor/index.js';
-import { TemplateLoaderService } from './template-loader.service.js';
+import { TemplateLoaderService } from './template-loader.service';
 
 export class TemplateSnippetService {
   b = new BaseService();
@@ -64,7 +64,7 @@ export class TemplateSnippetService {
     return {
       state,
       data: constructorCode,
-      message: state === CdFxStateLevel.Warning ? 'Unknown type fallback' : undefined,
+      message: state === CdFxStateLevel.Warning ? 'Unknown type fallback' : null,
     };
   }
 

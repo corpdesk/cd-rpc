@@ -13,7 +13,7 @@ import {
   envWorkshop,
   VersionControlDescriptor,
 } from '../../../../../../sys/dev-descriptor/index.js';
-import { CdFxReturn } from '../../../../../../sys/base/i-base.js';
+import { CdFxReturn } from '../../../../../../sys/base/i-base';
 
 export const cdAiVersionControl: VersionControlDescriptor = {
   name: 'CdAi',

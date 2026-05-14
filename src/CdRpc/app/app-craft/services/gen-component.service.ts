@@ -13,20 +13,20 @@ import {
   languages,
 } from '../../../sys/dev-descriptor/index.js';
 import { toPascalCase } from '../../../sys/utils/cd-naming.util.js';
-// import { BaseService, CdFxReturn, CdFxStateLevel } from '../../../sys/base/index.js';
-// import { writePrettyFile, writePrettyFileSafely } from '../../../sys/utils/fs.util.js';
+import { BaseService, CdFxReturn, CdFxStateLevel } from '../../../sys/base/index.js';
+import { writePrettyFile, writePrettyFileSafely } from '../../../sys/utils/fs.util.js';
 import { fileURLToPath } from 'url';
-// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
-// import { DevModeAction } from '../../../sys/dev-mode/index.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
+import { DevModeAction } from '../../../sys/dev-mode/index.js';
 import { inspect } from 'util';
 import { ComponentGenerationConfig, MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model.js';
 
 // import fs from 'fs';
 import path from 'path';
-import { DependencyProcessorService } from './dependency-processor.service.js';
-import { NamingFilterService } from './naming-filter.service.js';
-import { TemplateSnippetService } from './template-snipet.service.js';
-import { PreWriteValidatorService } from './pre-write-validator.service.js';
+import { DependencyProcessorService } from './dependency-processor.service';
+import { NamingFilterService } from './naming-filter.service';
+import { TemplateSnippetService } from './template-snipet.service';
+import { PreWriteValidatorService } from './pre-write-validator.service';
 import { exec } from 'child_process';
 import util from 'util';
 import {
@@ -36,18 +36,15 @@ import {
   PrimaryComponentType,
   Suffix,
 } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
-import { GenControllerImplementationService } from './gen-controller-implementation.service.js';
-import { TemplateLoaderService } from './template-loader.service.js';
+import { GenControllerImplementationService } from './gen-controller-implementation.service';
+import { TemplateLoaderService } from './template-loader.service';
 import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
-import { GenServiceImplementationService } from './gen-service-implementation.service.js';
-import { BaseService } from '../../../sys/base/base.service.js';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
-import { Logging } from '../../../sys/base/winston.log.js';
+import { GenServiceImplementationService } from './gen-service-implementation.service';
 
 // Simulate __dirname in ESM
-// const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
 
-// const execPromise = util.promisify(exec);
+const execPromise = util.promisify(exec);
 
 /**
  * This method should work for any module type.
@@ -55,7 +52,6 @@ import { Logging } from '../../../sys/base/winston.log.js';
  * `${MOD_CRAFT_WORKSHOP_DIR}/${this.appType}/output`
  */
 export class GenComponentService {
-  logger!: Logging;
   b = new BaseService();
   svTemplateLoader = new TemplateLoaderService();
   svGenControllerImplementation = new GenControllerImplementationService();
@@ -97,339 +93,339 @@ export class GenComponentService {
          outputPath: getModCraftOutputDir(moduleData.appType || AppType.CdApi),
        }
    */
-  // async generateArtifactsFromConfig(
-  //   action: DevModeAction,
-  //   moduleDescriptor: CdModuleDescriptor,
-  //   config: ComponentGenerationConfig,
-  // ): Promise<CdFxReturn<null>> {
-  //   try {
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateArtifactsFromConfig:moduleDescriptor.controllers[0]:`,
-  //       moduleDescriptor.controllers[0],
-  //       'debug',
-  //     );
+  async generateArtifactsFromConfig(
+    action: DevModeAction,
+    moduleDescriptor: CdModuleDescriptor,
+    config: ComponentGenerationConfig,
+  ): Promise<CdFxReturn<null>> {
+    try {
+      this.b.logWithContext(
+        this,
+        `generateArtifactsFromConfig:moduleDescriptor.controllers[0]:`,
+        moduleDescriptor.controllers[0],
+        'debug',
+      );
 
-  //     const extensionResult = getExtensionByLangProfile(
-  //       LanguageName.TypeScript,
-  //       languages,
-  //       'tsSource',
-  //     );
-  //     if (!extensionResult.state) {
-  //       return {
-  //         state: false,
-  //         message: `Failed to get extension for TypeScript: ${extensionResult.message}`,
-  //         data: null,
-  //       };
-  //     }
+      const extensionResult = getExtensionByLangProfile(
+        LanguageName.TypeScript,
+        languages,
+        'tsSource',
+      );
+      if (!extensionResult.state) {
+        return {
+          state: false,
+          message: `Failed to get extension for TypeScript: ${extensionResult.message}`,
+          data: null,
+        };
+      }
 
-  //     config.language = getLanguageByName(LanguageName.TypeScript, languages);
+      config.language = getLanguageByName(LanguageName.TypeScript, languages);
 
-  //     // Normalize artifact type (remove plural)
-  //     const type = config.artifactType.slice(0, -1) as PrimaryComponentType;
+      // Normalize artifact type (remove plural)
+      const type = config.artifactType.slice(0, -1) as PrimaryComponentType;
 
-  //     // Build only the relevant array depending on type
-  //     let targetComponents: ComponentDescriptor[] = [];
-  //     switch (type) {
-  //       case 'controller':
-  //         targetComponents = moduleDescriptor.controllers || [];
-  //         break;
-  //       case 'service':
-  //         targetComponents = moduleDescriptor.services || [];
-  //         break;
-  //       case 'model':
-  //         targetComponents = moduleDescriptor.models || [];
-  //         break;
-  //     }
+      // Build only the relevant array depending on type
+      let targetComponents: ComponentDescriptor[] = [];
+      switch (type) {
+        case 'controller':
+          targetComponents = moduleDescriptor.controllers || [];
+          break;
+        case 'service':
+          targetComponents = moduleDescriptor.services || [];
+          break;
+        case 'model':
+          targetComponents = moduleDescriptor.models || [];
+          break;
+      }
 
-  //     this.b.logWithContext(
-  //       this,
-  //       'generateArtifactsFromConfig:targetComponents',
-  //       { type, targetComponents },
-  //       'debug',
-  //     );
+      this.b.logWithContext(
+        this,
+        'generateArtifactsFromConfig:targetComponents',
+        { type, targetComponents },
+        'debug',
+      );
 
-  //     // Allowed types for this run
-  //     const allowedTypes: ComponentType[] = (() => {
-  //       switch (type) {
-  //         case 'controller':
-  //           return [ComponentType.Controller, ComponentType.ControllerType];
-  //         case 'service':
-  //           return [ComponentType.Service, ComponentType.ServiceType];
-  //         case 'model':
-  //           return [ComponentType.Model, ComponentType.ModelType, ComponentType.ModelView];
-  //       }
-  //     })();
+      // Allowed types for this run
+      const allowedTypes: ComponentType[] = (() => {
+        switch (type) {
+          case 'controller':
+            return [ComponentType.Controller, ComponentType.ControllerType];
+          case 'service':
+            return [ComponentType.Service, ComponentType.ServiceType];
+          case 'model':
+            return [ComponentType.Model, ComponentType.ModelType, ComponentType.ModelView];
+        }
+      })();
 
-  //     // --- process only relevant components ---
-  //     for (const artifactTypeDescriptor of targetComponents) {
-  //       if (allowedTypes.includes(artifactTypeDescriptor.type)) {
-  //         config.componentDescriptor = artifactTypeDescriptor as
-  //           | CdControllerDescriptor
-  //           | CdServiceDescriptor
-  //           | CdModelDescriptor;
+      // --- process only relevant components ---
+      for (const artifactTypeDescriptor of targetComponents) {
+        if (allowedTypes.includes(artifactTypeDescriptor.type)) {
+          config.componentDescriptor = artifactTypeDescriptor as
+            | CdControllerDescriptor
+            | CdServiceDescriptor
+            | CdModelDescriptor;
 
-  //         const result = await this.generateComponent(
-  //           artifactTypeDescriptor as CdControllerDescriptor | CdServiceDescriptor,
-  //           config,
-  //           moduleDescriptor,
-  //           action,
-  //         );
+          const result = await this.generateComponent(
+            artifactTypeDescriptor as CdControllerDescriptor | CdServiceDescriptor,
+            config,
+            moduleDescriptor,
+            action,
+          );
 
-  //         if (!result.state) {
-  //           return {
-  //             state: false,
-  //             data: null,
-  //             message: result.message || `Failed to generate ${config.artifactType}`,
-  //           };
-  //         }
-  //       }
-  //     }
+          if (!result.state) {
+            return {
+              state: false,
+              data: null,
+              message: result.message || `Failed to generate ${config.artifactType}`,
+            };
+          }
+        }
+      }
 
-  //     return { state: true, data: null };
-  //   } catch (e) {
-  //     const msg = (e as Error).message || 'Unexpected error in generateArtifactsFromConfig';
-  //     this.b.logWithContext(this, 'generateArtifactsFromConfig:error', { e, msg }, 'error');
-  //     return { state: false, data: null, message: msg };
-  //   }
-  // }
+      return { state: true, data: null };
+    } catch (e) {
+      const msg = (e as Error).message || 'Unexpected error in generateArtifactsFromConfig';
+      this.b.logWithContext(this, 'generateArtifactsFromConfig:error', { e, msg }, 'error');
+      return { state: false, data: null, message: msg };
+    }
+  }
 
   /**
    * Generate a component file (controller, service, model)
    */
 
-  // async generateComponent(
-  //   artifactTypeDescriptor: CdControllerDescriptor | CdServiceDescriptor,
-  //   config: ComponentGenerationConfig,
-  //   moduleDescriptor: CdModuleDescriptor,
-  //   action: DevModeAction,
-  // ): Promise<CdFxReturn<void>> {
-  //   try {
-  //     if (
-  //       !artifactTypeDescriptor.name ||
-  //       !artifactTypeDescriptor.dependencies ||
-  //       !artifactTypeDescriptor.fileName
-  //     ) {
-  //       return {
-  //         state: false,
-  //         data: undefined,
-  //         message: 'Componet data is not valid.',
-  //       };
-  //     }
-  //     config.componentName = artifactTypeDescriptor.name;
-  //     // --- 1. Validation ---
-  //     if (!artifactTypeDescriptor?.name) {
-  //       const msg = 'Descriptor missing name';
-  //       this.b.logWithContext(this, 'generateComponent:validation-fail', { msg }, 'error');
-  //       return { state: false, data: undefined, message: msg };
-  //     }
+  async generateComponent(
+    artifactTypeDescriptor: CdControllerDescriptor | CdServiceDescriptor,
+    config: ComponentGenerationConfig,
+    moduleDescriptor: CdModuleDescriptor,
+    action: DevModeAction,
+  ): Promise<CdFxReturn<void>> {
+    try {
+      if (
+        !artifactTypeDescriptor.name ||
+        !artifactTypeDescriptor.dependencies ||
+        !artifactTypeDescriptor.fileName
+      ) {
+        return {
+          state: false,
+          data: undefined,
+          message: 'Componet data is not valid.',
+        };
+      }
+      config.componentName = artifactTypeDescriptor.name;
+      // --- 1. Validation ---
+      if (!artifactTypeDescriptor?.name) {
+        const msg = 'Descriptor missing name';
+        this.b.logWithContext(this, 'generateComponent:validation-fail', { msg }, 'error');
+        return { state: false, data: undefined, message: msg };
+      }
 
-  //     if (!Array.isArray(config.dependencyList)) {
-  //       const msg = 'Invalid dependencyList in config';
-  //       return { state: false, data: undefined, message: msg };
-  //     }
+      if (!Array.isArray(config.dependencyList)) {
+        const msg = 'Invalid dependencyList in config';
+        return { state: false, data: undefined, message: msg };
+      }
 
-  //     this.b.logWithContext(
-  //       this,
-  //       `gnerateComponent:artifactTypeDescriptor.dependencies:`,
-  //       artifactTypeDescriptor.dependencies,
-  //       'debug',
-  //     );
+      this.b.logWithContext(
+        this,
+        `gnerateComponent:artifactTypeDescriptor.dependencies:`,
+        artifactTypeDescriptor.dependencies,
+        'debug',
+      );
 
-  //     // --- 2. Process Dependencies ---
-  //     const depsResult = await this.processDependencies(
-  //       artifactTypeDescriptor.dependencies,
-  //       moduleDescriptor,
-  //     );
-  //     if (!depsResult.state) {
-  //       return {
-  //         state: false,
-  //         data: null,
-  //         message: depsResult.message || 'Failed to process dependencies',
-  //       };
-  //     }
-  //     const dependencies = depsResult.data;
-  //     this.b.logWithContext(this, `generateComponent:dependencies:`, dependencies, 'debug');
+      // --- 2. Process Dependencies ---
+      const depsResult = await this.processDependencies(
+        artifactTypeDescriptor.dependencies,
+        moduleDescriptor,
+      );
+      if (!depsResult.state) {
+        return {
+          state: false,
+          data: null,
+          message: depsResult.message || 'Failed to process dependencies',
+        };
+      }
+      const dependencies = depsResult.data;
+      this.b.logWithContext(this, `generateComponent:dependencies:`, dependencies, 'debug');
 
-  //     // --- 3. Build Import Block ---
-  //     const importBlock = this.groupImports(dependencies ?? []);
-  //     this.b.logWithContext(this, `generateComponent:importBlock:`, importBlock, 'debug');
+      // --- 3. Build Import Block ---
+      const importBlock = this.groupImports(dependencies ?? []);
+      this.b.logWithContext(this, `generateComponent:importBlock:`, importBlock, 'debug');
 
-  //     const nameMap = this.prepareNameMap(artifactTypeDescriptor.name);
-  //     this.b.logWithContext(this, `generateComponent:nameMap:`, nameMap, 'debug');
+      const nameMap = this.prepareNameMap(artifactTypeDescriptor.name);
+      this.b.logWithContext(this, `generateComponent:nameMap:`, nameMap, 'debug');
 
-  //     /**
-  //      * --- 3. Build methods ---
-  //      */
-  //     const methodStubsResult = await this.svTemplateSnippet.buildMethodStubSnippets(
-  //       config.artifactType.slice(0, -1) as 'controller' | 'service' | 'model',
-  //       artifactTypeDescriptor.methods ?? [],
-  //       artifactTypeDescriptor.name,
-  //       this, // 👈 pass current instance
-  //       artifactTypeDescriptor,
-  //     );
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateComponent:methodStubsResult:`,
-  //       methodStubsResult,
-  //       'debug',
-  //     );
+      /**
+       * --- 3. Build methods ---
+       */
+      const methodStubsResult = await this.svTemplateSnippet.buildMethodStubSnippets(
+        config.artifactType.slice(0, -1) as 'controller' | 'service' | 'model',
+        artifactTypeDescriptor.methods ?? [],
+        artifactTypeDescriptor.name,
+        this, // 👈 pass current instance
+        artifactTypeDescriptor,
+      );
+      this.b.logWithContext(
+        this,
+        `generateComponent:methodStubsResult:`,
+        methodStubsResult,
+        'debug',
+      );
 
-  //     if (methodStubsResult.state === CdFxStateLevel.Error) {
-  //       return {
-  //         state: false,
-  //         data: undefined,
-  //         message: methodStubsResult.message || 'Failed to build method stubs',
-  //       };
-  //     }
+      if (methodStubsResult.state === CdFxStateLevel.Error) {
+        return {
+          state: false,
+          data: undefined,
+          message: methodStubsResult.message || 'Failed to build method stubs',
+        };
+      }
 
-  //     // --- 4. Assemble class using buildClass() ---
-  //     const primaryType = this.derivePrimaryComponentType(artifactTypeDescriptor.fileName);
-  //     if (!primaryType) {
-  //       return {
-  //         state: CdFxStateLevel.LogicalFailure,
-  //         message: 'Could not get the file name',
-  //       };
-  //     }
+      // --- 4. Assemble class using buildClass() ---
+      const primaryType = this.derivePrimaryComponentType(artifactTypeDescriptor.fileName);
+      if (!primaryType) {
+        return {
+          state: CdFxStateLevel.LogicalFailure,
+          message: 'Could not get the file name',
+        };
+      }
 
-  //     const classResult = await this.svTemplateSnippet.buildClass(
-  //       `${nameMap.Abcd}${toPascalCase(primaryType)}`,
-  //       artifactTypeDescriptor.attributes, // attributes (if any in future)
-  //       // constructorSnippetResult.data ?? '',
-  //       methodStubsResult.data ?? [],
-  //     );
+      const classResult = await this.svTemplateSnippet.buildClass(
+        `${nameMap.Abcd}${toPascalCase(primaryType)}`,
+        artifactTypeDescriptor.attributes, // attributes (if any in future)
+        // constructorSnippetResult.data ?? '',
+        methodStubsResult.data ?? [],
+      );
 
-  //     if (classResult.state === CdFxStateLevel.Error) {
-  //       return {
-  //         state: false,
-  //         data: undefined,
-  //         message: classResult.message || 'Failed to build class',
-  //       };
-  //     }
+      if (classResult.state === CdFxStateLevel.Error) {
+        return {
+          state: false,
+          data: undefined,
+          message: classResult.message || 'Failed to build class',
+        };
+      }
 
-  //     const classCode = `${importBlock}\n\n${classResult.data}`;
-  //     // this.b.logWithContext(this, `generateComponent:classCode:`, classCode, 'debug');
+      const classCode = `${importBlock}\n\n${classResult.data}`;
+      // this.b.logWithContext(this, `generateComponent:classCode:`, classCode, 'debug');
 
-  //     // --- 5. PreWrite Validation ---
-  //     const structureErrorsResult = await this.svPreWriteValidator.validateStructure(classCode);
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateComponent:structureErrorsResult:`,
-  //       structureErrorsResult,
-  //       'debug',
-  //     );
+      // --- 5. PreWrite Validation ---
+      const structureErrorsResult = await this.svPreWriteValidator.validateStructure(classCode);
+      this.b.logWithContext(
+        this,
+        `generateComponent:structureErrorsResult:`,
+        structureErrorsResult,
+        'debug',
+      );
 
-  //     if (!structureErrorsResult?.state) {
-  //       return {
-  //         state: false,
-  //         data: undefined,
-  //         message: structureErrorsResult.message || 'Structure validation failed',
-  //       };
-  //     }
+      if (!structureErrorsResult?.state) {
+        return {
+          state: false,
+          data: undefined,
+          message: structureErrorsResult.message || 'Structure validation failed',
+        };
+      }
 
-  //     const casingErrorsResult = await this.svPreWriteValidator.validateCasing(classCode);
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateComponent:casingErrorsResult:`,
-  //       casingErrorsResult,
-  //       'debug',
-  //     );
+      const casingErrorsResult = await this.svPreWriteValidator.validateCasing(classCode);
+      this.b.logWithContext(
+        this,
+        `generateComponent:casingErrorsResult:`,
+        casingErrorsResult,
+        'debug',
+      );
 
-  //     if (!casingErrorsResult?.state) {
-  //       return {
-  //         state: false,
-  //         data: undefined,
-  //         message: casingErrorsResult.message || 'Casing validation failed',
-  //       };
-  //     }
+      if (!casingErrorsResult?.state) {
+        return {
+          state: false,
+          data: undefined,
+          message: casingErrorsResult.message || 'Casing validation failed',
+        };
+      }
 
-  //     let finalCode = classCode;
-  //     const structureErrors = structureErrorsResult.data ?? [];
-  //     const casingErrors = casingErrorsResult.data ?? [];
-  //     if (structureErrors.length || casingErrors.length) {
-  //       if (this.svPreWriteValidator.autoCorrect) {
-  //         const autoCorrectResult = this.svPreWriteValidator.autoCorrect(classCode, [
-  //           ...structureErrors,
-  //           ...casingErrors,
-  //         ]);
-  //         finalCode =
-  //           autoCorrectResult instanceof Promise
-  //             ? ((await autoCorrectResult).data ?? classCode)
-  //             : (autoCorrectResult ?? classCode);
-  //       }
-  //     }
+      let finalCode = classCode;
+      const structureErrors = structureErrorsResult.data ?? [];
+      const casingErrors = casingErrorsResult.data ?? [];
+      if (structureErrors.length || casingErrors.length) {
+        if (this.svPreWriteValidator.autoCorrect) {
+          const autoCorrectResult = this.svPreWriteValidator.autoCorrect(classCode, [
+            ...structureErrors,
+            ...casingErrors,
+          ]);
+          finalCode =
+            autoCorrectResult instanceof Promise
+              ? ((await autoCorrectResult).data ?? classCode)
+              : (autoCorrectResult ?? classCode);
+        }
+      }
 
-  //     /**
-  //      * --- 6. Apply the method implementations to the finalCode scaffold. ---
-  //      * - substitute default methods with template reference
-  //      */
-  //     const finalImplementedCode = await this.applyComponentImplementations(
-  //       finalCode,
-  //       artifactTypeDescriptor,
-  //       moduleDescriptor,
-  //     );
+      /**
+       * --- 6. Apply the method implementations to the finalCode scaffold. ---
+       * - substitute default methods with template reference
+       */
+      const finalImplementedCode = await this.applyComponentImplementations(
+        finalCode,
+        artifactTypeDescriptor,
+        moduleDescriptor,
+      );
 
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateComponent:finalImplementedCode:`,
-  //       finalImplementedCode,
-  //       'debug',
-  //     );
+      this.b.logWithContext(
+        this,
+        `generateComponent:finalImplementedCode:`,
+        finalImplementedCode,
+        'debug',
+      );
 
-  //     this.b.logWithContext(
-  //       this,
-  //       `generateComponent:artifactTypeDescriptor.fileName:`,
-  //       artifactTypeDescriptor.fileName,
-  //       'debug',
-  //     );
+      this.b.logWithContext(
+        this,
+        `generateComponent:artifactTypeDescriptor.fileName:`,
+        artifactTypeDescriptor.fileName,
+        'debug',
+      );
 
-  //     config.componentDescriptor = artifactTypeDescriptor;
+      config.componentDescriptor = artifactTypeDescriptor;
 
-  //     /**
-  //      * stop for observation before writing controllers
-  //      */
-  //     // if(artifactTypeDescriptor) {
-  //     //   throw new Error(`Process stoped for observation!`);
-  //     // }
+      /**
+       * stop for observation before writing controllers
+       */
+      // if(artifactTypeDescriptor) {
+      //   throw new Error(`Process stoped for observation!`);
+      // }
 
-  //     /**
-  //      * stop for observation before writing controller types
-  //      */
-  //     // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.ControllerType) {
-  //     //   throw new Error(`Process stoped for observation!`);
-  //     // }
+      /**
+       * stop for observation before writing controller types
+       */
+      // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.ControllerType) {
+      //   throw new Error(`Process stoped for observation!`);
+      // }
 
-  //     /**
-  //      * stop for observation before writing services
-  //      */
-  //     // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.Service) {
-  //     //   throw new Error(`Process stoped for observation!`);
-  //     // }
+      /**
+       * stop for observation before writing services
+       */
+      // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.Service) {
+      //   throw new Error(`Process stoped for observation!`);
+      // }
 
-  //     /**
-  //      * stop for observation before writing service type
-  //      */
-  //     // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.ServiceType) {
-  //     //   throw new Error(`Process stoped for observation!`);
-  //     // }
+      /**
+       * stop for observation before writing service type
+       */
+      // if (artifactTypeDescriptor && artifactTypeDescriptor.type === ComponentType.ServiceType) {
+      //   throw new Error(`Process stoped for observation!`);
+      // }
 
-  //     // --- 9. File Write ---
-  //     const writeResult = await this.writeFile(
-  //       config,
-  //       moduleDescriptor,
-  //       finalImplementedCode,
-  //       action,
-  //       artifactTypeDescriptor,
-  //     );
-  //     if (!writeResult.state) return writeResult;
+      // --- 9. File Write ---
+      const writeResult = await this.writeFile(
+        config,
+        moduleDescriptor,
+        finalImplementedCode,
+        action,
+        artifactTypeDescriptor,
+      );
+      if (!writeResult.state) return writeResult;
 
-  //     return { state: true, data: undefined };
-  //   } catch (e) {
-  //     const actualMessage = (e as Error).message || 'Unknown error during generateComponent';
-  //     this.b.logWithContext(this, 'generateComponent:error', { e, actualMessage }, 'error');
-  //     return { state: false, data: undefined, message: actualMessage };
-  //   }
-  // }
+      return { state: true, data: undefined };
+    } catch (e) {
+      const actualMessage = (e as Error).message || 'Unknown error during generateComponent';
+      this.b.logWithContext(this, 'generateComponent:error', { e, actualMessage }, 'error');
+      return { state: false, data: undefined, message: actualMessage };
+    }
+  }
 
   // --- internal helpers ---
   private async processDependencies(
@@ -1000,121 +996,121 @@ export class GenComponentService {
     }
   }
 
-  // async writeFile(
-  //   config: ComponentGenerationConfig,
-  //   moduleDescriptor: CdModuleDescriptor,
-  //   content: any, // kept loose since generators may return object/array/string
-  //   action: DevModeAction,
-  //   component?: ComponentDescriptor,
-  // ): Promise<CdFxReturn<void>> {
-  //   try {
-  //     const outputFileName = config.componentDescriptor?.fileName;
-  //     this.b.logWithContext(this, 'writeFile:trace', '01', 'debug');
-  //     // this.b.logWithContext(
-  //     //   this,
-  //     //   'writeFile:outputFileName',
-  //     //   { outputFileName, config, moduleDescriptor },
-  //     //   'debug',
-  //     // );
+  async writeFile(
+    config: ComponentGenerationConfig,
+    moduleDescriptor: CdModuleDescriptor,
+    content: any, // kept loose since generators may return object/array/string
+    action: DevModeAction,
+    component?: ComponentDescriptor,
+  ): Promise<CdFxReturn<void>> {
+    try {
+      const outputFileName = config.componentDescriptor?.fileName;
+      this.b.logWithContext(this, 'writeFile:trace', '01', 'debug');
+      // this.b.logWithContext(
+      //   this,
+      //   'writeFile:outputFileName',
+      //   { outputFileName, config, moduleDescriptor },
+      //   'debug',
+      // );
 
-  //     this.b.logWithContext(this, 'writeFile:outputFileName', { outputFileName }, 'debug');
-  //     const pathResult = await this.resolveOutputFilePath(
-  //       config,
-  //       moduleDescriptor,
-  //       outputFileName,
-  //       component,
-  //     );
+      this.b.logWithContext(this, 'writeFile:outputFileName', { outputFileName }, 'debug');
+      const pathResult = await this.resolveOutputFilePath(
+        config,
+        moduleDescriptor,
+        outputFileName,
+        component,
+      );
 
-  //     if (!pathResult || !pathResult.data) {
-  //       return { state: false, message: pathResult.message };
-  //     }
+      if (!pathResult || !pathResult.data) {
+        return { state: false, message: pathResult.message };
+      }
 
-  //     const fullPath = pathResult.data;
+      const fullPath = pathResult.data;
 
-  //     // const fullPath = this.resolveOutputFilePath(config, moduleDescriptor);
-  //     const outputDir = config.outputPath;
-  //     this.b.logWithContext(this, 'writeFile:outputDir', { fullPath, action, outputDir }, 'debug');
+      // const fullPath = this.resolveOutputFilePath(config, moduleDescriptor);
+      const outputDir = config.outputPath;
+      this.b.logWithContext(this, 'writeFile:outputDir', { fullPath, action, outputDir }, 'debug');
 
-  //     // --- BEFORE TREE ---
-  //     try {
-  //       this.b.logWithContext(this, 'writeFile:before-tree', { outputDir }, 'debug');
-  //       const { stdout: beforeTree } = await execPromise(
-  //         `tree -a -I 'node_modules|.git' ${outputDir}`,
-  //       );
-  //       this.b.logWithContext(
-  //         this,
-  //         'writeFile:before-tree',
-  //         { outputDir, tree: beforeTree },
-  //         'debug',
-  //       );
-  //     } catch (treeErr) {
-  //       this.b.logWithContext(this, 'writeFile:before-tree:error', treeErr, 'error');
-  //     }
+      // --- BEFORE TREE ---
+      try {
+        this.b.logWithContext(this, 'writeFile:before-tree', { outputDir }, 'debug');
+        const { stdout: beforeTree } = await execPromise(
+          `tree -a -I 'node_modules|.git' ${outputDir}`,
+        );
+        this.b.logWithContext(
+          this,
+          'writeFile:before-tree',
+          { outputDir, tree: beforeTree },
+          'debug',
+        );
+      } catch (treeErr) {
+        this.b.logWithContext(this, 'writeFile:before-tree:error', treeErr, 'error');
+      }
 
-  //     this.b.logWithContext(this, 'writeFile:start', { fullPath, action }, 'debug');
+      this.b.logWithContext(this, 'writeFile:start', { fullPath, action }, 'debug');
 
-  //     try {
-  //       await fs.mkdir(path.dirname(fullPath), { recursive: true });
+      try {
+        await fs.mkdir(path.dirname(fullPath), { recursive: true });
 
-  //       // 🔽 Normalize content before writing
-  //       let normalizedContent: string;
-  //       if (!content) {
-  //         normalizedContent = '';
-  //       } else if (typeof content === 'string') {
-  //         normalizedContent = content;
-  //       } else if (Array.isArray(content)) {
-  //         normalizedContent = content.join('\n');
-  //       } else if (typeof content === 'object' && 'data' in content) {
-  //         const data = (content as any).data;
-  //         if (Array.isArray(data)) {
-  //           normalizedContent = data.join('\n');
-  //         } else {
-  //           normalizedContent = String(data ?? '');
-  //         }
-  //       } else {
-  //         normalizedContent = String(content);
-  //       }
+        // 🔽 Normalize content before writing
+        let normalizedContent: string;
+        if (!content) {
+          normalizedContent = '';
+        } else if (typeof content === 'string') {
+          normalizedContent = content;
+        } else if (Array.isArray(content)) {
+          normalizedContent = content.join('\n');
+        } else if (typeof content === 'object' && 'data' in content) {
+          const data = (content as any).data;
+          if (Array.isArray(data)) {
+            normalizedContent = data.join('\n');
+          } else {
+            normalizedContent = String(data ?? '');
+          }
+        } else {
+          normalizedContent = String(content);
+        }
 
-  //       this.b.logWithContext(
-  //         this,
-  //         'writeFile:normalizedContent',
-  //         { fullPath, normalizedContent },
-  //         'debug',
-  //       );
+        this.b.logWithContext(
+          this,
+          'writeFile:normalizedContent',
+          { fullPath, normalizedContent },
+          'debug',
+        );
 
-  //       if (action === DevModeAction.CREATE) {
-  //         // fs.writeFile(fullPath, normalizedContent, 'utf8');
-  //         await writePrettyFile(fullPath, normalizedContent);
-  //       } else {
-  //         await writePrettyFileSafely(fullPath, normalizedContent);
-  //       }
+        if (action === DevModeAction.CREATE) {
+          // fs.writeFile(fullPath, normalizedContent, 'utf8');
+          await writePrettyFile(fullPath, normalizedContent);
+        } else {
+          await writePrettyFileSafely(fullPath, normalizedContent);
+        }
 
-  //       // --- AFTER TREE ---
-  //       try {
-  //         const { stdout: afterTree } = await execPromise(
-  //           `tree -a -I 'node_modules|.git' ${outputDir}`,
-  //         );
-  //         this.b.logWithContext(
-  //           this,
-  //           'writeFile:after-tree',
-  //           { outputDir, fullPath, tree: afterTree },
-  //           'debug',
-  //         );
-  //       } catch (treeErr) {
-  //         this.b.logWithContext(this, 'writeFile:after-tree:error', treeErr, 'error');
-  //       }
+        // --- AFTER TREE ---
+        try {
+          const { stdout: afterTree } = await execPromise(
+            `tree -a -I 'node_modules|.git' ${outputDir}`,
+          );
+          this.b.logWithContext(
+            this,
+            'writeFile:after-tree',
+            { outputDir, fullPath, tree: afterTree },
+            'debug',
+          );
+        } catch (treeErr) {
+          this.b.logWithContext(this, 'writeFile:after-tree:error', treeErr, 'error');
+        }
 
-  //       return { state: true, data: undefined };
-  //     } catch (err) {
-  //       this.b.logWithContext(this, `writeFile:error:`, { fullPath, content, err }, 'error');
-  //       return { state: false, data: undefined, message: `Failed to write file at ${fullPath}` };
-  //     }
-  //   } catch (e) {
-  //     const msg = (e as Error).message || 'Unexpected error in writeFile';
-  //     this.b.logWithContext(this, 'writeFile:exception', { e, msg }, 'error');
-  //     return { state: false, data: null, message: msg };
-  //   }
-  // }
+        return { state: true, data: undefined };
+      } catch (err) {
+        this.b.logWithContext(this, `writeFile:error:`, { fullPath, content, err }, 'error');
+        return { state: false, data: undefined, message: `Failed to write file at ${fullPath}` };
+      }
+    } catch (e) {
+      const msg = (e as Error).message || 'Unexpected error in writeFile';
+      this.b.logWithContext(this, 'writeFile:exception', { e, msg }, 'error');
+      return { state: false, data: null, message: msg };
+    }
+  }
 
   /**
    * Resolve the output file path based on the config and module descriptor
@@ -1130,7 +1126,7 @@ export class GenComponentService {
     if (component?.fileName) {
       const primaryType = this.derivePrimaryComponentType(component?.fileName);
       this.b.logWithContext(this, `GenComponentService:primaryType:`, primaryType, 'debug');
-      this.logger.logDebug(
+      CdLog.debug(
         `GenComponentService::resolveOutputFilePath()/expected-resolution: ${config.outputPath}/${moduleDescriptor.name}/${primaryType}s/${component?.fileName}`,
       );
       return {

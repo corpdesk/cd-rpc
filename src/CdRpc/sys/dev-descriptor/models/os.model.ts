@@ -1,4 +1,4 @@
-import type { OperatingSystemDescriptor } from './workstations.model';
+import type { OperatingSystemDescriptor } from './workstations.model.js';
 
 export const operatingSystems: OperatingSystemDescriptor[] = [
   {

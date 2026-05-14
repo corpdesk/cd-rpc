@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as fs from 'fs';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
+import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
 import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
 
 // export interface ParsedTemplate {

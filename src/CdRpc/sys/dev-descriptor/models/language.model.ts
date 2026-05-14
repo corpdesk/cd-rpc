@@ -1,7 +1,7 @@
 // import type { LanguageDescriptor } from './dev-descriptor.model';
 
-import { CdFxReturn } from '../../base/i-base';
-import type { BaseDescriptor } from './base-descriptor.model';
+import { CdFxReturn } from '../../base/i-base.js';
+import type { BaseDescriptor } from './base-descriptor.model.js';
 
 // export interface LanguageDescriptor extends BaseDescriptor {
 //   name: string; // Name of the language
@@ -43,7 +43,7 @@ export interface LanguageDescriptor extends BaseDescriptor {
  */
 export interface LanguageFileProfile extends BaseDescriptor {
   profileName?: string; // Optional: e.g., "typeScriptSource", "cppHeader"
-  extension: string; // e.g. ".ts", "", ".cpp", ".h"
+  extension: string; // e.g. ".ts", ".js", ".cpp", ".h"
   stage?: 'source' | 'transpiled' | 'compiled' | 'intermediate' | 'executable';
   standard?: string; // e.g., "ECMAScript 6", "C++20"
   tooling?: string[]; // Tooling relevant for this stage (["tsc", "babel"])
@@ -124,7 +124,7 @@ export const languages: LanguageDescriptor[] = [
     type: 'hybrid',
     fileProfiles: [
       { profileName: 'tsSource', extension: '.ts', stage: 'source', standard: 'ECMAScript 6+', tooling: ['tsc'] },
-      { profileName: 'tsCompiled', extension: '', stage: 'transpiled', standard: 'ECMAScript 6+', tooling: ['node'] },
+      { profileName: 'tsCompiled', extension: '.js', stage: 'transpiled', standard: 'ECMAScript 6+', tooling: ['node'] },
     ],
     languageEcosystem: {
       defaultPackageManager: 'npm',

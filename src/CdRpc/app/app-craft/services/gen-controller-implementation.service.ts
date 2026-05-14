@@ -1,20 +1,20 @@
-import { BaseService } from '../../../sys/base/base.service.js';
+import { BaseService } from '../../../sys/base/base.service';
 import {
   ParsedTemplate,
   TemplateLoaderService,
   TemplateMethod,
-} from './template-loader.service.js';
+} from './template-loader.service';
 import {
   CdControllerDescriptor,
   CdModuleDescriptor,
   CdServiceDescriptor,
 } from '../../../sys/dev-descriptor/index.js';
 import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model.js';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
+import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
 import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
-import { GenComponentService } from './gen-component.service.js';
-// import * as recast from 'recast';
-// import { namedTypes as n } from 'ast-types';
+import { GenComponentService } from './gen-component.service';
+import * as recast from 'recast';
+import { namedTypes as n } from 'ast-types';
 import { toCamelCase } from '../../../sys/utils/cd-naming.util.js';
 
 export class GenControllerImplementationService {

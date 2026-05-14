@@ -1,7 +1,7 @@
-import type { BaseDescriptor } from './base-descriptor.model';
-import { ComponentDescriptor, ComponentType } from './component-descriptor.model';
-import type { DependencyDescriptor } from './dependancy-descriptor.model';
-import { AccountCredentials } from './service-provider.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import { ComponentDescriptor, ComponentType } from './component-descriptor.model.js';
+import type { DependencyDescriptor } from './dependancy-descriptor.model.js';
+import { AccountCredentials } from './service-provider.model.js';
 
 export interface CdModelDescriptor extends ComponentDescriptor {
   module?: string; // The module to which this model belongs

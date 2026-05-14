@@ -1,4 +1,4 @@
-import { BaseService } from '../../../sys/base/base.service.js';
+import { BaseService } from '../../../sys/base/base.service';
 import { CdControllerDescriptor, CdModelDescriptor } from '../../../sys/dev-descriptor/index.js';
 import { toCamelCase, toPascalCase } from '../../../sys/utils/cd-naming.util.js';
 

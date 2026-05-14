@@ -30,10 +30,10 @@ import {
 import { fileURLToPath } from 'url';
 import { getModCraftOutputDir, MOD_CRAFT_WORKSHOP_DIR } from '../models/app-craft.model.js';
 import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
-import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/index.js';
 import { inspect } from 'util';
-import { CdModuleDescriptorService } from '../../../sys/dev-descriptor/services/cd-module-descriptor.service.js';
+import { CdModuleDescriptorService } from '../../../sys/dev-descriptor/services/cd-module-descriptor.service';
 
 // Simulate __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);

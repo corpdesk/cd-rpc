@@ -1,6 +1,6 @@
 
-// import { DevModeAction } from '../../../sys/dev-mode/index.js';
-// import { GenDependencyService } from '../services/gen-dependency.service.js';
+import { DevModeAction } from '../../../sys/dev-mode/index.js';
+// import { GenDependencyService } from '../services/gen-dependency.service';
 import {
   AppType,
   CdCtx,
@@ -9,8 +9,8 @@ import {
   CdServiceDescriptor,
   DependencyDescriptor,
 } from '../../../sys/dev-descriptor/index.js';
-import { CdFxReturn } from '../../../sys/base/i-base.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { CdFxReturn } from '../../../sys/base/i-base';
+import { BaseService } from '../../../sys/base/base.service';
 import { ComponentType } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
 
 export class GenDependencyService {
@@ -20,27 +20,27 @@ export class GenDependencyService {
   /**
    * Entrypoint: reset & rebuild all dependencies
    */
-  // async rebuildDependencies(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   this.b.logWithContext(this, 'rebuildDependencies:start', { action, moduleData });
+  async rebuildDependencies(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    this.b.logWithContext(this, 'rebuildDependencies:start', { action, moduleData });
 
-  //   // 0. reset all
-  //   this.resetAllDependencies(moduleData);
+    // 0. reset all
+    this.resetAllDependencies(moduleData);
 
-  //   // 1. controllers (Controller + ControllerType)
-  //   this.applyControllerDeps(moduleData);
+    // 1. controllers (Controller + ControllerType)
+    this.applyControllerDeps(moduleData);
 
-  //   // 2. services (Service + ServiceType)
-  //   this.applyServiceDeps(moduleData);
+    // 2. services (Service + ServiceType)
+    this.applyServiceDeps(moduleData);
 
-  //   // 3. models (Model + ModelType)
-  //   this.applyModelDeps(moduleData);
+    // 3. models (Model + ModelType)
+    this.applyModelDeps(moduleData);
 
-  //   this.b.logWithContext(this, 'rebuildDependencies:end', { moduleData });
-  //   return { state: true, data: null };
-  // }
+    this.b.logWithContext(this, 'rebuildDependencies:end', { moduleData });
+    return { state: true, data: null };
+  }
 
   /**
    * Reset all dependencies in all component types
@@ -173,87 +173,87 @@ export class GenDependencyService {
   }
 
   // 1. Controller (ComponentType.Controller)
-  // async genDependencyForModule(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateControllerImports(action, moduleData, ComponentType.Controller);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForModule(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateControllerImports(action, moduleData, ComponentType.Controller);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
   // 2. ControllerType
-  // async genDependencyForControllerType(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateControllerImports(action, moduleData, ComponentType.ControllerType);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForControllerType(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateControllerImports(action, moduleData, ComponentType.ControllerType);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
   // 3. Service (ComponentType.Service)
-  // async genDependencyForService(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateServiceImports(action, moduleData, ComponentType.Service);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForService(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateServiceImports(action, moduleData, ComponentType.Service);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
-  // // 4. ServiceType
-  // async genDependencyForServiceType(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateServiceImports(action, moduleData, ComponentType.ServiceType);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  // 4. ServiceType
+  async genDependencyForServiceType(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateServiceImports(action, moduleData, ComponentType.ServiceType);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
   // 5. Model (ComponentType.Model)
-  // async genDependencyForModel(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateModelImports(action, moduleData, ComponentType.Model);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForModel(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateModelImports(action, moduleData, ComponentType.Model);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
   // 6. ModelType
-  // async genDependencyForModelType(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // return this.genDependencyService.generateModelImports(action, moduleData, ComponentType.ModelType);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForModelType(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // return this.genDependencyService.generateModelImports(action, moduleData, ComponentType.ModelType);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 
   // 7. Method-level dependency automation (future expansion)
-  // async genDependencyForMethodLevel(
-  //   action: DevModeAction,
-  //   moduleData: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   // Stub → real logic to come from descriptors (rfc-0005 aligned)
-  //   // return this.genDependencyService.generateMethodImports(action, moduleData);
-  //   return {
-  //     state: false,
-  //     data: null,
-  //   };
-  // }
+  async genDependencyForMethodLevel(
+    action: DevModeAction,
+    moduleData: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    // Stub → real logic to come from descriptors (rfc-0005 aligned)
+    // return this.genDependencyService.generateMethodImports(action, moduleData);
+    return {
+      state: false,
+      data: null,
+    };
+  }
 }

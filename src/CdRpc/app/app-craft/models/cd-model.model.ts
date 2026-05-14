@@ -1,6 +1,4 @@
-// import { ICdRequest } from "~/CdCli/sys/base";
-
-import { ICdRequest } from "../../../sys/base/i-base";
+import { ICdRequest } from "~/CdCli/sys/base";
 
 export const defaultCdRfcEnv: ICdRequest = {
   ctx: 'app',

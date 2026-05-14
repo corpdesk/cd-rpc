@@ -7,22 +7,19 @@
 // import { GenericService } from '../../base/generic-service';
 // import { CdControllerDescriptor } from '../models/cd-controller-descriptor.model';
 
-import { GenericService } from '../../../sys/base/generic-service.js';
-import { CD_FX_FAIL, CdFxReturn, IQuery } from '../../../sys/base/i-base.js';
+import { GenericService } from '../../../sys/base/generic-service';
+import { CD_FX_FAIL, CdFxReturn, IQuery } from '../../../sys/base/i-base';
 import { CdControllerDescriptor } from '../../../sys/dev-descriptor/models/cd-controller-descriptor.model.js';
 import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model.js';
-// import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service.js';
+import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service';
 import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model.js';
 
 export class CdControllerService extends GenericService<CdObjModel> {
-  cdToken!: string;
-  // svDevDescriptors!: DevDescriptorService;
-  serviceModel = CdObjModel;
-  docName = 'CdController';
-
+  cdToken;
+  svDevDescriptors;
   constructor() {
     super(CdObjModel);
-    // this.svDevDescriptors = new DevDescriptorService();
+    this.svDevDescriptors = new DevDescriptorService();
   }
 
   /**
@@ -42,123 +39,123 @@ export class CdControllerService extends GenericService<CdObjModel> {
    * @param controllerDescriptor
    * @returns
    */
-  // async create(d: CdControllerDescriptor): Promise<CdFxReturn<null>> {
-  //   try {
-  //     // const payload = this.svDevDescriptors.setEnvelope('Create', { data: d });
-  //     // const httpService = new HttpService();
-  //     // await httpService.init(); // Ensure this is awaited
-  //     // httpService.headers.data = payload;
-  //     // return await httpService.proc3(httpService.headers);
-  //     return CD_FX_FAIL;
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Creation failed: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async create(d: CdControllerDescriptor): Promise<CdFxReturn<null>> {
+    try {
+      // const payload = this.svDevDescriptors.setEnvelope('Create', { data: d });
+      // const httpService = new HttpService();
+      // await httpService.init(); // Ensure this is awaited
+      // httpService.headers.data = payload;
+      // return await httpService.proc3(httpService.headers);
+      return CD_FX_FAIL;
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Creation failed: ${(error as Error).message}`,
+      };
+    }
+  }
 
-  // async read(q?: IQuery): Promise<CdFxReturn<CdDescriptor[] | null >> {
-  //   try {
-  //     /**
-  //      * The q is allowed to be null
-  //      * If null it is substituted by { where: {} }
-  //      * Which would then fetch all the data
-  //      */
-  //     // const payload = this.svDevDescriptors.setEnvelope('Read', {
-  //     //   query: q ?? { where: {} },
-  //     // });
-  //     // const httpService = new HttpService();
-  //     // await httpService.init(); // Ensure this is awaited
-  //     // httpService.headers.data = payload;
-  //     // return await httpService.proc3(httpService.headers);
-  //     return CD_FX_FAIL;
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Read failed: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async read(q?: IQuery): Promise<CdFxReturn<CdDescriptor[] | null >> {
+    try {
+      /**
+       * The q is allowed to be null
+       * If null it is substituted by { where: {} }
+       * Which would then fetch all the data
+       */
+      // const payload = this.svDevDescriptors.setEnvelope('Read', {
+      //   query: q ?? { where: {} },
+      // });
+      // const httpService = new HttpService();
+      // await httpService.init(); // Ensure this is awaited
+      // httpService.headers.data = payload;
+      // return await httpService.proc3(httpService.headers);
+      return CD_FX_FAIL;
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Read failed: ${(error as Error).message}`,
+      };
+    }
+  }
 
-  // async update(q: IQuery): Promise<CdFxReturn<null>> {
-  //   try {
-  //     // const payload = this.svDevDescriptors.setEnvelope('Update', { query: q });
-  //     // const httpService = new HttpService();
-  //     // await httpService.init(); // Ensure this is awaited
-  //     // httpService.headers.data = payload;
-  //     // return await httpService.proc3(httpService.headers);
-  //     return CD_FX_FAIL;
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Update failed: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async update(q: IQuery): Promise<CdFxReturn<null>> {
+    try {
+      // const payload = this.svDevDescriptors.setEnvelope('Update', { query: q });
+      // const httpService = new HttpService();
+      // await httpService.init(); // Ensure this is awaited
+      // httpService.headers.data = payload;
+      // return await httpService.proc3(httpService.headers);
+      return CD_FX_FAIL;
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Update failed: ${(error as Error).message}`,
+      };
+    }
+  }
 
-  // async delete(q: IQuery): Promise<CdFxReturn<null>> {
-  //   try {
-  //     // const payload = this.svDevDescriptors.setEnvelope('Delete', { query: q });
-  //     // const httpService = new HttpService();
-  //     // await httpService.init(); // Ensure this is awaited
-  //     // httpService.headers.data = payload;
-  //     // return await httpService.proc3(httpService.headers);
-  //     return CD_FX_FAIL;
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Update failed: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async delete(q: IQuery): Promise<CdFxReturn<null>> {
+    try {
+      // const payload = this.svDevDescriptors.setEnvelope('Delete', { query: q });
+      // const httpService = new HttpService();
+      // await httpService.init(); // Ensure this is awaited
+      // httpService.headers.data = payload;
+      // return await httpService.proc3(httpService.headers);
+      return CD_FX_FAIL;
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Update failed: ${(error as Error).message}`,
+      };
+    }
+  }
 
   protected getTypeId(): number {
     return 1; // CdController type
   }
 
   // Get all applications
-  // async getAllControllers(): Promise<CdFxReturn<CdDescriptor[] | null >> {
-  //   try {
-  //     return await this.read(); // Fetch all applications
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Failed to retrieve all controllers: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async getAllControllers(): Promise<CdFxReturn<CdDescriptor[] | null >> {
+    try {
+      return await this.read(); // Fetch all applications
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Failed to retrieve all controllers: ${(error as Error).message}`,
+      };
+    }
+  }
 
-  // // Get a single controller by name
-  // async getControllerByName(name: string): Promise<CdFxReturn<CdDescriptor[] | null >> {
-  //   try {
-  //     // Validate input
-  //     if (!name.trim()) {
-  //       return {
-  //         data: null,
-  //         state: false,
-  //         message: 'Application name is required.',
-  //       };
-  //     }
+  // Get a single controller by name
+  async getControllerByName(name: string): Promise<CdFxReturn<CdDescriptor[] | null >> {
+    try {
+      // Validate input
+      if (!name.trim()) {
+        return {
+          data: null,
+          state: false,
+          message: 'Application name is required.',
+        };
+      }
 
-  //     // Define the query
-  //     const q: IQuery = {
-  //       select: ['cdObjId', 'cdObjName', 'cdObjGuid', 'jDetails'], // Fields to select
-  //       where: { cdObjName: name }, // Fetch controllers by name
-  //     };
+      // Define the query
+      const q: IQuery = {
+        select: ['cdObjId', 'cdObjName', 'cdObjGuid', 'jDetails'], // Fields to select
+        where: { cdObjName: name }, // Fetch controllers by name
+      };
 
-  //     return await this.read(q);
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Failed to retrieve controller by name: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+      return await this.read(q);
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Failed to retrieve controller by name: ${(error as Error).message}`,
+      };
+    }
+  }
 }

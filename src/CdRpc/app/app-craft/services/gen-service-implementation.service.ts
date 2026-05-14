@@ -1,9 +1,9 @@
-import { CdServiceDescriptor } from '../../../sys/dev-descriptor/index.js';
-import { ParsedTemplate, TemplateMethod } from './template-loader.service.js';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base.js';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
-import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { CdServiceDescriptor } from '../../..//sys/dev-descriptor/index.js';
+import { ParsedTemplate, TemplateMethod } from './template-loader.service';
+import { CdFxReturn, CdFxStateLevel } from '../../..//sys/base/i-base';
+import { cdFx } from '../../..//sys/base/cd-fx-return.util.js';
+import { FunctionDescriptor } from '../../..//sys/dev-descriptor/models/function-descriptor.model.js';
+import { BaseService } from '../../../sys/base/base.service';
 
 export class GenServiceImplementationService {
   b = new BaseService();

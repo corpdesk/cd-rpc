@@ -1,4 +1,4 @@
-import type { BaseDescriptor } from './base-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
 
 export interface MigrationDescriptor extends BaseDescriptor {
   migrationTool?:

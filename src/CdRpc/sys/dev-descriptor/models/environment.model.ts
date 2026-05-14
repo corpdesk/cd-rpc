@@ -1,28 +1,30 @@
-import type { BaseDescriptor } from './base-descriptor.model';
-import type { BaseServiceDescriptor } from './service-descriptor.model';
+// src/CdCli/sys/dev-descriptor/models/environment.model.ts
+
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { BaseServiceDescriptor } from './service-descriptor.model.js';
 import {
   type CiCdDescriptor,
-  // getCiCdByName,
-  // knownCiCds,
-} from './cicd-descriptor.model';
-import { getServiceByName, services } from './service-descriptor.model';
+  getCiCdByName,
+  knownCiCds,
+} from './cicd-descriptor.model.js';
+import { getServiceByName, services } from './service-descriptor.model.js';
 import {
   getVersionControlByContext,
   type VersionControlDescriptor,
   // versionControlRepositories,
-} from './version-control.model';
+} from './version-control.model.js';
 import {
   getTestingFramework,
   type TestingFrameworkDescriptor,
   testingFrameworks,
-} from './testing-framework.model';
+} from './testing-framework.model.js';
 
 import {
   defaultWorkstation,
   getWorkstationByName,
   type WorkstationDescriptor,
   workstations,
-} from './workstations.model';
+} from './workstations.model.js';
 
 export interface EnvironmentDescriptor extends BaseDescriptor {
   name?: CdEnvName; // Name of the environment, e.g., workshop, test-bed, production
@@ -41,10 +43,28 @@ export enum CdEnvName {
   CI_CD = 'ci-cd',
   SANDBOX = 'sandbox',
   CUSTOM = 'custom',
-  LOCAL_CD_API_APP = 'local-cd-api-app',
-  LOCAL_CD_API_SYS = 'local-cd-api-sys',
+
+  /**
+   * cd-api subsystem related environments
+   */
   LOCAL_CD_API = 'local-cd-api',
+  LOCAL_CD_API_SYS = 'local-cd-api-sys',
+  LOCAL_CD_API_APP = 'local-cd-api-app',
+  
+  /**
+   * cd-cli subsystem related environments
+   */
   LOCAL_CD_CLI = 'local-cd-cli',
+  LOCAL_CD_CLI_SYS = 'local-cd-cli-sys',
+  LOCAL_CD_CLI_APP = 'local-cd-cli-app',
+  
+  /**
+   * cd-shell subsystem related environments
+   */
+  LOCAL_CD_SHELL = 'local-cd-shell',
+  LOCAL_CD_SHELL_SYS = 'local-cd-shell-sys',
+  LOCAL_CD_SHELL_APP = 'local-cd-shell-app',
+  
   LOCAL_FRONTEND = 'local-frontend',
   LOCAL_PWA = 'local-pwa',
 }
@@ -92,9 +112,47 @@ export const envProduction: EnvironmentDescriptor = {
   workstation: workstations.find((w) => w.name === 'emp-07') || defaultWorkstation,
 };
 
+/**
+ * This environment represents the local development environment for the CD CLI tool. It is used for developing and testing the CD CLI application itself, including its commands, features, and integrations. The workstation is set to 'emp-12', which is the primary development machine for CD CLI development. This environment can be used to run the CD CLI in a local context, allowing developers to iterate quickly and validate changes before they are integrated into the main codebase or deployed to other environments.
+ */
 export const envCdCli: EnvironmentDescriptor = {
   name: CdEnvName.LOCAL_CD_CLI,
   type: 'local-cd-cli',
+  workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
+};
+
+export const envCdCliApp: EnvironmentDescriptor = {
+  name: CdEnvName.LOCAL_CD_CLI_APP,
+  type: 'local-cd-cli-app',
+  workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
+};
+
+export const envCdCliSys: EnvironmentDescriptor = {
+  name: CdEnvName.LOCAL_CD_CLI_SYS,
+  type: 'local-cd-cli-sys',
+  workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
+};
+
+/**
+ * This environment represents the local development environment for the CD SHELL tool. 
+ * It is used for developing and testing the CD SHELL application itself, including its commands, features, and integrations. The workstation is set to 'emp-12', which is the primary development machine for CD SHELL development. This environment can be used to run the CD SHELL in a local context, allowing developers to iterate quickly and validate changes before they are integrated into the main codebase or deployed to other environments.
+ */
+
+export const envCdShell: EnvironmentDescriptor = {
+  name: CdEnvName.LOCAL_CD_SHELL,
+  type: 'local-cd-shell',
+  workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
+};
+
+export const envCdShellApp: EnvironmentDescriptor = {
+  name: CdEnvName.LOCAL_CD_SHELL_APP,
+  type: 'local-cd-shell-app',
+  workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
+};
+
+export const envCdShellSys: EnvironmentDescriptor = {
+  name: CdEnvName.LOCAL_CD_CLI_SYS,
+  type: 'local-cd-cli-sys',
   workstation: workstations.find((w) => w.name === 'emp-12') || defaultWorkstation,
 };
 
@@ -112,83 +170,83 @@ export const envPwa: EnvironmentDescriptor = {
 
 
 const vcRepositories: VersionControlDescriptor[] = [];
-// export const environments: EnvironmentDescriptor[] = [
-//   {
-//     /**
-//      * create an incus container for development
-//      */
-//     workstation: getWorkstationByName('emp-12', workstations) || defaultWorkstation,
-//     services: getServiceByName(['AuthService', 'DatabaseService'], services),
-//     environmentVariables: {
-//       global: { NODE_ENV: 'development', DEBUG: 'true' },
-//       perEnvironment: {
-//         local: { API_URL: 'http://localhost:3000' },
-//         staging: { API_URL: 'https://staging.api.com' },
-//         production: { API_URL: 'https://api.com' },
-//       },
-//     },
-//     ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
-//     testingFrameworks: getTestingFramework(['Jest'], testingFrameworks),
-//     versionControl: getVersionControlByContext('cd-api', vcRepositories),
-//   },
-//   {
-//     workstation: getWorkstationByName('DevMachine-1', workstations) || defaultWorkstation,
-//     services: getServiceByName(['AuthService', 'DatabaseService'], services),
-//     environmentVariables: {
-//       global: { NODE_ENV: 'development', DEBUG: 'true' },
-//       perEnvironment: {
-//         local: { API_URL: 'http://localhost:3000' },
-//         staging: { API_URL: 'https://staging.api.com' },
-//         production: { API_URL: 'https://api.com' },
-//       },
-//     },
-//     ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
-//     testingFrameworks: getTestingFramework(['Jest', 'Mocha'], testingFrameworks),
-//     versionControl: getVersionControlByContext('cd-api', vcRepositories),
-//   },
-//   {
-//     workstation: getWorkstationByName('DevMachine-2', workstations) || defaultWorkstation,
-//     services: getServiceByName(['PaymentService', 'NotificationService'], services),
-//     environmentVariables: {
-//       global: { LOG_LEVEL: 'verbose' },
-//       perEnvironment: {
-//         local: { PAYMENT_GATEWAY: 'sandbox' },
-//         production: { PAYMENT_GATEWAY: 'live' },
-//       },
-//     },
-//     ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
-//     testingFrameworks: getTestingFramework(['Cypress', 'Jasmine'], testingFrameworks),
-//     versionControl: getVersionControlByContext('cd-api', vcRepositories),
-//   },
-//   {
-//     workstation: getWorkstationByName('DevMachine-3', workstations) || defaultWorkstation,
-//     services: getServiceByName(['CacheService', 'AnalyticsService'], services),
-//     environmentVariables: {
-//       global: { CACHE_ENABLED: 'true' },
-//       perEnvironment: {
-//         local: { CACHE_PROVIDER: 'redis' },
-//         staging: { CACHE_PROVIDER: 'memcached' },
-//       },
-//     },
-//     ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
-//     testingFrameworks: getTestingFramework(['Karma', 'AVA'], testingFrameworks),
-//     versionControl: getVersionControlByContext('cd-api', vcRepositories),
-//   },
-//   {
-//     workstation: getWorkstationByName('DevMachine-4', workstations) || defaultWorkstation,
-//     services: getServiceByName(['UserService', 'LoggingService'], services),
-//     environmentVariables: {
-//       global: { ENABLE_LOGGING: 'true' },
-//       perEnvironment: {
-//         local: { LOG_FORMAT: 'pretty' },
-//         production: { LOG_FORMAT: 'json' },
-//       },
-//     },
-//     ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
-//     testingFrameworks: getTestingFramework(['Playwright', 'TestCafe'], testingFrameworks),
-//     versionControl: getVersionControlByContext('cd-api', vcRepositories),
-//   },
-// ];
+export const environments: EnvironmentDescriptor[] = [
+  {
+    /**
+     * create an incus container for development
+     */
+    workstation: getWorkstationByName('emp-12', workstations) || defaultWorkstation,
+    services: getServiceByName(['AuthService', 'DatabaseService'], services),
+    environmentVariables: {
+      global: { NODE_ENV: 'development', DEBUG: 'true' },
+      perEnvironment: {
+        local: { API_URL: 'http://localhost:3000' },
+        staging: { API_URL: 'https://staging.api.com' },
+        production: { API_URL: 'https://api.com' },
+      },
+    },
+    ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
+    testingFrameworks: getTestingFramework(['Jest'], testingFrameworks),
+    versionControl: getVersionControlByContext('cd-api', vcRepositories),
+  },
+  {
+    workstation: getWorkstationByName('DevMachine-1', workstations) || defaultWorkstation,
+    services: getServiceByName(['AuthService', 'DatabaseService'], services),
+    environmentVariables: {
+      global: { NODE_ENV: 'development', DEBUG: 'true' },
+      perEnvironment: {
+        local: { API_URL: 'http://localhost:3000' },
+        staging: { API_URL: 'https://staging.api.com' },
+        production: { API_URL: 'https://api.com' },
+      },
+    },
+    ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
+    testingFrameworks: getTestingFramework(['Jest', 'Mocha'], testingFrameworks),
+    versionControl: getVersionControlByContext('cd-api', vcRepositories),
+  },
+  {
+    workstation: getWorkstationByName('DevMachine-2', workstations) || defaultWorkstation,
+    services: getServiceByName(['PaymentService', 'NotificationService'], services),
+    environmentVariables: {
+      global: { LOG_LEVEL: 'verbose' },
+      perEnvironment: {
+        local: { PAYMENT_GATEWAY: 'sandbox' },
+        production: { PAYMENT_GATEWAY: 'live' },
+      },
+    },
+    ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
+    testingFrameworks: getTestingFramework(['Cypress', 'Jasmine'], testingFrameworks),
+    versionControl: getVersionControlByContext('cd-api', vcRepositories),
+  },
+  {
+    workstation: getWorkstationByName('DevMachine-3', workstations) || defaultWorkstation,
+    services: getServiceByName(['CacheService', 'AnalyticsService'], services),
+    environmentVariables: {
+      global: { CACHE_ENABLED: 'true' },
+      perEnvironment: {
+        local: { CACHE_PROVIDER: 'redis' },
+        staging: { CACHE_PROVIDER: 'memcached' },
+      },
+    },
+    ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
+    testingFrameworks: getTestingFramework(['Karma', 'AVA'], testingFrameworks),
+    versionControl: getVersionControlByContext('cd-api', vcRepositories),
+  },
+  {
+    workstation: getWorkstationByName('DevMachine-4', workstations) || defaultWorkstation,
+    services: getServiceByName(['UserService', 'LoggingService'], services),
+    environmentVariables: {
+      global: { ENABLE_LOGGING: 'true' },
+      perEnvironment: {
+        local: { LOG_FORMAT: 'pretty' },
+        production: { LOG_FORMAT: 'json' },
+      },
+    },
+    ciCd: [getCiCdByName(['Corpdesk CI/CD - Bash Deployment'], knownCiCds)],
+    testingFrameworks: getTestingFramework(['Playwright', 'TestCafe'], testingFrameworks),
+    versionControl: getVersionControlByContext('cd-api', vcRepositories),
+  },
+];
 
 export const defaultEnvironment: EnvironmentDescriptor = {
   workstation: {

@@ -1,8 +1,8 @@
 import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
 import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
 import { workshopConfig } from '../../../../models/app-craft.model.js';
-import CdLog from '../../../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdFxStateLevel } from '../../../../../../sys/base/i-base.js';
+import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
+import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { inspect } from 'util';
 import { DevModeAction } from '../../../../../../sys/dev-mode/index.js';
 import { MOD_CRAFT_WORKSHOP_DIR } from '../../../../models/default.model.js';
@@ -796,32 +796,88 @@ export class CdRfcWorkFlow {
               // ─────────────────────────────
               {
                 name: 'UpdateRfcData',
-                type: 'method',
+                type: 'remoteCdRequest',
                 executor: 'cd-cli',
                 status: 'pending',
                 cdRequest: {
                   ctx: 'app',
-                  m: 'app-craft',
-                  c: 'CdModel',
-                  a: 'UpdateRfcData',
+                  m: 'cd-bio-engine',
+                  c: 'CdBioEngineDna',
+                  a: 'UpdateCdBioEngineDna',
                   dat: {
-                    f_vals: [{ data: null }],
+                    f_vals: [
+                      {
+                        query: {
+                          update: {
+                            cdBioEngineDnaData: '$outputs.FetchRfcData.blocks',
+                          },
+                        },
+                        jsonUpdate: [
+                          {
+                            v: '1.0',
+                            path: ['cdBioEngineDnaSrc', 'url'],
+                            value: extraParam.srcPath,
+                            action: 'read',
+                            op: 'eq',
+                          },
+                        ],
+                      },
+                    ],
                     token: extraParam.cdToken,
                   },
-                  args: {
-                    query: {
-                      update: {
-                        rfcData: '$outputs.FetchRfcData.blocks', // assuming the output of FetchRfcData task has a property 'blocks' which contains the extracted cd-rfc block data
-                      },
-                      where: {
-                        identifier: extraParam.srcPath,
-                      },
-                    },
-
-                    // optional additional context
-                    source: extraParam.srcPath,
-                    module: cdModule.name,
+                  args: {},
+                },
+                onResult: [
+                  {
+                    ifState: [CdFxStateLevel.Success, CdFxStateLevel.PartialSuccess],
+                    toTask: 'GetRfcData',
                   },
+                  {
+                    ifState: [
+                      CdFxStateLevel.Error,
+                      CdFxStateLevel.Fatal,
+                      CdFxStateLevel.SystemError,
+                      CdFxStateLevel.LogicalFailure,
+                    ],
+                    toTask: 'NotifyFailure',
+                  },
+                ],
+              },
+              // ─────────────────────────────
+              // 3. TEST READING OF DNA
+              // ─────────────────────────────
+              {
+                name: 'GetRfcData',
+                type: 'remoteCdRequest',
+                executor: 'cd-cli',
+                status: 'pending',
+                cdRequest: {
+                  ctx: 'app',
+                  m: 'cd-bio-engine',
+                  c: 'CdBioEngineDna',
+                  a: 'JGet',
+                  dat: {
+                    f_vals: [
+                      {
+                        // query: {
+                        //   update: {
+                        //     cdBioEngineDnaData: '$outputs.FetchRfcData.blocks',
+                        //   },
+                        // },
+                        jsonUpdate: [
+                          {
+                            v: '1.0',
+                            path: ['cdBioEngineDnaSrc', 'url'],
+                            value: extraParam.srcPath,
+                            action: 'read',
+                            op: 'eq',
+                          },
+                        ],
+                      },
+                    ],
+                    token: extraParam.cdToken,
+                  },
+                  args: {},
                 },
                 onResult: [
                   // {

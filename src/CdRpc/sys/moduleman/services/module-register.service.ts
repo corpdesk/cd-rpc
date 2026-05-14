@@ -1,11 +1,11 @@
 // import { CdCliProfileController } from '../../../sys/cd-cli/index.js';
-import { CdFxReturn, CdFxStateLevel, ICdRequest, ICdResponse } from '../../base/i-base.js';
+import { CdFxReturn, CdFxStateLevel, ICdRequest, ICdResponse } from '../../base/i-base';
 import { CdCtx, CdModuleDescriptor } from '../../dev-descriptor/index.js';
 // import { SessonController } from '../../user/controllers/';
 import config from '../../../../config.js';
-// import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { BaseService } from '../../base/base.service.js';
-// import { HttpService } from '../../base/http.service.js';
+// import CdLog from '../../comm/controllers/cd-logger.controller';
+import { BaseService } from '../../base/base.service';
+// import { HttpService } from '../../base/http.service';
 // import { EnvCreate, EnvPurge } from '../models/module.model.js';
 import { inspect } from 'node:util';
 

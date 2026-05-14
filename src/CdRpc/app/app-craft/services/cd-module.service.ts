@@ -1,29 +1,29 @@
 /* eslint-disable style/brace-style */
 
 import { basename, join } from 'path';
-import { GenericService } from '../../../sys/base/generic-service.js';
-// import { HttpService } from '../../../sys/base/http.service.js';
+import { GenericService } from '../../../sys/base/generic-service';
+import { HttpService } from '../../../sys/base/http.service';
 import {
   CD_FX_FAIL,
   CdAssertReturn,
   CdFxReturn,
   CdFxStateLevel,
   IQuery,
-} from '../../../sys/base/i-base.js';
-// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
+} from '../../../sys/base/i-base';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
 import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model.js';
-// import { CiCdRunnerService } from '../../../sys/dev-descriptor/services/cd-ci-runner.service.js';
-// import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service.js';
-// import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { CiCdRunnerService } from '../../../sys/dev-descriptor/services/cd-ci-runner.service';
+import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service';
+import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
 import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model.js';
 import { mkdir, writeFile } from 'fs/promises';
 import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
 import { inferCdObjType } from '../../../sys/utils/cd-naming.util.js';
-// import { executeCommand } from '../../../sys/utils/cmd.util.js';
-// import { CdAutoGitController } from '../../cd-auto-git/index.js';
-// import { VersionService } from '../../../sys/dev-descriptor/services/version.service.js';
-// import { CdAutoGitService } from '../../cd-auto-git/services/cd-auto-git.service.js';
+import { executeCommand } from '../../../sys/utils/cmd.util.js';
+import { CdAutoGitController } from '../../cd-auto-git/index.js';
+import { VersionService } from '../../../sys/dev-descriptor/services/version.service';
+import { CdAutoGitService } from '../../cd-auto-git/services/cd-auto-git.service';
 import {
   AppType,
   CdChangeLogDescriptor,
@@ -32,21 +32,21 @@ import {
   CICdHistory,
   CICdPipeline,
 } from '../../../sys/dev-descriptor/index.js';
-import { CdDescriptorFileService } from './cd-descriptor-file.service.js';
+import { CdDescriptorFileService } from './cd-descriptor-file.service';
 
 export class CdModuleService {
-  cdToken!: string;
-  // svDevDescriptors;
-  // private svCiCdRunner!: CiCdRunnerService;
+  cdToken;
+  svDevDescriptors;
+  private svCiCdRunner!: CiCdRunnerService;
 
   constructor() {
-    // this.svDevDescriptors = new DevDescriptorService();
+    this.svDevDescriptors = new DevDescriptorService();
   }
 
-  // init(): this {
-  //   this.svCiCdRunner = new CiCdRunnerService();
-  //   return this;
-  // }
+  init(): this {
+    this.svCiCdRunner = new CiCdRunnerService();
+    return this;
+  }
 
   /**
    * 
@@ -62,43 +62,43 @@ export class CdModuleService {
    * @param cdToken 
    * @returns 
    */
-  // async create(
-  //   actionTargetName: string,
-  //   moduleName: string,
-  //   oEnv: string,
-  //   repoName: string,
-  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-  //   CdLog.debug('Starting CdModuleService::create()');
-  //   CdLog.debug(`CdModuleService::create()/actionTargetName: ${actionTargetName}`);
-  //   CdLog.debug(`CdModuleService::create()/moduleName: ${moduleName}`);
-  //   CdLog.debug(`CdModuleService::create()/oEnv: ${oEnv}`);
-  //   CdLog.debug(`CdModuleService::create()/repoName: ${repoName}`);
-  //   const cdObjType = inferCdObjType(this.constructor.name);
-  //   const runner = new CiCdRunnerService();
-  //   const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
-  //     DevModeAction.CREATE,
-  //     cdObjType,
-  //     moduleName,
-  //     oEnv,
-  //     {
-  //       actionTargetName: actionTargetName,
-  //       descriptor: 'CdModuleDescriptor',
-  //       cdToken: '', // Pass the cdToken if needed
-  //       repoName: repoName,
-  //       appType: AppType.CdApiModule,
-  //       oEnv: oEnv,
-  //     },
-  //   );
+  async create(
+    actionTargetName: string,
+    moduleName: string,
+    oEnv: string,
+    repoName: string,
+  ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+    CdLog.debug('Starting CdModuleService::create()');
+    CdLog.debug(`CdModuleService::create()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleService::create()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleService::create()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleService::create()/repoName: ${repoName}`);
+    const cdObjType = inferCdObjType(this.constructor.name);
+    const runner = new CiCdRunnerService();
+    const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      DevModeAction.CREATE,
+      cdObjType,
+      moduleName,
+      oEnv,
+      {
+        actionTargetName: actionTargetName,
+        descriptor: 'CdModuleDescriptor',
+        cdToken: '', // Pass the cdToken if needed
+        repoName: repoName,
+        appType: AppType.CdApiModule,
+        oEnv: oEnv,
+      },
+    );
 
-  //   if (!workflowModel) {
-  //     return {
-  //       state: false,
-  //       data: null,
-  //       message: `CdModuleService::create()/ No valid workflowModel`,
-  //     };
-  //   }
-  //   return await this.svCiCdRunner.run(descriptor, workflowModel);
-  // }
+    if (!workflowModel) {
+      return {
+        state: false,
+        data: null,
+        message: `CdModuleService::create()/ No valid workflowModel`,
+      };
+    }
+    return await this.svCiCdRunner.run(descriptor, workflowModel);
+  }
 
   /**
    * Create a new application
@@ -165,234 +165,234 @@ export class CdModuleService {
     }
   }
 
-  // async read(q?: IQuery): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
-  //   try {
-  //     /**
-  //      * The q is allowed to be null
-  //      * If null it is substituted by { where: {} }
-  //      * Which would then fetch all the data
-  //      */
-  //     const payload = this.svDevDescriptors.setEnvelope('Read', {
-  //       query: q ?? { where: {} },
-  //     });
-  //     return CD_FX_FAIL; // placeholder until this method is properly implemented
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Read failed: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async read(q?: IQuery): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+    try {
+      /**
+       * The q is allowed to be null
+       * If null it is substituted by { where: {} }
+       * Which would then fetch all the data
+       */
+      const payload = this.svDevDescriptors.setEnvelope('Read', {
+        query: q ?? { where: {} },
+      });
+      return CD_FX_FAIL; // placeholder until this method is properly implemented
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Read failed: ${(error as Error).message}`,
+      };
+    }
+  }
 
-  // async update(
-  //   actionTargetName: string,
-  //   moduleName: string,
-  //   oEnv: string,
-  //   repoName: string,
-  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-  //   CdLog.debug('Starting CdModuleService::update()');
-  //   CdLog.debug(`CdModuleService::update()/actionTargetName: ${actionTargetName}`);
-  //   CdLog.debug(`CdModuleService::update()/moduleName: ${moduleName}`);
-  //   CdLog.debug(`CdModuleService::update()/oEnv: ${oEnv}`);
-  //   CdLog.debug(`CdModuleService::update()/repoName: ${repoName}`);
-  //   const cdObjType = inferCdObjType(this.constructor.name);
-  //   const runner = new CiCdRunnerService();
-  //   const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
-  //     DevModeAction.UPDATE,
-  //     cdObjType,
-  //     moduleName,
-  //     oEnv,
-  //     {
-  //       actionTargetName: actionTargetName,
-  //       descriptor: 'CdModuleDescriptor',
-  //       cdToken: '', // Pass the cdToken if needed
-  //       repoName: repoName,
-  //       appType: AppType.CdApiModule,
-  //     },
-  //   );
+  async update(
+    actionTargetName: string,
+    moduleName: string,
+    oEnv: string,
+    repoName: string,
+  ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+    CdLog.debug('Starting CdModuleService::update()');
+    CdLog.debug(`CdModuleService::update()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleService::update()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleService::update()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleService::update()/repoName: ${repoName}`);
+    const cdObjType = inferCdObjType(this.constructor.name);
+    const runner = new CiCdRunnerService();
+    const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      DevModeAction.UPDATE,
+      cdObjType,
+      moduleName,
+      oEnv,
+      {
+        actionTargetName: actionTargetName,
+        descriptor: 'CdModuleDescriptor',
+        cdToken: '', // Pass the cdToken if needed
+        repoName: repoName,
+        appType: AppType.CdApiModule,
+      },
+    );
 
-  //   if (!workflowModel) {
-  //     return {
-  //       state: false,
-  //       data: null,
-  //       message: `CdModuleService::update()/ No valid workflowModel`,
-  //     };
-  //   }
-  //   return await this.svCiCdRunner.run(descriptor, workflowModel);
-  // }
+    if (!workflowModel) {
+      return {
+        state: false,
+        data: null,
+        message: `CdModuleService::update()/ No valid workflowModel`,
+      };
+    }
+    return await this.svCiCdRunner.run(descriptor, workflowModel);
+  }
 
-  // async delete(
-  //   actionTargetName: string,
-  //   moduleName: string,
-  //   oEnv: string,
-  //   repoName: string,
-  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-  //   CdLog.debug('Starting CdModuleService::delete()');
-  //   CdLog.debug(`CdModuleService::delete()/actionTargetName: ${actionTargetName}`);
-  //   CdLog.debug(`CdModuleService::delete()/moduleName: ${moduleName}`);
-  //   CdLog.debug(`CdModuleService::delete()/oEnv: ${oEnv}`);
-  //   CdLog.debug(`CdModuleService::delete()/repoName: ${repoName}`);
-  //   const cdObjType = inferCdObjType(this.constructor.name);
-  //   const runner = new CiCdRunnerService();
-  //   const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
-  //     DevModeAction.DELETE,
-  //     cdObjType,
-  //     moduleName,
-  //     oEnv,
-  //     {
-  //       actionTargetName: actionTargetName,
-  //       descriptor: 'CdModuleDescriptor',
-  //       cdToken: '', // Pass the cdToken if needed
-  //       repoName: repoName,
-  //       appType: AppType.CdApiModule,
-  //     },
-  //   );
+  async delete(
+    actionTargetName: string,
+    moduleName: string,
+    oEnv: string,
+    repoName: string,
+  ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+    CdLog.debug('Starting CdModuleService::delete()');
+    CdLog.debug(`CdModuleService::delete()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleService::delete()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleService::delete()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleService::delete()/repoName: ${repoName}`);
+    const cdObjType = inferCdObjType(this.constructor.name);
+    const runner = new CiCdRunnerService();
+    const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      DevModeAction.DELETE,
+      cdObjType,
+      moduleName,
+      oEnv,
+      {
+        actionTargetName: actionTargetName,
+        descriptor: 'CdModuleDescriptor',
+        cdToken: '', // Pass the cdToken if needed
+        repoName: repoName,
+        appType: AppType.CdApiModule,
+      },
+    );
 
-  //   if (!workflowModel) {
-  //     return {
-  //       state: false,
-  //       data: null,
-  //       message: `CdModuleService::update()/ No valid workflowModel`,
-  //     };
-  //   }
-  //   return await this.svCiCdRunner.run(descriptor, workflowModel);
-  // }
+    if (!workflowModel) {
+      return {
+        state: false,
+        data: null,
+        message: `CdModuleService::update()/ No valid workflowModel`,
+      };
+    }
+    return await this.svCiCdRunner.run(descriptor, workflowModel);
+  }
 
-  // async test(
-  //   actionTargetName: string,
-  //   moduleName: string,
-  //   oEnv: string,
-  //   repoName: string,
-  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-  //   CdLog.debug('Starting CdModuleService::test()');
-  //   CdLog.debug(`CdModuleService::test()/actionTargetName: ${actionTargetName}`);
-  //   CdLog.debug(`CdModuleService::test()/moduleName: ${moduleName}`);
-  //   CdLog.debug(`CdModuleService::test()/oEnv: ${oEnv}`);
-  //   CdLog.debug(`CdModuleService::test()/repoName: ${repoName}`);
-  //   const cdObjType = inferCdObjType(this.constructor.name);
-  //   const runner = new CiCdRunnerService();
-  //   const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
-  //     DevModeAction.TEST,
-  //     cdObjType,
-  //     moduleName,
-  //     oEnv,
-  //     {
-  //       actionTargetName: actionTargetName,
-  //       descriptor: 'CdModuleDescriptor',
-  //       cdToken: '', // Pass the cdToken if needed
-  //       repoName: repoName,
-  //       appType: AppType.CdApiModule,
-  //     },
-  //   );
+  async test(
+    actionTargetName: string,
+    moduleName: string,
+    oEnv: string,
+    repoName: string,
+  ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+    CdLog.debug('Starting CdModuleService::test()');
+    CdLog.debug(`CdModuleService::test()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleService::test()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleService::test()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleService::test()/repoName: ${repoName}`);
+    const cdObjType = inferCdObjType(this.constructor.name);
+    const runner = new CiCdRunnerService();
+    const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      DevModeAction.TEST,
+      cdObjType,
+      moduleName,
+      oEnv,
+      {
+        actionTargetName: actionTargetName,
+        descriptor: 'CdModuleDescriptor',
+        cdToken: '', // Pass the cdToken if needed
+        repoName: repoName,
+        appType: AppType.CdApiModule,
+      },
+    );
 
-  //   if (!workflowModel) {
-  //     return {
-  //       state: false,
-  //       data: null,
-  //       message: `CdModuleService::update()/ No valid workflowModel`,
-  //     };
-  //   }
-  //   return await this.svCiCdRunner.run(descriptor, workflowModel);
-  // }
+    if (!workflowModel) {
+      return {
+        state: false,
+        data: null,
+        message: `CdModuleService::update()/ No valid workflowModel`,
+      };
+    }
+    return await this.svCiCdRunner.run(descriptor, workflowModel);
+  }
 
-  // async upgrade(
-  //   actionTargetName: string,
-  //   moduleName: string,
-  //   oEnv: string,
-  //   repoName: string,
-  //   version?: string,
-  //   testTasks?: string,
-  // ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-  //   CdLog.debug('Starting CdModuleService::upgrade()');
-  //   CdLog.debug(`CdModuleService::upgrade()/actionTargetName: ${actionTargetName}`);
-  //   CdLog.debug(`CdModuleService::upgrade()/moduleName: ${moduleName}`);
-  //   CdLog.debug(`CdModuleService::upgrade()/oEnv: ${oEnv}`);
-  //   CdLog.debug(`CdModuleService::upgrade()/repoName: ${repoName}`);
-  //   CdLog.debug(`CdModuleService::upgrade()/version: ${version}`);
-  //   CdLog.debug(`CdModuleService::upgrade()/testTasks: ${testTasks}`);
+  async upgrade(
+    actionTargetName: string,
+    moduleName: string,
+    oEnv: string,
+    repoName: string,
+    version?: string,
+    testTasks?: string,
+  ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
+    CdLog.debug('Starting CdModuleService::upgrade()');
+    CdLog.debug(`CdModuleService::upgrade()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleService::upgrade()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleService::upgrade()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleService::upgrade()/repoName: ${repoName}`);
+    CdLog.debug(`CdModuleService::upgrade()/version: ${version}`);
+    CdLog.debug(`CdModuleService::upgrade()/testTasks: ${testTasks}`);
 
-  //   // 🔁 Convert version string to SemanticVersionObject
-  //   const semanticResult = VersionService.toSemanticObject(version ?? '');
-  //   if (semanticResult.state !== CdFxStateLevel.Success || !semanticResult.data) {
-  //     return cdFx(CdFxStateLevel.LogicalFailure, `❌ Invalid version format: "${version}"`);
-  //   }
+    // 🔁 Convert version string to SemanticVersionObject
+    const semanticResult = VersionService.toSemanticObject(version ?? '');
+    if (semanticResult.state !== CdFxStateLevel.Success || !semanticResult.data) {
+      return cdFx(CdFxStateLevel.LogicalFailure, `❌ Invalid version format: "${version}"`);
+    }
 
-  //   const versionObj = semanticResult.data;
-  //   CdLog.debug(`Parsed semantic version:`, versionObj);
+    const versionObj = semanticResult.data;
+    CdLog.debug(`Parsed semantic version:`, versionObj);
 
-  //   const cdObjType = inferCdObjType(this.constructor.name);
-  //   const runner = new CiCdRunnerService();
-  //   const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
-  //     DevModeAction.UPDATE,
-  //     cdObjType,
-  //     moduleName,
-  //     oEnv,
-  //     {
-  //       actionTargetName: actionTargetName,
-  //       descriptor: 'CdModuleDescriptor',
-  //       cdToken: '', // Pass the cdToken if needed
-  //       repoName: repoName,
-  //       appType: AppType.CdApiModule,
-  //       version: versionObj, // 👈 Pass object instead of string
-  //       testTasks: testTasks !== undefined ? String(testTasks) : undefined, // 👈 Convert to string if needed
-  //     },
-  //   );
+    const cdObjType = inferCdObjType(this.constructor.name);
+    const runner = new CiCdRunnerService();
+    const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      DevModeAction.UPDATE,
+      cdObjType,
+      moduleName,
+      oEnv,
+      {
+        actionTargetName: actionTargetName,
+        descriptor: 'CdModuleDescriptor',
+        cdToken: '', // Pass the cdToken if needed
+        repoName: repoName,
+        appType: AppType.CdApiModule,
+        version: versionObj, // 👈 Pass object instead of string
+        testTasks: testTasks !== undefined ? String(testTasks) : undefined, // 👈 Convert to string if needed
+      },
+    );
 
-  //   if (!workflowModel) {
-  //     return {
-  //       state: false,
-  //       data: null,
-  //       message: `CdModuleService::upgrade()/ No valid workflowModel`,
-  //     };
-  //   }
-  //   return await this.svCiCdRunner.run(descriptor, workflowModel);
-  // }
+    if (!workflowModel) {
+      return {
+        state: false,
+        data: null,
+        message: `CdModuleService::upgrade()/ No valid workflowModel`,
+      };
+    }
+    return await this.svCiCdRunner.run(descriptor, workflowModel);
+  }
 
   protected getTypeId(): number {
     return 1; // CdModule type
   }
 
   // Get all applications
-  // async getAllModules(): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
-  //   try {
-  //     return await this.read(); // Fetch all applications
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Failed to retrieve all apps: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+  async getAllModules(): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+    try {
+      return await this.read(); // Fetch all applications
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Failed to retrieve all apps: ${(error as Error).message}`,
+      };
+    }
+  }
 
   // Get a single app by name
-  // async getModuleByName(name: string): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
-  //   try {
-  //     // Validate input
-  //     if (!name.trim()) {
-  //       return {
-  //         data: null,
-  //         state: false,
-  //         message: 'Application name is required.',
-  //       };
-  //     }
+  async getModuleByName(name: string): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
+    try {
+      // Validate input
+      if (!name.trim()) {
+        return {
+          data: null,
+          state: false,
+          message: 'Application name is required.',
+        };
+      }
 
-  //     // Define the query
-  //     const q: IQuery = {
-  //       select: ['cdObjId', 'cdObjName', 'cdObjGuid', 'jDetails'], // Fields to select
-  //       where: { cdObjName: name }, // Fetch apps by name
-  //     };
+      // Define the query
+      const q: IQuery = {
+        select: ['cdObjId', 'cdObjName', 'cdObjGuid', 'jDetails'], // Fields to select
+        where: { cdObjName: name }, // Fetch apps by name
+      };
 
-  //     return await this.read(q);
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       state: false,
-  //       message: `Failed to retrieve app by name: ${(error as Error).message}`,
-  //     };
-  //   }
-  // }
+      return await this.read(q);
+    } catch (error) {
+      return {
+        data: null,
+        state: false,
+        message: `Failed to retrieve app by name: ${(error as Error).message}`,
+      };
+    }
+  }
 
   /**
    * Creates the initial root files required for a new Corpdesk module.
@@ -407,104 +407,104 @@ export class CdModuleService {
    * @param moduleDir Absolute path to the target module directory.
    * @param moduleDescriptor Metadata used to define and initialize the module identity.
    */
-  // async createModuleRootFiles(
-  //   moduleDir: string,
-  //   moduleDescriptor: CdModuleDescriptor,
-  // ): Promise<CdFxReturn<null>> {
-  //   try {
-  //     // CdLog.debug(`CdModuleService::createRootFiles()/moduleDir: ${moduleDir}`);
-  //     const cdDir = path.join(moduleDir, '.cd');
-  //     const timestamp = new Date().toISOString();
-  //     const initialVersion = '0.0.0';
+  async createModuleRootFiles(
+    moduleDir: string,
+    moduleDescriptor: CdModuleDescriptor,
+  ): Promise<CdFxReturn<null>> {
+    try {
+      // CdLog.debug(`CdModuleService::createRootFiles()/moduleDir: ${moduleDir}`);
+      const cdDir = path.join(moduleDir, '.cd');
+      const timestamp = new Date().toISOString();
+      const initialVersion = '0.0.0';
 
-  //     // ✅ Remove hello-api.txt
-  //     const helloFile = path.join(moduleDir, 'hello-api.txt');
-  //     try {
-  //       await fs.promises.access(helloFile, fs.constants.F_OK);
-  //       await fs.promises.unlink(helloFile);
-  //     } catch {}
+      // ✅ Remove hello-api.txt
+      const helloFile = path.join(moduleDir, 'hello-api.txt');
+      try {
+        await fs.promises.access(helloFile, fs.constants.F_OK);
+        await fs.promises.unlink(helloFile);
+      } catch {}
 
-  //     // 🏗️ Ensure .cd directory exists
-  //     await fs.promises.mkdir(cdDir, { recursive: true });
+      // 🏗️ Ensure .cd directory exists
+      await fs.promises.mkdir(cdDir, { recursive: true });
 
-  //     // 📄 Create generic files
-  //     const textFileMap: Record<string, string> = {
-  //       'README.md': `# ${moduleDescriptor.name}\n\n${moduleDescriptor.description || 'Corpdesk module.'}`,
-  //       'CHANGELOG.md': `# Changelog\n\n## [${initialVersion}]\n- Initial module creation.`,
-  //       LICENSE: `MIT License\n\nCopyright (c) ${new Date().getFullYear()}`,
-  //     };
-  //     for (const [fileName, content] of Object.entries(textFileMap)) {
-  //       await fs.promises.writeFile(path.join(moduleDir, fileName), content, 'utf-8');
-  //     }
+      // 📄 Create generic files
+      const textFileMap: Record<string, string> = {
+        'README.md': `# ${moduleDescriptor.name}\n\n${moduleDescriptor.description || 'Corpdesk module.'}`,
+        'CHANGELOG.md': `# Changelog\n\n## [${initialVersion}]\n- Initial module creation.`,
+        LICENSE: `MIT License\n\nCopyright (c) ${new Date().getFullYear()}`,
+      };
+      for (const [fileName, content] of Object.entries(textFileMap)) {
+        await fs.promises.writeFile(path.join(moduleDir, fileName), content, 'utf-8');
+      }
 
-  //     // 📦 Create package.json
-  //     const packageJson = {
-  //       name: moduleDescriptor.name,
-  //       version: initialVersion,
-  //       description: moduleDescriptor.description || '',
-  //       scripts: {},
-  //     };
-  //     await fs.promises.writeFile(
-  //       path.join(moduleDir, 'package.json'),
-  //       JSON.stringify(packageJson, null, 2),
-  //       'utf-8',
-  //     );
+      // 📦 Create package.json
+      const packageJson = {
+        name: moduleDescriptor.name,
+        version: initialVersion,
+        description: moduleDescriptor.description || '',
+        scripts: {},
+      };
+      await fs.promises.writeFile(
+        path.join(moduleDir, 'package.json'),
+        JSON.stringify(packageJson, null, 2),
+        'utf-8',
+      );
 
-  //     // ✳️ Use new service for .cd files
-  //     const cdWriter = new CdDescriptorFileService(cdDir);
-  //     const roadmap: CdRoadmapDescriptor = {
-  //       name: 'Initial Dev Roadmap',
-  //       type: 'dev-roadmap',
-  //       stages: [],
-  //       versionTag: 0,
-  //       baseId: moduleDescriptor.name + ':roadmap',
-  //     };
+      // ✳️ Use new service for .cd files
+      const cdWriter = new CdDescriptorFileService(cdDir);
+      const roadmap: CdRoadmapDescriptor = {
+        name: 'Initial Dev Roadmap',
+        type: 'dev-roadmap',
+        stages: [],
+        versionTag: 0,
+        baseId: moduleDescriptor.name + ':roadmap',
+      };
 
-  //     const changelog: CdChangeLogDescriptor = {
-  //       baseId: moduleDescriptor.name + ':changelog',
-  //       changelogs: [],
-  //       contributors: [],
-  //       events: [
-  //         {
-  //           baseId: 'init-event',
-  //           type: 'commit',
-  //           actor: 'system',
-  //           description: 'Initial commit',
-  //           date: timestamp,
-  //         },
-  //       ],
-  //     };
+      const changelog: CdChangeLogDescriptor = {
+        baseId: moduleDescriptor.name + ':changelog',
+        changelogs: [],
+        contributors: [],
+        events: [
+          {
+            baseId: 'init-event',
+            type: 'commit',
+            actor: 'system',
+            description: 'Initial commit',
+            date: timestamp,
+          },
+        ],
+      };
 
-  //     const doc: CdDocDescriptor = {
-  //       baseId: moduleDescriptor.name + ':doc',
-  //       version: initialVersion,
-  //       status: 'draft',
-  //       summary: 'Initial auto-generated documentation',
-  //     };
+      const doc: CdDocDescriptor = {
+        baseId: moduleDescriptor.name + ':doc',
+        version: initialVersion,
+        status: 'draft',
+        summary: 'Initial auto-generated documentation',
+      };
 
-  //     await cdWriter.writeRoadmap(roadmap, cdDir);
-  //     await cdWriter.writeChangelog(changelog, cdDir);
-  //     await cdWriter.writeDocumentation(doc, cdDir);
+      await cdWriter.writeRoadmap(roadmap, cdDir);
+      await cdWriter.writeChangelog(changelog, cdDir);
+      await cdWriter.writeDocumentation(doc, cdDir);
 
-  //     // ✅ Commit if anything changed
-  //     const git = new CdAutoGitService();
-  //     const result = await git.commitAndPushIfChanges(
-  //       moduleDir,
-  //       moduleDescriptor.versionControl,
-  //       'created root files',
-  //       DevModeAction.CREATE,
-  //     );
+      // ✅ Commit if anything changed
+      const git = new CdAutoGitService();
+      const result = await git.commitAndPushIfChanges(
+        moduleDir,
+        moduleDescriptor.versionControl,
+        'created root files',
+        DevModeAction.CREATE,
+      );
 
-  //     if (!result?.state) {
-  //       CdLog.debug(`createModuleRootFiles()/Git push failed`);
-  //       return cdFx(CdFxStateLevel.LogicalFailure, 'Failed to commit or push changes.');
-  //     }
+      if (!result?.state) {
+        CdLog.debug(`createModuleRootFiles()/Git push failed`);
+        return cdFx(CdFxStateLevel.LogicalFailure, 'Failed to commit or push changes.');
+      }
 
-  //     return cdFx(CdFxStateLevel.Success, 'Module root files created successfully.');
-  //   } catch (e: any) {
-  //     return cdFx(CdFxStateLevel.Error, `Failed to create root files: ${e.message}`);
-  //   }
-  // }
+      return cdFx(CdFxStateLevel.Success, 'Module root files created successfully.');
+    } catch (e: any) {
+      return cdFx(CdFxStateLevel.Error, `Failed to create root files: ${e.message}`);
+    }
+  }
 
   /**
    * Creates standard directory structure for a new module and commits the changes to Git.
@@ -526,47 +526,47 @@ export class CdModuleService {
    * @param moduleDir - Absolute path to the root of the module.
    * @returns CdFxReturn indicating success or error.
    */
-  // async createModuleDirectories(moduleDir: string): Promise<CdFxReturn<null>> {
-  //   try {
-  //     // CdLog.debug(`CdAppService::createModuleDirectories()/moduleDir: ${moduleDir}`);
+  async createModuleDirectories(moduleDir: string): Promise<CdFxReturn<null>> {
+    try {
+      // CdLog.debug(`CdAppService::createModuleDirectories()/moduleDir: ${moduleDir}`);
 
-  //     const directories = ['controllers', 'models', 'services'];
-  //     const createdDirs: string[] = [];
+      const directories = ['controllers', 'models', 'services'];
+      const createdDirs: string[] = [];
 
-  //     for (const dir of directories) {
-  //       const fullPath = join(moduleDir, dir);
-  //       await mkdir(fullPath, { recursive: true });
+      for (const dir of directories) {
+        const fullPath = join(moduleDir, dir);
+        await mkdir(fullPath, { recursive: true });
 
-  //       const gitkeepPath = join(fullPath, '.gitkeep');
-  //       await writeFile(gitkeepPath, '');
+        const gitkeepPath = join(fullPath, '.gitkeep');
+        await writeFile(gitkeepPath, '');
 
-  //       CdLog.debug(`📂 Created: ${fullPath}`);
-  //       CdLog.debug(`📄 Added .gitkeep: ${gitkeepPath}`);
+        CdLog.debug(`📂 Created: ${fullPath}`);
+        CdLog.debug(`📄 Added .gitkeep: ${gitkeepPath}`);
 
-  //       const list = await executeCommand(`ls -la ${fullPath}`);
-  //       CdLog.debug(`📁 Contents of ${fullPath}:\n${list}`);
+        const list = await executeCommand(`ls -la ${fullPath}`);
+        CdLog.debug(`📁 Contents of ${fullPath}:\n${list}`);
 
-  //       createdDirs.push(dir);
-  //     }
+        createdDirs.push(dir);
+      }
 
-  //     const moduleName = basename(moduleDir);
-  //     const commitMessage = `scaffold(${moduleName}): created directories - ${createdDirs.join(', ')}`;
+      const moduleName = basename(moduleDir);
+      const commitMessage = `scaffold(${moduleName}): created directories - ${createdDirs.join(', ')}`;
 
-  //     const svCdAutoGit = new CdAutoGitService();
-  //     const result = await svCdAutoGit.commitAndPushIfChanges(
-  //       moduleDir,
-  //       undefined,
-  //       commitMessage,
-  //       DevModeAction.CREATE,
-  //     );
+      const svCdAutoGit = new CdAutoGitService();
+      const result = await svCdAutoGit.commitAndPushIfChanges(
+        moduleDir,
+        undefined,
+        commitMessage,
+        DevModeAction.CREATE,
+      );
 
-  //     if (!result || !result.state) {
-  //       CdLog.debug(`CdAppService::createModuleDirectories()/Error committing or pushing changes`);
-  //     }
+      if (!result || !result.state) {
+        CdLog.debug(`CdAppService::createModuleDirectories()/Error committing or pushing changes`);
+      }
 
-  //     return cdFx(CdFxStateLevel.Success, 'Module directories created successfully.');
-  //   } catch (e: any) {
-  //     return cdFx(CdFxStateLevel.Error, `Failed to create module directories: ${e.message}`);
-  //   }
-  // }
+      return cdFx(CdFxStateLevel.Success, 'Module directories created successfully.');
+    } catch (e: any) {
+      return cdFx(CdFxStateLevel.Error, `Failed to create module directories: ${e.message}`);
+    }
+  }
 }

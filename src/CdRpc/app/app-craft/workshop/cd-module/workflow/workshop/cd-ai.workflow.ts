@@ -1,8 +1,8 @@
 import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
 import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
 import { workshopConfig } from '../../../../models/app-craft.model.js';
-import CdLog from '../../../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdFxStateLevel } from '../../../../../../sys/base/i-base.js';
+import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
+import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { HOME } from '../../../../../../sys/utils/fs.util.js';
 // import { MOD_CRAFT_OUTPUT_DIR } from "../default.model.js";
 import { inspect } from 'util';
@@ -11,7 +11,7 @@ import {
   MOD_CRAFT_OUTPUT_APP_DIR,
   MOD_CRAFT_OUTPUT_MODULE_DIR,
   MOD_CRAFT_WORKSHOP_DIR,
-} from '../../../../models/default.model.js';
+} from '../../../../../../app/app-craft/models/default.model.js';
 import { AppType } from '../../../../../../sys/dev-descriptor/index.js';
 // import { MOD_CRAFT_OUTPUT_DIR } from "../../../cd-module/workflow/default.model.js";
 // import { MOD_CRAFT_OUTPUT_DIR } from "../../../cd-api/workflow/default.model.js";

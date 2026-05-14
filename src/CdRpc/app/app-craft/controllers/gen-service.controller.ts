@@ -3,12 +3,12 @@
 //     controllerName: string
 //   ): Promise<CdFxReturn<null>> {
 
-import { CdFxReturn, IQuery } from '../../../sys/base/i-base.js';
-// import { GenEntityService } from '../services/cd-module.service.js';
+import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
+// import { GenEntityService } from '../services/cd-module.service';
 import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
 import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
-import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { GenServiceService } from '../services/gen-service.service.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
+import { GenServiceService } from '../services/gen-service.service';
 
 export class GenServiceController {
   svGenService: GenServiceService;

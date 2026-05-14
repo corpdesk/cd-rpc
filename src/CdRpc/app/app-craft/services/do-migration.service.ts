@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions.js';
-import { CdFxReturn } from '../../../sys/base/i-base.js';
+import { CdFxReturn } from '../../../sys/base/i-base';
 import { CdModuleDescriptor } from '../../../sys/dev-descriptor/index.js';
 import {
   DataSourceSchema,
@@ -13,7 +13,7 @@ import {
   CdModelDescriptor,
 } from '../../../sys/dev-descriptor/models/cd-model-descriptor.model.js';
 import { loadEntityPaths } from '../../../../config.js';
-import { BaseService } from '../../../sys/base/base.service.js';
+import { BaseService } from '../../../sys/base/base.service';
 import { toKebabCase, toPascalCase, toSnakeCase } from '../../../sys/utils/cd-naming.util.js';
 import { inspect } from 'util';
 import { resolve } from 'path';
@@ -87,7 +87,7 @@ export class DbMigrationService {
     } catch (error: any) {
       return {
         state: false,
-        data: null,
+        data: undefined,
         message: `Failed to initialize database: ${error.message ?? error}`,
       };
     }
@@ -118,34 +118,34 @@ export class DbMigrationService {
     }
   }
 
-  // async getRepositoryForModel(
-  //   db: DataSource,
-  //   modelDescriptor: CdModelDescriptor,
-  //   moduleDir: string,
-  // ) {
-  //   const modelNamePascal = `${toPascalCase(modelDescriptor.name)}Model`;
-  //   // 1. Build the path to the model file
-  //   const modelFilePath = path.resolve(
-  //     moduleDir,
-  //     'models',
-  //     `${toKebabCase(modelDescriptor.name)}.model.js`, // cd-ai.model.ts
-  //   );
+  async getRepositoryForModel(
+    db: DataSource,
+    modelDescriptor: CdModelDescriptor,
+    moduleDir: string,
+  ) {
+    const modelNamePascal = `${toPascalCase(modelDescriptor.name)}Model`;
+    // 1. Build the path to the model file
+    const modelFilePath = path.resolve(
+      moduleDir,
+      'models',
+      `${toKebabCase(modelDescriptor.name)}.model.js`, // cd-ai.model.ts
+    );
 
-  //   this.b.logWithContext(this, `migrateFromModel()/modelFilePath:`, { modelFilePath }, 'debug');
+    this.b.logWithContext(this, `migrateFromModel()/modelFilePath:`, { modelFilePath }, 'debug');
 
-  //   // 2. Dynamically import the module
-  //   const importedModule = await import(modelFilePath);
+    // 2. Dynamically import the module
+    const importedModule = await import(modelFilePath);
 
-  //   // 3. Extract the class constructor
-  //   // Example: modelDescriptor.className = "CdAiModel"
-  //   const entityClass = importedModule[modelNamePascal];
-  //   if (!entityClass) {
-  //     throw new Error(`Entity class ${modelNamePascal} not found in ${modelFilePath}`);
-  //   }
+    // 3. Extract the class constructor
+    // Example: modelDescriptor.className = "CdAiModel"
+    const entityClass = importedModule[modelNamePascal];
+    if (!entityClass) {
+      throw new Error(`Entity class ${modelNamePascal} not found in ${modelFilePath}`);
+    }
 
-  //   // 4. Get the repository
-  //   return db.getRepository(entityClass);
-  // }
+    // 4. Get the repository
+    return db.getRepository(entityClass);
+  }
 
   async migrateFromModel(module: CdModuleDescriptor): Promise<CdFxReturn<null>> {
     try {
@@ -179,7 +179,6 @@ export class DbMigrationService {
         return {
           state: false,
           message: destSchemaResult.message,
-          data: null
         };
       }
       const destSchema = destSchemaResult.data;
@@ -191,7 +190,6 @@ export class DbMigrationService {
         return {
           state: false,
           message: migrationsResult.message,
-          data: null
         };
       }
 
@@ -210,7 +208,6 @@ export class DbMigrationService {
           return {
             state: false,
             message: migResult.message,
-            data: null
           };
         }
       }

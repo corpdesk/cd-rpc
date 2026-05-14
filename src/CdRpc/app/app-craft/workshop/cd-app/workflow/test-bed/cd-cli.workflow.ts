@@ -3,8 +3,8 @@ import {
   CICdPipeline,
 } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
 import { workshopConfig } from '../../../../models/app-craft.model.js';
-import CdLog from '../../../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdFxStateLevel } from '../../../../../../sys/base/i-base.js';
+import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
+import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { HOME } from '../../../../../../sys/utils/fs.util.js';
 // import { MOD_CRAFT_OUTPUT_APP_DIR } from "../default.model.js";
 import { inspect } from 'util';

@@ -1,12 +1,12 @@
 /* eslint-disable style/indent */
 // import type { DependencyDescriptor } from './app-descriptor.model';
 
-import type { SecurityDescriptor } from './service-descriptor.model';
-import type { FileReference, WorkstationAccessDescriptor } from './workstations.model';
-import type { BaseDescriptor } from './base-descriptor.model';
-import { AppType } from './cd-app.model';
-import { CdCtx } from './cd-module-descriptor.model';
-import type { VersionControlDescriptor } from './version-control.model';
+import type { SecurityDescriptor } from './service-descriptor.model.js';
+import type { FileReference, WorkstationAccessDescriptor } from './workstations.model.js';
+import type { BaseDescriptor } from './base-descriptor.model.js';
+import { AppType } from './cd-app.model.js';
+import { CdCtx } from './cd-module-descriptor.model.js';
+import type { VersionControlDescriptor } from './version-control.model.js';
 
 export interface DependencyDescriptor
   extends BaseDescriptor,
@@ -152,7 +152,7 @@ export const dependencies: DependencyDescriptor[] = [
     //   interactionType: 'cli',
     // },
     platformCompatibility: {
-      languages: ['Node'],
+      languages: ['Node.js'],
       os: ['Linux', 'Windows', 'macOS'],
       architectures: ['x86_64', 'arm64'],
     },
@@ -165,7 +165,7 @@ export const dependencies: DependencyDescriptor[] = [
       vulnerabilities: [],
     },
     dependencyMetadata: {
-      description: 'Fast, unopinionated, minimalist web framework for Node',
+      description: 'Fast, unopinionated, minimalist web framework for Node.js',
       repository: 'https://github.com/expressjs/express',
       license: 'MIT',
       documentationUrl: 'https://expressjs.com/',
@@ -186,7 +186,7 @@ export const dependencies: DependencyDescriptor[] = [
       functionsUsed: ['bundle', 'watch'],
     },
     platformCompatibility: {
-      languages: ['Node', 'JavaScript'],
+      languages: ['Node.js', 'JavaScript'],
       os: ['Linux', 'Windows', 'macOS'],
     },
     dependencyLifecycle: {
@@ -201,7 +201,7 @@ export const dependencies: DependencyDescriptor[] = [
       description: 'A static module bundler for modern JavaScript applications.',
       repository: 'https://github.com/webpack/webpack',
       license: 'MIT',
-      documentationUrl: 'https://webpack.org/',
+      documentationUrl: 'https://webpack.js.org/',
     },
   },
   {
@@ -371,7 +371,7 @@ export function getDependencyByName(
  */
 export const cdApiDependencies: DependencyDescriptor[] = [
   {
-    name: 'Node',
+    name: 'Node.js',
     version: '18.x',
     category: 'tool',
     type: 'development',
@@ -380,7 +380,7 @@ export const cdApiDependencies: DependencyDescriptor[] = [
     resolution: { method: 'import', path: '/usr/bin/npm' },
     usage: { usageContext: 'cli' },
     platformCompatibility: {
-      languages: ['JavaScript', 'Node'],
+      languages: ['JavaScript', 'Node.js'],
       os: ['Linux', 'Windows', 'macOS'],
     },
     security: { isSecure: true },
@@ -414,7 +414,7 @@ export const cdApiDependencies: DependencyDescriptor[] = [
     resolution: { method: 'import', path: '/usr/bin/pnpm' },
     usage: { usageContext: 'cli' },
     platformCompatibility: {
-      languages: ['JavaScript', 'Node'],
+      languages: ['JavaScript', 'Node.js'],
       os: ['Linux', 'Windows', 'macOS'],
     },
     security: { isSecure: true },

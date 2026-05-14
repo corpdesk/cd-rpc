@@ -1,79 +1,26 @@
-/**
- * Root Entity
- * Base Name: cdCli
- */
+// src/CdCli/sys/cd-cli/models/cd-cli.model.ts
+
+import { CD_AUTO_GIT_CMD } from '../../../app/cd-auto-git/models/cd-auto-git.model.js';
+import { LOGIN_CMD, LOGOUT_CMD } from '../../user/models/user.model.js';
+import { PROFILE_CMD } from './cd-cli-profile.model.js';
+import { DEV_MODE_COMMANDS } from '../../dev-mode/dev-mode-commands/index.js';
+// import { CD_AI_LOGS_CMD, CD_OPEN_AI_CMD } from '../../../app/cd-ai-pwa/index.js';
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-} from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+  MODULE_CMD,
+  TEMPLATE_CMD,
+} from '../../../app/app-craft/models/app-craft.model.js';
+import { CD_AI_LOGS_CMD, CD_OPEN_AI_CMD } from '../../../app/cd-ai/index.js';
 
-@Entity(
-    {
-        name: 'cd_cli',
-        synchronize: false
-    }
-)
-export class CdCliModel {
-    @PrimaryGeneratedColumn(
-        {
-            name: 'cd_cli_id'
-        }
-    )
-    cdCliId?: number;
-
-    @Column({
-        name: 'cd_cli_guid',
-        length: 36,
-        default: uuidv4()
-    })
-    cdCliGuid?: string;
-
-    @Column(
-        {
-            name: 'cd_cli_name',
-            length: 50,
-            nullable: true
-        }
-    )
-    cdCliName: string;
-
-    @Column(
-        {
-            name: 'cd_cli_description',
-            length: 60,
-            default: null
-        })
-    cdCliDescription: string;
-
-    /**
-     *link to DocModel
-     * Doc model stores metadata for all transaction 
-     * See Documentation on Doc Processing 
-     */
-    @Column(
-        {
-            name: 'doc_id',
-            default: null
-        }
-    )
-    docId?: number;
-
-    @Column(
-        {
-            name: 'cd_cli_type_id',
-            default: null
-        }
-    )
-    cdCliTypeId?: number;
-
-    @Column(
-        'boolean',
-        {
-            name: 'cd_cli_enabled',
-            default: null
-        }
-    )
-    cdCliEnabled?: boolean;  
-}
+export const CdCli = {
+  commands: [
+    LOGIN_CMD,
+    LOGOUT_CMD,
+    PROFILE_CMD,
+    MODULE_CMD,
+    TEMPLATE_CMD,
+    CD_AUTO_GIT_CMD,
+    DEV_MODE_COMMANDS,
+    CD_OPEN_AI_CMD,
+    CD_AI_LOGS_CMD,
+  ] as any,
+};

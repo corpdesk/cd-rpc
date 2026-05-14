@@ -4,7 +4,7 @@
 import type {
   PermissionDescriptor,
   RoleDescriptor,
-} from './workstations.model';
+} from './workstations.model.js';
 
 export const enum RoleNames {
   Admin = 'admin',

@@ -1,6 +1,6 @@
-import { CdFxReturn, IQuery } from '../../../sys/base/i-base.js';
+import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
 import { CiCdDescriptor } from '../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
-import { CdCiCdService } from '../services/cd-ci-cd.service.js';
+import { CdCiCdService } from '../services/cd-ci-cd.service';
 
 export class CdCiCdCiCd {
   svCdCiCd;
@@ -25,29 +25,29 @@ export class CdCiCdCiCd {
    * @param modelDescriptor
    * @returns
    */
-  // async create(d: CiCdDescriptor): Promise<CdFxReturn<null>> {
-  //   return this.svCdCiCd.create(d);
-  // }
+  async create(d: CiCdDescriptor): Promise<CdFxReturn<null>> {
+    return this.svCdCiCd.create(d);
+  }
 
-  // async read(q?: IQuery): Promise<CdFxReturn<CiCdDescriptor[]>> {
-  //   return this.svCdCiCd.read(q);
-  // }
+  async read(q?: IQuery): Promise<CdFxReturn<CiCdDescriptor[]>> {
+    return this.svCdCiCd.read(q);
+  }
 
-  // async update(q: IQuery): Promise<CdFxReturn<null>> {
-  //   return this.svCdCiCd.update(q);
-  // }
+  async update(q: IQuery): Promise<CdFxReturn<null>> {
+    return this.svCdCiCd.update(q);
+  }
 
-  // async delete(q: IQuery): Promise<CdFxReturn<null>> {
-  //   return this.svCdCiCd.delete(q);
-  // }
+  async delete(q: IQuery): Promise<CdFxReturn<null>> {
+    return this.svCdCiCd.delete(q);
+  }
 
-  // // Get all applications
-  // async getAllApps(): Promise<CdFxReturn<CiCdDescriptor[]>> {
-  //   return this.svCdCiCd.getAllApps();
-  // }
+  // Get all applications
+  async getAllApps(): Promise<CdFxReturn<CiCdDescriptor[]>> {
+    return this.svCdCiCd.getAllApps();
+  }
 
-  // // Get a single model by name
-  // async getCiCdByName(name: string): Promise<CdFxReturn<CiCdDescriptor[]>> {
-  //   return this.svCdCiCd.getCiCdByName(name);
-  // }
+  // Get a single model by name
+  async getCiCdByName(name: string): Promise<CdFxReturn<CiCdDescriptor[]>> {
+    return this.svCdCiCd.getCiCdByName(name);
+  }
 }

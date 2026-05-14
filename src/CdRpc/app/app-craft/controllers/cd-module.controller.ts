@@ -1,12 +1,10 @@
-import { CdAssertReturn, CdFxReturn, IQuery } from '../../../sys/base/i-base.js';
-import { Logging } from '../../../sys/base/winston.log.js';
+import { CdAssertReturn, CdFxReturn, IQuery } from '../../../sys/base/i-base';
 import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-// import CdLog from '../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdModuleService } from '../services/cd-module.service.js';
-import { TestBedService } from '../services/test-bed.service.js';
+import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
+import { CdModuleService } from '../services/cd-module.service';
+import { TestBedService } from '../services/test-bed.service';
 
 export class CdModuleController {
-  logger!: Logging;
   svCdModule: CdModuleService;
   svTestBed: TestBedService;
   constructor() {
@@ -28,18 +26,18 @@ export class CdModuleController {
     oEnv: string,
     repoName: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdModuleController::create()');
-    this.logger.logDebug('Starting CdModuleService::create()');
-    this.logger.logDebug(`CdModuleController::create()/actionTargetName: ${actionTargetName}`);
-    this.logger.logDebug(`CdModuleController::create()/moduleName: ${moduleName}`);
-    this.logger.logDebug(`CdModuleController::create()/oEnv: ${oEnv}`);
-    this.logger.logDebug(`CdModuleController::create()/repoName: ${repoName}`);
+    CdLog.debug('Starting CdModuleController::create()');
+    CdLog.debug('Starting CdModuleService::create()');
+    CdLog.debug(`CdModuleController::create()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleController::create()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleController::create()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleController::create()/repoName: ${repoName}`);
     switch (oEnv) {
       case 'workshop':
-        this.logger.logDebug(`CdModuleController::create()/case:workshop`);
+        CdLog.debug(`CdModuleController::create()/case:workshop`);
         return this.svCdModule.create(actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
-        this.logger.logDebug(`CdModuleController::create()/case:test-bed`);
+        CdLog.debug(`CdModuleController::create()/case:test-bed`);
         return this.svTestBed.create(actionTargetName, moduleName, oEnv, repoName);
     }
 
@@ -60,18 +58,18 @@ export class CdModuleController {
     oEnv: string,
     repoName: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdModuleController::update()');
-    this.logger.logDebug('Starting CdModuleService::update()');
-    this.logger.logDebug(`CdModuleController::update()/actionTargetName: ${actionTargetName}`);
-    this.logger.logDebug(`CdModuleController::update()/moduleName: ${moduleName}`);
-    this.logger.logDebug(`CdModuleController::update()/oEnv: ${oEnv}`);
-    this.logger.logDebug(`CdModuleController::update()/repoName: ${repoName}`);
+    CdLog.debug('Starting CdModuleController::update()');
+    CdLog.debug('Starting CdModuleService::update()');
+    CdLog.debug(`CdModuleController::update()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleController::update()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleController::update()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleController::update()/repoName: ${repoName}`);
     switch (oEnv) {
       case 'workshop':
-        this.logger.logDebug(`CdModuleController::update()/case:workshop`);
+        CdLog.debug(`CdModuleController::update()/case:workshop`);
         return this.svCdModule.update(actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
-        this.logger.logDebug(`CdModuleController::update()/case:test-bed`);
+        CdLog.debug(`CdModuleController::update()/case:test-bed`);
         return this.svTestBed.update(actionTargetName, moduleName, oEnv, repoName);
     }
 
@@ -88,18 +86,18 @@ export class CdModuleController {
     oEnv: string,
     repoName: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdModuleController::delete()');
-    this.logger.logDebug('Starting CdModuleService::delete()');
-    this.logger.logDebug(`CdModuleController::delete()/actionTargetName: ${actionTargetName}`);
-    this.logger.logDebug(`CdModuleController::delete()/moduleName: ${moduleName}`);
-    this.logger.logDebug(`CdModuleController::delete()/oEnv: ${oEnv}`);
-    this.logger.logDebug(`CdModuleController::delete()/repoName: ${repoName}`);
+    CdLog.debug('Starting CdModuleController::delete()');
+    CdLog.debug('Starting CdModuleService::delete()');
+    CdLog.debug(`CdModuleController::delete()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleController::delete()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleController::delete()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleController::delete()/repoName: ${repoName}`);
     switch (oEnv) {
       case 'workshop':
-        this.logger.logDebug(`CdModuleController::delete()/case:workshop`);
+        CdLog.debug(`CdModuleController::delete()/case:workshop`);
         return this.svCdModule.delete(actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
-        this.logger.logDebug(`CdModuleController::delete()/case:test-bed`);
+        CdLog.debug(`CdModuleController::delete()/case:test-bed`);
         return this.svTestBed.delete(actionTargetName, moduleName, oEnv, repoName);
     }
 
@@ -116,18 +114,18 @@ export class CdModuleController {
     oEnv: string,
     repoName: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdModuleController::test()');
-    this.logger.logDebug('Starting CdModuleService::test()');
-    this.logger.logDebug(`CdModuleController::test()/actionTargetName: ${actionTargetName}`);
-    this.logger.logDebug(`CdModuleController::test()/moduleName: ${moduleName}`);
-    this.logger.logDebug(`CdModuleController::test()/oEnv: ${oEnv}`);
-    this.logger.logDebug(`CdModuleController::test()/repoName: ${repoName}`);
+    CdLog.debug('Starting CdModuleController::test()');
+    CdLog.debug('Starting CdModuleService::test()');
+    CdLog.debug(`CdModuleController::test()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleController::test()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleController::test()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleController::test()/repoName: ${repoName}`);
     switch (oEnv) {
       case 'workshop':
-        this.logger.logDebug(`CdModuleController::test()/case:workshop`);
+        CdLog.debug(`CdModuleController::test()/case:workshop`);
         return this.svCdModule.test(actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
-        this.logger.logDebug(`CdModuleController::test()/case:test-bed`);
+        CdLog.debug(`CdModuleController::test()/case:test-bed`);
         return this.svTestBed.test(actionTargetName, moduleName, oEnv, repoName);
     }
 
@@ -147,15 +145,15 @@ export class CdModuleController {
     version: string,
     testTasks?: boolean,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    this.logger.logDebug('Starting CdModuleController::upgrade()');
-    this.logger.logDebug('Starting CdModuleService::upgrade()');
-    this.logger.logDebug(`CdModuleController::upgrade()/actionTargetName: ${actionTargetName}`);
-    this.logger.logDebug(`CdModuleController::upgrade()/moduleName: ${moduleName}`);
-    this.logger.logDebug(`CdModuleController::upgrade()/oEnv: ${oEnv}`);
-    this.logger.logDebug(`CdModuleController::upgrade()/repoName: ${repoName}`);
+    CdLog.debug('Starting CdModuleController::upgrade()');
+    CdLog.debug('Starting CdModuleService::upgrade()');
+    CdLog.debug(`CdModuleController::upgrade()/actionTargetName: ${actionTargetName}`);
+    CdLog.debug(`CdModuleController::upgrade()/moduleName: ${moduleName}`);
+    CdLog.debug(`CdModuleController::upgrade()/oEnv: ${oEnv}`);
+    CdLog.debug(`CdModuleController::upgrade()/repoName: ${repoName}`);
     switch (oEnv) {
       case 'workshop':
-        this.logger.logDebug(`CdModuleController::upgrade()/case:workshop`);
+        CdLog.debug(`CdModuleController::upgrade()/case:workshop`);
         return this.svCdModule.upgrade(
           actionTargetName,
           moduleName,
@@ -165,7 +163,7 @@ export class CdModuleController {
           testTasks !== undefined ? String(testTasks) : undefined,
         );
       case 'test-bed':
-        this.logger.logDebug(`CdModuleController::upgrade()/case:test-bed`);
+        CdLog.debug(`CdModuleController::upgrade()/case:test-bed`);
         return this.svTestBed.upgrade(
           actionTargetName,
           moduleName,

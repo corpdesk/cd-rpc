@@ -1,4 +1,4 @@
-import type { BaseDescriptor } from './base-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model.js';
 
 export interface TestingFrameworkDescriptor extends BaseDescriptor {
   type: 'unit' | 'integration' | 'end-to-end' | 'unknown'; // Type of testing it supports

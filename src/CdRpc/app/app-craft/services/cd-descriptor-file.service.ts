@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-// import { formatISO } from 'date-fns';
+import { formatISO } from 'date-fns';
 // import { CdFileDescriptor } from './CdFileDescriptor';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -76,34 +76,34 @@ export class CdDescriptorFileService<T extends BaseDescriptor> {
     await this.save(filename, current.descriptor, updatedMeta.updatedBy ?? 'system');
   }
 
-  // private async write<T>(filename: string, content: T): Promise<void> {
-  //   const filePath = this.getFullPath(filename);
-  //   const now = formatISO(new Date());
+  private async write<T>(filename: string, content: T): Promise<void> {
+    const filePath = this.getFullPath(filename);
+    const now = formatISO(new Date());
 
-  //   const descriptor: CdFileWrapper<T> = {
-  //     descriptor: content,
-  //     fileMeta: {
-  //       createdAt: now,
-  //       lastUpdated: now,
-  //       origin: 'cd-cli',
-  //     },
-  //   };
+    const descriptor: CdFileWrapper<T> = {
+      descriptor: content,
+      fileMeta: {
+        createdAt: now,
+        lastUpdated: now,
+        origin: 'cd-cli',
+      },
+    };
 
-  //   await fs.writeFile(filePath, JSON.stringify(descriptor, null, 2), 'utf-8');
-  // }
+    await fs.writeFile(filePath, JSON.stringify(descriptor, null, 2), 'utf-8');
+  }
 
-  // async writeDocumentation(doc: CdDocDescriptor, basePath: string): Promise<void> {
-  //   const filename = path.join(basePath, 'doc.json');
-  //   await this.write(filename, doc);
-  // }
+  async writeDocumentation(doc: CdDocDescriptor, basePath: string): Promise<void> {
+    const filename = path.join(basePath, 'doc.json');
+    await this.write(filename, doc);
+  }
 
-  // async writeRoadmap(roadmap: CdRoadmapDescriptor, basePath: string): Promise<void> {
-  //   const filename = path.join(basePath, 'roadmap.json');
-  //   await this.write(filename, roadmap);
-  // }
+  async writeRoadmap(roadmap: CdRoadmapDescriptor, basePath: string): Promise<void> {
+    const filename = path.join(basePath, 'roadmap.json');
+    await this.write(filename, roadmap);
+  }
 
-  // async writeChangelog(changelog: CdChangeLogDescriptor, basePath: string): Promise<void> {
-  //   const filename = path.join(basePath, 'changelog.json');
-  //   await this.write(filename, changelog);
-  // }
+  async writeChangelog(changelog: CdChangeLogDescriptor, basePath: string): Promise<void> {
+    const filename = path.join(basePath, 'changelog.json');
+    await this.write(filename, changelog);
+  }
 }

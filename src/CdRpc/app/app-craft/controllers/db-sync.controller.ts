@@ -1,7 +1,7 @@
 // src/CdCli/app/app-craft/controllers/db-sync.controller.ts
 
-import { DbSyncService } from "../services/db-sync.service.js";
-import { CdFxReturn, CdFxStateLevel } from "../../../sys/base/i-base.js";
+import { DbSyncService } from "../services/db-sync.service";
+import { CdFxReturn, CdFxStateLevel } from "../../../sys/base/i-base";
 import { cdFx } from "../../../sys/base/cd-fx-return.util.js";
 
 export class DbSyncController {
@@ -27,7 +27,7 @@ export class DbSyncController {
     const svDbSync = new DbSyncService();
 
     const initResult = svDbSync.init(modelEntities, logOptions);
-    if (!initResult.state) {
+    if (initResult.state !== CdFxStateLevel.Success) {
       return cdFx(
         CdFxStateLevel.Fatal,
         `DbSyncService initialization failed: ${initResult.message}`
