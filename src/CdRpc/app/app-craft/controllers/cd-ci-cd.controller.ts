@@ -1,5 +1,5 @@
 import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
-import { CiCdDescriptor } from '../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
+import { CiCdDescriptor } from '../../../sys/dev-descriptor/models/cicd-descriptor.model';
 import { CdCiCdService } from '../services/cd-ci-cd.service';
 
 export class CdCiCdCiCd {

@@ -3,13 +3,13 @@
 /* eslint-disable antfu/if-newline */
 
 /* eslint-disable style/brace-style */
-import type { CdFxReturn } from '../../base/i-base.js';
+import type { CdFxReturn } from '../../base/i-base';
 import type {
   OperatingSystemDescriptor,
   SshCredentials,
-} from '../models/workstations.model.js';
+} from '../models/workstations.model';
 import { NodeSSH } from 'node-ssh';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
+import CdLog from '../../comm/controllers/cd-logger.controller';
 
 export class OsController {
   async detectOs(

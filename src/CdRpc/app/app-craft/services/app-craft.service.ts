@@ -6,10 +6,10 @@ import {
   CdCtx,
   DependencyDescriptor,
   ResolutionDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
-import { MOD_CRAFT_WORKSHOP_DIR } from '../models/app-craft.model.js';
-import { CD_API_APPS_DIR } from '../models/default.model.js';
+import { MOD_CRAFT_WORKSHOP_DIR } from '../models/app-craft.model';
+import { CD_API_APPS_DIR } from '../models/default.model';
 
 export class AppCraftService {
   // Composition: BaseService instance

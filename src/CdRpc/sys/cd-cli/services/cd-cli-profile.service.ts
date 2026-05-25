@@ -8,8 +8,8 @@ import type {
 } from '../../base/i-base';
 import { HttpService } from '../../base/http.service';
 import { DEFAULT_CD_RESPONSE, DEFAULT_ENVELOPE_CREATE } from '../../base/i-base';
-import CdLog from '../../comm/controllers/cd-logger.controller.js';
-import config from '../../../../config.js';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import config from '../../../../config';
 
 export class CdCliProfileService {
   // svServer: any;

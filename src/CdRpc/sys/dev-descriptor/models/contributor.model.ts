@@ -1,4 +1,4 @@
-import type { ContributorDescriptor } from './version-control.model.js';
+import type { ContributorDescriptor } from './version-control.model';
 
 // Example Contributors
 const contributors: ContributorDescriptor = {

@@ -1,33 +1,32 @@
 import type {
   CdFxReturn,
-  CdRequest,
+  ICdRequest,
   ICdResponse,
   ISessResp,
-} from "../../base/i-base.js";
-import type { CdDescriptor } from "../models/dev-descriptor.model.js";
+} from "../../base/i-base";
+import type { CdDescriptor } from "../models/dev-descriptor.model";
 /* eslint-disable style/brace-style */
-import config from "../../../../config.js";
-import { HttpService } from "../../base/http.service.js";
-import { CdCliProfileController } from "../../cd-cli/controllers/cd-cli-profile.cointroller.js";
-import CdLog from "../../cd-comm/controllers/cd-logger.controller.js";
+import config from "../../../../config";
+import { HttpService } from "../../base/http.service";
+import { CdCliProfileController } from "../../cd-cli/controllers/cd-cli-profile.cointroller";
+import CdLog from "../../comm/controllers/cd-logger.controller";
 import {
   CdObjModel,
   defaultCdObjEnv,
-} from "../../moduleman/models/cd-obj.model.js";
-import { CdCliStoreService } from "../../cd-cli/services/cd-cli-store.service.js";
-import { CdObjTypeModel } from "../../moduleman/models/cd-obj-type.model.js";
-import { GenericService } from "../../base/generic-service.js";
-import { CdModuleDescriptor } from "../models/cd-module-descriptor.model.js";
-import { ProfileStoreService } from "../../cd-cli/services/profile-store.service.js";
+} from "../../moduleman/models/cd-obj.model";
+import { CdCliStoreService } from "../../cd-cli/services/cd-cli-store.service";
+import { CdObjTypeModel } from "../../moduleman/models/cd-obj-type.model";
+import { GenericService } from "../../base/generic-service";
+import { CdModuleDescriptor } from "../models/cd-module-descriptor.model";
+import { ProfileStoreService } from "../../cd-cli/services/profile-store.service";
 
-export class DevDescriptorService extends GenericService<CdObjModel> {
+export class DevDescriptorService{
   cdToken = "";
   baseUrl = "";
   httpService;
   svCdCliStore = new CdCliStoreService();
   // private redisService = new CdCliStoreService();
   constructor() {
-    super(CdObjModel);
     this.init();
   }
 
@@ -79,7 +78,7 @@ export class DevDescriptorService extends GenericService<CdObjModel> {
       try {
         const payload = this.setEnvelope("SyncDescriptors", { data: d });
         const httpService = new HttpService(true); // Enable debug mode if needed
-        const profileName = "cdApiLocal";
+        const profileName = "cd-api-local";
 
         await httpService.init(profileName); // Initialize with profile
         mysqlResult = await httpService.request<ICdResponse>(
@@ -152,7 +151,7 @@ export class DevDescriptorService extends GenericService<CdObjModel> {
         });
 
         const httpService = new HttpService(true); // Optional: enable debug mode
-        const profileName = "cdApiLocal";
+        const profileName = "cd-api-local";
 
         await httpService.init(profileName);
         mysqlResult = await httpService.request<ICdResponse>(
@@ -273,7 +272,7 @@ export class DevDescriptorService extends GenericService<CdObjModel> {
     }
   }
 
-  setEnvelope(action: string, data: any): CdRequest {
+  setEnvelope(action: string, data: any): ICdRequest {
     CdLog.debug("CdAppService::setEnvelope()/starting...");
     // Reset f_vals array to avoid unintended accumulation
     defaultCdObjEnv.dat.f_vals = [];

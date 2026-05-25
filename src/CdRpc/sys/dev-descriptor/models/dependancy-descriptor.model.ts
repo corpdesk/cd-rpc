@@ -1,12 +1,12 @@
 /* eslint-disable style/indent */
 // import type { DependencyDescriptor } from './app-descriptor.model';
 
-import type { SecurityDescriptor } from './service-descriptor.model.js';
-import type { FileReference, WorkstationAccessDescriptor } from './workstations.model.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import { AppType } from './cd-app.model.js';
-import { CdCtx } from './cd-module-descriptor.model.js';
-import type { VersionControlDescriptor } from './version-control.model.js';
+import type { SecurityDescriptor } from './service-descriptor.model';
+import type { FileReference, WorkstationAccessDescriptor } from './workstations.model';
+import type { BaseDescriptor } from './base-descriptor.model';
+import { AppType } from './cd-app.model';
+import { CdCtx } from './cd-module-descriptor.model';
+import type { VersionControlDescriptor } from './version-control.model';
 
 export interface DependencyDescriptor
   extends BaseDescriptor,

@@ -2,12 +2,12 @@ import type {
   CliControlsDescriptor,
   ScalingDescriptor,
   SecurityDescriptor,
-} from './service-descriptor.model.js';
+} from './service-descriptor.model';
 import type {
   OperatingSystemDescriptor,
   SystemResources,
-} from './workstations.model.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+} from './workstations.model';
+import type { BaseDescriptor } from './base-descriptor.model';
 
 export interface ContainerManagerDescriptor extends BaseDescriptor {
   typeInfo: ContainerManagerTypeDescriptor; // Type and deployment info of the container manager

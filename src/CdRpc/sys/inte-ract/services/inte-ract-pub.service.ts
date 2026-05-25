@@ -10,14 +10,16 @@ import { InteRactPubViewModel } from '../models/inte-ract-pub-view.model';
 import { InteRactMediaService } from './inte-ract-media.service';
 import { InteRactMediaModel } from '../models/inte-ract-media.model';
 import { GenericController } from "../../base/generic-controller";
+import { GenericService } from "../../base/generic-service";
 
 // export class InteRactPubService extends CdService {
-export class InteRactPubService extends GenericController<InteRactPubModel> {
+export class InteRactPubService extends GenericService<InteRactPubModel> {
     err: string[] = []; // error messages
     b: any; // instance of InteRactPubService
     cdToken: string;
     plData: InteRactPubModel;
-    serviceModel: InteRactPubModel;
+    serviceModel = InteRactPubModel;
+    docName = 'InteRactPubService';
     sessModel;
     isInitial; // the first time a bill is created other than being amended
 
@@ -33,9 +35,8 @@ export class InteRactPubService extends GenericController<InteRactPubModel> {
     dRules: any[];
 
     constructor() {
-        super()
+        super(InteRactPubModel)
         this.b = new BaseService();
-        this.serviceModel = new InteRactPubModel();
     }
 
     /**
@@ -125,7 +126,7 @@ export class InteRactPubService extends GenericController<InteRactPubModel> {
             entityData: mediaData
         }
         // return await svBill.createI(req, res, serviceInputExt)
-        const newMedia = await svInteRactMedia.createI(req,res,IExtServiceInput<any>)
+        const newMedia = await svInteRactMedia.createI(req,res,serviceInputExt)
         console.log('InteRactPubService::afterCreate()/newMedia:', newMedia)
     }
 
@@ -212,7 +213,7 @@ export class InteRactPubService extends GenericController<InteRactPubModel> {
     //  * @param req
     //  * @param res
     //  */
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         console.log('InteRactPubService::update()/01');
         let q = this.b.getQuery(req);
         q = this.beforeUpdate(q);
@@ -428,7 +429,7 @@ export class InteRactPubService extends GenericController<InteRactPubModel> {
             })
     }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         console.log('InteRactPubService::delete()/q:', q)
         const serviceInput = {
@@ -499,7 +500,7 @@ export class InteRactPubService extends GenericController<InteRactPubModel> {
      */
     async testJsonQuery(req: Request, res: Response): Promise<any> {
         console.log('InteRactPubService::testJsonQuery()/01');
-        let q: IQbInput = this.b.getQuery(req);
+        let q: any = this.b.getQuery(req);
         console.log('InteRactPubService::testJsonQuery()/q:', q);
         const serviceInput = {
             serviceModel: InteRactPubModel,

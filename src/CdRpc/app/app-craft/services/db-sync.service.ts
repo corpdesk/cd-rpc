@@ -1,10 +1,10 @@
 import { DataSource, DataSourceOptions } from "typeorm";
-import { cdFx } from "../../../sys/base/cd-fx-return.util.js";
+import { cdFx } from "../../../sys/base/cd-fx-return.util";
 import { CdFxReturn, CdFxStateLevel } from "../../../sys/base/i-base";
 import config, {
   enableModelSyncing,
   disableModelSyncing,
-} from "../../../../config.js";
+} from "../../../../config";
 
 export class DbSyncService {
   private dataSource!: DataSource;

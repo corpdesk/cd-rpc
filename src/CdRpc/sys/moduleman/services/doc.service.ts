@@ -195,7 +195,7 @@ export class DocService extends GenericService<DocModel> {
     const m = (req as any).post.m;
     const c = (req as any).post.c;
     const a = (req as any).post.a;
-    await this.b.init(req, res);
+    await this.b.init();
     this.logger.logDebug("DocService::createDocType()/02");
     await this.b.setRepo({ serviceModel: DocModel });
     this.logger.logDebug("DocService::createDocType()/03");
@@ -218,7 +218,7 @@ export class DocService extends GenericService<DocModel> {
       this.logger.logDebug(
         `DocService::createDocType()/dtm:${JSON.stringify(dtm)}`,
       );
-      // await this.b.init(req, res);
+      // await this.b.init();
       this.b.repo = this.b.ds.getRepository(DocModel);
       // const ret = await this.b.ds.save(dtm);
       const ret = await this.b.repo.save(dtm);

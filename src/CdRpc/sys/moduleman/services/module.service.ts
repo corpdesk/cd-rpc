@@ -856,7 +856,7 @@ export class ModuleService extends GenericService<ModuleModel> {
       cdObjTypeGuid: "809a6e31-9fb1-4874-b61a-38cf2708a3bb",
     };
 
-    const foundCdObj = await svCdObj.getCdObjI(req, res, { where });
+    const foundCdObj = await svCdObj.getCdObjI({ where });
     this.logger.logInfo(
       "ModuleService::purgeModuleFromCdObj/foundCdObj:",
       inspect(foundCdObj, { depth: 3 }),

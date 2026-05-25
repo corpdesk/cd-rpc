@@ -7,13 +7,15 @@ import { from, Observable } from 'rxjs';
 import { getConnection } from 'typeorm';
 import { InteRactMediaModel } from '../models/inte-ract-media.model';
 import { GenericController } from "../../base/generic-controller";
+import { GenericService } from "../../base/generic-service";
 
 // export class InteRactMediaService extends CdService {
-export class InteRactMediaService extends GenericController<InteRactMediaModel> {
+export class InteRactMediaService extends GenericService<InteRactMediaModel> {
     err: string[] = []; // error messages
     b: any; // instance of BaseService
     cdToken: string;
-    serviceModel: InteRactMediaModel;
+    serviceModel = InteRactMediaModel;
+    docName = 'InteRactMediaService';
     sessModel;
     isInitial; // the first time a bill is created other than being amended
 
@@ -32,9 +34,8 @@ export class InteRactMediaService extends GenericController<InteRactMediaModel> 
     dRules: any[];
 
     constructor() {
-        super()
+        super(InteRactMediaModel)
         this.b = new BaseService();
-        this.serviceModel = new InteRactMediaModel();
     }
 
     /**
@@ -108,7 +109,7 @@ export class InteRactMediaService extends GenericController<InteRactMediaModel> 
         console.log('InteRactMediaService::createI()/createI()/01')
         if (await this.validatecreateI(req, res, serviceInputExt)) {
             console.log('InteRactMediaService::createI()/02')
-            const befRet = await this.beforecreateI(req, res, serviceInputExt);
+            const befRet = await this.beforeCreateI(req, res, serviceInputExt);
             console.log('InteRactMediaService::createI()/befRet:', befRet)
             const result = this.b.createI(req, res, serviceInputExt)
             const afterResult = await this.afterCreate(req, res, result)
@@ -195,7 +196,7 @@ export class InteRactMediaService extends GenericController<InteRactMediaModel> 
     //  * @param req
     //  * @param res
     //  */
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         console.log('InteRactMediaService::update()/01');
         let q = this.b.getQuery(req);
         q = this.beforeUpdate(q);
@@ -411,7 +412,7 @@ export class InteRactMediaService extends GenericController<InteRactMediaModel> 
     //         })
     // }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         console.log('InteRactMediaService::delete()/q:', q)
         const serviceInput = {
@@ -482,7 +483,7 @@ export class InteRactMediaService extends GenericController<InteRactMediaModel> 
      */
     async testJsonQuery(req: Request, res: Response): Promise<any> {
         console.log('InteRactMediaService::testJsonQuery()/01');
-        let q: IQbInput = this.b.getQuery(req);
+        let q: any = this.b.getQuery(req);
         console.log('InteRactMediaService::testJsonQuery()/q:', q);
         const serviceInput = {
             serviceModel: InteRactMediaModel,

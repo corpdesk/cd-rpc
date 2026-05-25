@@ -1,4 +1,4 @@
-import { BaseDescriptor } from './base-descriptor.model.js';
+import { BaseDescriptor } from './base-descriptor.model';
 
 export interface ViewModelDescriptor extends BaseDescriptor {
   name: string;

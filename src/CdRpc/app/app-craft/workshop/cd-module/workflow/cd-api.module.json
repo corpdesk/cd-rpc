@@ -1941,7 +1941,7 @@
                           "children": []
                         },
                         {
-                          "name": "index.js",
+                          "name": "index",
                           "cdObjGuid": "773977af-e4e2-6743-63e0-1b1cd3380f29",
                           "isFile": true,
                           "weight": 1,
@@ -1950,14 +1950,14 @@
                       ]
                     },
                     {
-                      "name": "svgo.config.js",
+                      "name": "svgo.config",
                       "cdObjGuid": "af625869-68a5-4501-0b49-b65414df9940",
                       "isFile": true,
                       "weight": 1,
                       "children": []
                     },
                     {
-                      "name": "webpack.config.js",
+                      "name": "webpack.config",
                       "cdObjGuid": "bf7eab19-179f-6461-19c1-eb36ce7c016e",
                       "isFile": true,
                       "weight": 1,
@@ -4599,7 +4599,7 @@
                           "weight": 1,
                           "children": [
                             {
-                              "name": "index.js",
+                              "name": "index",
                               "cdObjGuid": "6105bf72-96a2-7a03-3feb-fb1d49bd4883",
                               "isFile": true,
                               "weight": 1,
@@ -5206,7 +5206,7 @@
                           "weight": 1,
                           "children": [
                             {
-                              "name": "index.js",
+                              "name": "index",
                               "cdObjGuid": "b7799987-1627-b887-20ff-33fba699439a",
                               "isFile": true,
                               "weight": 1,
@@ -6268,7 +6268,7 @@
           ]
         },
         {
-          "name": "tsconfig.json",
+          "name": "tsconfigon",
           "cdObjGuid": "ed37f9ed-e69f-554f-65bf-a0554ef6c10c",
           "isFile": true,
           "weight": 1,

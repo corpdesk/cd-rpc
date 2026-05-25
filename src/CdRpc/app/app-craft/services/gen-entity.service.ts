@@ -17,7 +17,7 @@ import {
   getLanguageByName,
   LanguageName,
   languages,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import {
   injectTypeBeforeSnakeSuffix,
   injectTypeBeforeSuffix,
@@ -26,49 +26,45 @@ import {
   toKebabCase,
   toPascalCase,
   toUniversalSnakeCase,
-} from '../../../sys/utils/cd-naming.util.js';
-import {
-  BaseService,
-  CdFxReturn,
-  CdFxStateLevel,
-  CdRequest,
-  HttpService,
-  ICdRequest,
-  ICdResponse,
-} from '../../../sys/base/index.js';
+} from '../../../sys/utils/cd-naming.util';
+
 import {
   writeFileSafely,
   writePrettyFile,
   writePrettyFileSafely,
-} from '../../../sys/utils/fs.util.js';
+} from '../../../sys/utils/fs.util';
 // import { dirname, join } from "path";
 import { fileURLToPath } from 'url';
-import { getModCraftOutputDir } from '../models/app-craft.model.js';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+import { getModCraftOutputDir } from '../models/app-craft.model';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
+import { DevModeAction } from '../../../sys/dev-mode/index';
 import {
   abcdModelDependencies,
   ComponentGenerationConfig,
   MOD_CRAFT_MODEL_TEMPLATE,
-} from '../models/default.model.js';
+} from '../models/default.model';
 import { GenComponentService } from './gen-component.service';
 import {
   ComponentDescriptor,
   ComponentType,
-} from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
+} from '../../../sys/dev-descriptor/models/component-descriptor.model';
 import util from 'util';
 import { exec } from 'child_process';
 // import { ModuleRegisterService } from './module-register.service';
-import { SessonController } from '../../../sys/user/index.js';
-import { CdCliProfileController } from '../../../sys/cd-cli/index.js';
-import config from '../../../../config.js';
+import { SessonController } from '../../../sys/user/controllers/session.controller';
+import { CdCliProfileController } from '../../../sys/cd-cli/index';
+import config from '../../../../config';
+import { BaseService } from '../../../sys/base/base.service';
+import { HttpService } from '../../../sys/base/http.service';
+import { CdFxReturn, CdFxStateLevel, ICdRequest } from '../../../sys/base/i-base';
+import { CdRequest } from '../../../sys/utils/request';
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 // const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+// // const __filename = fileURLToPath(import.meta.url);
 
 const execPromise = util.promisify(exec);
 
@@ -423,7 +419,7 @@ ${modelFields.join('\n\n')}
     }
   }
 
-  getEnvRegisterModule(moduleName: string): CdRequest {
+  getEnvRegisterModule(moduleName: string): ICdRequest {
     return {
       ctx: 'Sys',
       m: 'Moduleman',

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import CdLog from '../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { CdOpenAiController } from '../../../../app/cd-ai/index.js';
+import CdLog from '../../../../sys/comm/controllers/cd-logger.controller';
+import { CdOpenAiController } from '../../../../app/cd-ai/index';
 
 // let chalk: any;
 

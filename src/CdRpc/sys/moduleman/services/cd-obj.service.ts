@@ -4,6 +4,7 @@ import { SessionService } from "../../user/services/session.service";
 import { UserService } from "../../user/services/user.service";
 import { ModuleModel } from "../models/module.model";
 import {
+  CdFxReturn,
   IExtServiceInput,
   IQuery,
   IServiceInput,
@@ -598,8 +599,10 @@ export class CdObjService extends GenericService<CdObjModel> {
     return ret;
   }
 
-  async getCdObj(req: Request, res: Response) {
-    const q = this.b.getQuery(req);
+  async getCdObj(req: Request, res: Response, q?: IQuery): Promise<CdFxReturn<CdObjModel[] | void>> {
+    // if (!q) {
+    //   q = this.b.getQuery(req);
+    // }
     console.log("CdObjService::getCdObj/f:", q);
     const serviceInput = {
       serviceModel: CdObjViewModel,
@@ -619,7 +622,12 @@ export class CdObjService extends GenericService<CdObjModel> {
         svSess.sessResp.ttl = svSess.getTtl();
         this.b.setAppState(true, this.b.i, svSess.sessResp);
         this.b.cdResp.data = r;
-        this.b.respond(req, res);
+        // const ret = this.b.respond(req, res);
+        return {
+          success: true,
+          data: r,
+          app_msg: this.b.i.app_msg,
+        }
       });
     } catch (e: any) {
       console.log("CdObjService::read$()/e:", e);
@@ -631,12 +639,11 @@ export class CdObjService extends GenericService<CdObjModel> {
       };
       await this.b.serviceErr(req, res, e, i.code);
       await this.b.respond(req, res);
+      return void 0;
     }
   }
 
   async getCdObjI(
-    req: Request,
-    res: Response,
     q: IQuery,
   ): Promise<CdObjViewModel[]> {
     console.log("CdObjService::getCdObjI/f:", q);
@@ -649,7 +656,7 @@ export class CdObjService extends GenericService<CdObjModel> {
       },
       dSource: 1,
     };
-    return this.b.read(req, res, serviceInput);
+    return this.b.readI(serviceInput);
   }
 
   async getCdObjType(req: Request, res: Response) {

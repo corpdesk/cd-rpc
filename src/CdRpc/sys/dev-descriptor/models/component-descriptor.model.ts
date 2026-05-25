@@ -1,7 +1,7 @@
-import { BaseDescriptor } from './base-descriptor.model.js';
-import { DependencyDescriptor } from './dependancy-descriptor.model.js';
-import { FunctionDescriptor } from './function-descriptor.model.js';
-import { ViewModelDescriptor } from './view-model-descriptor.model.js';
+import { BaseDescriptor } from './base-descriptor.model';
+import { DependencyDescriptor } from './dependancy-descriptor.model';
+import { FunctionDescriptor } from './function-descriptor.model';
+import { ViewModelDescriptor } from './view-model-descriptor.model';
 
 export interface ComponentDescriptor extends BaseDescriptor {
   name: string;

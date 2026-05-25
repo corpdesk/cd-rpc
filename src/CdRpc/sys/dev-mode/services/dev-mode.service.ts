@@ -1,9 +1,10 @@
+import { Request, Response } from 'express';
 import { inspect } from 'util';
-import { BaseService } from '../../base/base.service.js';
-import { CdFxReturn, CdFxStateLevel, ICdRequest } from '../../base/i-base.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { AppType, CdEnvName, repoRegistry } from '../../dev-descriptor/index.js';
-import { SessionService } from '../../user/index.js';
+import { BaseService } from '../../base/base.service';
+import { CdFxReturn, CdFxStateLevel, ICdRequest } from '../../base/i-base';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { AppType, CdEnvName, repoRegistry } from '../../dev-descriptor/index';
+// import { SessionService } from '../../user/index';
 import {
   actionTargets,
   CdOutputEnvModel,
@@ -11,20 +12,23 @@ import {
   DevModeModel,
   getRegistry,
   IDevModeInstructionDescriptor,
-} from '../models/dev-mode.model.js';
-import { cdFx } from '../../base/cd-fx-return.util.js';
-import { VersionService } from '../../dev-descriptor/services/version.service.js';
-import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model.js';
+} from '../models/dev-mode.model';
+import { cdFx } from '../../base/cd-fx-return.util';
+import { VersionService } from '../../dev-descriptor/services/version.service';
+import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model';
 import { join } from 'path';
-import { CdWire } from '../../base/cd-wire.service.js';
-import { LocalExecutor } from '../../base/local-executor.service.js';
-import { RpcExecutor } from '../../base/rpc-executor.service.js';
-import { HttpExecutor } from '../../base/http-executor.service.js';
-import { QueueExecutor } from '../../base/queue-executor.service.js';
+// import { CdWire } from '../../base/cd-wire.service';
+import { LocalExecutor } from '../../base/local-executor.service';
+import { RpcExecutor } from '../../base/rpc-executor.service';
+import { HttpExecutor } from '../../base/http-executor.service';
+import { QueueExecutor } from '../../base/queue-executor.service';
 import {
   TransportExecutionMode,
   TransportProtocol,
-} from '../../dev-descriptor/models/network-descriptor.model.js';
+} from '../../dev-descriptor/models/network-descriptor.model';
+import { SessionService } from '../../user/services/session.service';
+import { CdWire } from '../../base/cd-wire.service';
+import { ICdExecutionContext } from '../../dev-descriptor/models/runtime-descriptor.model';
 
 export class DevModeService {
   private validEnvNames = Object.values(CdEnvName);
@@ -138,7 +142,7 @@ export class DevModeService {
 
     let registryResult: CdFxReturn<IDevModeInstructionDescriptor[]>;
     try {
-      registryResult = await this.getRegistryForCdObj(action, actionTargetName, oEnv, name, repo);
+      registryResult = await this.getRegistryForCdObj(null, action, actionTargetName, oEnv, name, repo);
       // CdLog.debug(
       //   `DevModeService::executeCrudCommand()/registryResult:${inspect(registryResult, { depth: 2 })}`,
       // );
@@ -234,6 +238,7 @@ export class DevModeService {
       //   transport: {
       //     mode: TransportExecutionMode.RPC,
       //     protocol: TransportProtocol.HTTP,
+      //     // endpoint: 'http://localhost:3000/rpc', // This could be made dynamic based on config or CLI options
       //   },
       // });
 
@@ -290,9 +295,9 @@ export class DevModeService {
 
   // getRegistryForCdObj(action, actionTargetName, oEnv, name, repo)
   async getRegistryForCdObj(
+    cdCtx: ICdExecutionContext | null,
     action: DevModeAction,
     actionTargetName: string,
-    // cdObjType: string,
     oEnv: string, // replaced former cdObjType
     cdObjName: string,
     repoName: string,
@@ -304,7 +309,7 @@ export class DevModeService {
      */
     const svVersion = new VersionService();
 
-    const appType = svVersion.getAppTypeFromRepoName(repoName, repoRegistry);
+    const appType = svVersion.getAppTypeFromRepoName(cdCtx, repoName, repoRegistry);
     CdLog.debug(`DevModeService::getRegistryForCdObj()/appType: ${appType}`);
     let aType = '';
     if (actionTargetName === 'cd-app') {
@@ -317,7 +322,7 @@ export class DevModeService {
       aType,
       'workflow',
       oEnv,
-      `${cdObjName}-workshop.model.js`,
+      `${cdObjName}-workshop.model`,
     );
 
     CdLog.debug(`DevModeService::getRegistryForCdObj()/filePath: ${filePath}`);
@@ -360,12 +365,14 @@ export class DevModeService {
   }
 
   async getCreateRegistryForCdObj(
+    cdCtx: ICdExecutionContext | null,
     actionTargetName: string,
     cdObjType: string,
     cdObjName: string,
     repoName: string,
   ) {
     return this.getRegistryForCdObj(
+      cdCtx,
       DevModeAction.CREATE,
       actionTargetName,
       cdObjType,

@@ -4,17 +4,17 @@
 //   ): Promise<CdFxReturn<null>> {
 
 import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { GenEntityService } from '../services/gen-entity.service';
 import {
   abcdModelDependencies,
   ComponentGenerationConfig,
   MOD_CRAFT_MODEL_TEMPLATE,
-} from '../models/default.model.js';
-import { getModCraftOutputDir } from '../models/app-craft.model.js';
-import { AppType } from '../../../sys/dev-descriptor/index.js';
+} from '../models/default.model';
+import { getModCraftOutputDir } from '../models/app-craft.model';
+import { AppType } from '../../../sys/dev-descriptor/index';
 
 export class GenEntityController {
   svGenEntity: GenEntityService;

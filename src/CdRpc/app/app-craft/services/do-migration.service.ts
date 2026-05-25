@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions.js';
 import { CdFxReturn } from '../../../sys/base/i-base';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/index.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/index';
 import {
   DataSourceSchema,
   CdDataSource,
@@ -11,13 +11,13 @@ import {
   RelationshipDescriptor,
   IndexDescriptor,
   CdModelDescriptor,
-} from '../../../sys/dev-descriptor/models/cd-model-descriptor.model.js';
-import { loadEntityPaths } from '../../../../config.js';
+} from '../../../sys/dev-descriptor/models/cd-model-descriptor.model';
+import { loadEntityPaths } from '../../../../config';
 import { BaseService } from '../../../sys/base/base.service';
-import { toKebabCase, toPascalCase, toSnakeCase } from '../../../sys/utils/cd-naming.util.js';
+import { toKebabCase, toPascalCase, toSnakeCase } from '../../../sys/utils/cd-naming.util';
 import { inspect } from 'util';
-import { resolve } from 'path';
-import { CD_API_TEST_BED_DIR, MigrationConfig } from '../models/default.model.js';
+import path, { resolve } from 'path';
+import { CD_API_TEST_BED_DIR, MigrationConfig } from '../models/default.model';
 
 const CD_API_APPS_DIR = resolve(CD_API_TEST_BED_DIR, 'dist', 'CdApi', 'app');
 
@@ -128,7 +128,7 @@ export class DbMigrationService {
     const modelFilePath = path.resolve(
       moduleDir,
       'models',
-      `${toKebabCase(modelDescriptor.name)}.model.js`, // cd-ai.model.ts
+      `${toKebabCase(modelDescriptor.name)}.model`, // cd-ai.model.ts
     );
 
     this.b.logWithContext(this, `migrateFromModel()/modelFilePath:`, { modelFilePath }, 'debug');

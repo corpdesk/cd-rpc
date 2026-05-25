@@ -1,5 +1,48 @@
 // src/CdCli/app/app-craft/models/cd-app.model.ts
 
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+
+@Entity({
+  name: "cd_model",
+  synchronize: false,
+})
+// @CdModel
+export class CdModelModel {
+
+  @PrimaryGeneratedColumn({
+    name: "cd_model_id",
+  })
+  cd_modelId?: number;
+
+  @Column({
+    name: "cd_model_guid",
+    length: 36,
+    default: uuidv4(),
+  })
+  CdModelGuid?: string;
+
+  @Column("varchar", {
+    name: "cd_model_name",
+    length: 50,
+    nullable: true,
+  })
+  CdModelName?: string;
+
+  @Column({
+    name: "doc_id",
+    default: null,
+  })
+  // @IsInt()
+  docId?: number;
+
+  @Column({
+    name: "cd_model_type_id",
+    default: null,
+  })
+  cd_modelTypeId?: number;
+}
+
 /**
  * Root SeedConfig for a specific Corpdesk subsystem
  */

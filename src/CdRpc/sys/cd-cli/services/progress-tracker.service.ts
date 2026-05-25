@@ -2,7 +2,7 @@ import type { CdFxReturn } from '../../base/i-base';
 import type {
   ProgressTrackerModel,
   StepProgress,
-} from '../models/progress-tracker.model.js';
+} from '../models/progress-tracker.model';
 
 export class ProgressTrackerService {
   private progressTracker: ProgressTrackerModel;

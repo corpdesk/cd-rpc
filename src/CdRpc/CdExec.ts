@@ -1,3 +1,4 @@
+// src/CdRpc/CdExec.ts
 import { Request, Response } from "express";
 import { BaseService } from './sys/base/base.service';
 import { IRespInfo } from './sys/base/i-base';
@@ -25,7 +26,7 @@ export class CdExec {
                     dataSource: ds
                 }
                 // this.logger.logInfo('CdExec::exec()/clsCtx:', clsCtx)
-                await this.b.resolveCls(req, res, clsCtx);
+                return await this.b.resolveCls(req, res, clsCtx);
             } catch (e: any) {
                 this.logger.logInfo('CdExec::exec()/03');
                 const i: IRespInfo = {
@@ -33,7 +34,7 @@ export class CdExec {
                     code: 'CdExec:exec:01',
                     app_msg: ''
                 }
-                await this.b.returnErr(req, res, i);
+                return await this.b.returnErr(req, res, i);
             }
         } else {
             this.logger.logInfo('CdExec::exec()/04');

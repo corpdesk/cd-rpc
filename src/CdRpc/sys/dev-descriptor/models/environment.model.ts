@@ -1,30 +1,30 @@
 // src/CdCli/sys/dev-descriptor/models/environment.model.ts
 
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import type { BaseServiceDescriptor } from './service-descriptor.model.js';
+import type { BaseDescriptor } from './base-descriptor.model';
+import type { BaseServiceDescriptor } from './service-descriptor.model';
 import {
   type CiCdDescriptor,
   getCiCdByName,
   knownCiCds,
-} from './cicd-descriptor.model.js';
-import { getServiceByName, services } from './service-descriptor.model.js';
+} from './cicd-descriptor.model';
+import { getServiceByName, services } from './service-descriptor.model';
 import {
   getVersionControlByContext,
   type VersionControlDescriptor,
   // versionControlRepositories,
-} from './version-control.model.js';
+} from './version-control.model';
 import {
   getTestingFramework,
   type TestingFrameworkDescriptor,
   testingFrameworks,
-} from './testing-framework.model.js';
+} from './testing-framework.model';
 
 import {
   defaultWorkstation,
   getWorkstationByName,
   type WorkstationDescriptor,
   workstations,
-} from './workstations.model.js';
+} from './workstations.model';
 
 export interface EnvironmentDescriptor extends BaseDescriptor {
   name?: CdEnvName; // Name of the environment, e.g., workshop, test-bed, production

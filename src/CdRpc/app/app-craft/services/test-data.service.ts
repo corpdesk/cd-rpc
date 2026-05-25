@@ -1,6 +1,6 @@
 import { BaseService } from '../../../sys/base/base.service';
-import { CdControllerDescriptor, CdModelDescriptor } from '../../../sys/dev-descriptor/index.js';
-import { toCamelCase, toPascalCase } from '../../../sys/utils/cd-naming.util.js';
+import { CdControllerDescriptor, CdModelDescriptor } from '../../../sys/dev-descriptor/index';
+import { toCamelCase, toPascalCase } from '../../../sys/utils/cd-naming.util';
 
 export class TestDataService {
   b = new BaseService();

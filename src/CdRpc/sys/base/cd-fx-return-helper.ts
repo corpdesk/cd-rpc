@@ -1,4 +1,5 @@
-import { CdFxStateLevel, FxStateMeta, FxStateSemantics } from "./i-base.js";
+import { Request, Response } from "express";
+import { CdFxStateLevel, FxStateMeta, FxStateSemantics } from "./i-base";
 
 // Overloads for direct state checks
 export function isSuccess(state: boolean | CdFxStateLevel): boolean {

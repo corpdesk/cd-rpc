@@ -1,4 +1,4 @@
-// import config from "./config.js";
+// src/main.ts
 
 import express from "express";
 import cors from "cors";
@@ -40,7 +40,7 @@ export class Main {
     // -------------------------------------------------------------
 
     app.post(config.rpc.route, async (req, res) => {
-      await CdInit(req, res);
+      return await CdInit(req, res);
     });
 
     // -------------------------------------------------------------

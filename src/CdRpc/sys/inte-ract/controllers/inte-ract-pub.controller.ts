@@ -6,15 +6,12 @@ import { InteRactPubModel } from "../models/inte-ract-pub.model";
 import { GenericController } from "../../base/generic-controller";
 
 export class InteRactPubController extends GenericController<InteRactPubModel> {
+    service: InteRactPubService;
 
-    b: BaseService;
-    svInteRactPub: InteRactPubService;
 
     constructor() {
-        console.log('InteRactPubController::constructor()/01')
-        this.b = new BaseService();
-        console.log('InteRactPubController::constructor()/02')
-        this.svInteRactPub = new InteRactPubService();
+        super();
+        this.service = new InteRactPubService();
     }
 
     /**
@@ -54,7 +51,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
         console.log('InteRactPubController::Create()/01')
         try {
             console.log('InteRactPubController::Create()/02')
-            await this.svInteRactPub.create(req, res);
+            await this.service.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:Create');
         }
@@ -83,7 +80,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
     //  */
     async Get(req: Request, res: Response) {
         try {
-            await this.svInteRactPub.getInteRactPub(req, res);
+            await this.service.getInteRactPub(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:Get');
         }
@@ -118,7 +115,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
     //   */
     async GetPaged(req: Request, res: Response) {
         try {
-            await this.svInteRactPub.getPaged(req, res);
+            await this.service.getPaged(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:GetCount');
         }
@@ -149,7 +146,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
     //  */
     async GetViewPaged(req: Request, res: Response) {
         try {
-            await this.svInteRactPub.getViewPaged(req, res);
+            await this.service.getViewPaged(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:InteRactPubViewPaged');
         }
@@ -185,7 +182,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
         console.log('InteRactPubController::Update()/01');
         try {
             console.log('InteRactPubController::Update()/02');
-            await this.svInteRactPub.update(req, res);
+            await this.service.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:Update');
         }
@@ -216,7 +213,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
     //  */
     async Delete(req: Request, res: Response) {
         try {
-            await this.svInteRactPub.delete(req, res);
+            await this.service.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:Delete');
         }
@@ -273,7 +270,7 @@ export class InteRactPubController extends GenericController<InteRactPubModel> {
      */
     async TestJsonQuery(req: Request, res: Response) {
         try {
-            await this.svInteRactPub.testJsonQuery(req, res);
+            await this.service.testJsonQuery(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'InteRactPubController:TestJsonQuery');
         }

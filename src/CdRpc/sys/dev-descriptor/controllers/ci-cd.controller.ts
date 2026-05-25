@@ -1,5 +1,5 @@
-import { CdFxReturn } from "../../base/i-base.js";
-import { CiCdService } from "../services/ci-cd.service.js";
+import { CdFxReturn } from "../../base/i-base";
+import { CiCdService } from "../services/ci-cd.service";
 
 export class CiCdController{
     svCiCd = new CiCdService();

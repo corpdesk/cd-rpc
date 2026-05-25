@@ -1,45 +1,45 @@
 // src/CdCli/sys/dev-descriptor/models/workstations.model.ts
 
 /* eslint-disable style/brace-style */
-import type { CdFxReturn } from '../../base/i-base.js';
+import type { CdFxReturn } from '../../base/i-base';
 
-import type { ProfileModel } from '../../cd-cli/models/cd-cli-profile.model.js';
-import type { EnvironmentService } from '../services/environment.service.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import type { ContainerDescriptor } from './container-manager.model.descriptor.js';
+import type { ProfileModel } from '../../cd-cli/models/cd-cli-profile.model';
+import type { EnvironmentService } from '../services/environment.service';
+import type { BaseDescriptor } from './base-descriptor.model';
+import type { ContainerDescriptor } from './container-manager.model.descriptor';
 /* eslint-disable antfu/if-newline */
 // import type { WorkstationDescriptor } from './dev-descriptor.model';
 // import type { OperatingSystemDescriptor } from './app-descriptor.model';
 import {
   cdApiDependencies,
   type DependencyDescriptor,
-} from './dependancy-descriptor.model.js';
+} from './dependancy-descriptor.model';
 import {
   // CdApiSetupTasks,
   type CiCdDescriptor,
   type CICdTask,
-} from './cicd-descriptor.model.js';
+} from './cicd-descriptor.model';
 // import type { ContainerDescriptor } from './container-manager.model.descriptor';
-import type { EnvironmentDescriptor } from './environment.model.js';
-import type { MetricsQuantity } from './service-provider.model.js';
-import type { VersionControlDescriptor } from './version-control.model.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { defaultOs, getOsByName, operatingSystems } from './os.model.js';
+import type { EnvironmentDescriptor } from './environment.model';
+import type { MetricsQuantity } from './service-provider.model';
+import type { VersionControlDescriptor } from './version-control.model';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { defaultOs, getOsByName, operatingSystems } from './os.model';
 import {
   getPermissionsByName,
   getPermissionsByRoleNames,
   roles,
-} from './permissions.model.js';
+} from './permissions.model';
 import {
   defaultSoftware,
   getSoftwareByName,
   softwareDataStore,
-} from './software-store.model.js';
+} from './software-store.model';
 import {
   getTestingFramework,
   getTestingFrameworkByContext,
   testingFrameworks,
-} from './testing-framework.model.js';
+} from './testing-framework.model';
 
 /**
  * Questions:

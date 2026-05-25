@@ -1,8 +1,8 @@
 /* eslint-disable style/operator-linebreak */
 /* eslint-disable no-case-declarations */
-import CdLog from '../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { DevDescriptorController } from '../../../../sys/dev-descriptor/controllers/dev-descriptor.controller.js';
-import { DevModeController } from '../../controllers/dev-mode.controller.js';
+import CdLog from '../../../../sys/comm/controllers/cd-logger.controller';
+import { DevDescriptorController } from '../../../../sys/dev-descriptor/controllers/dev-descriptor.controller';
+import { DevModeController } from '../../controllers/dev-mode.controller';
 
 export const showCommand = {
   name: 'show',

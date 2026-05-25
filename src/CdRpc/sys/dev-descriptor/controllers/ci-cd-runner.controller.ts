@@ -1,7 +1,7 @@
-import { CdFxReturn } from '../../base/i-base.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { FailureAlertResult } from '../models/cicd-descriptor.model.js';
-import { CiCdRunnerService } from '../services/cd-ci-runner.service.js';
+import { CdFxReturn } from '../../base/i-base';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { FailureAlertResult } from '../models/cicd-descriptor.model';
+import { CiCdRunnerService } from '../services/cd-ci-runner.service';
 
 export class CiCdRunnerController {
   // This controller is responsible for handling CI/CD runner operations

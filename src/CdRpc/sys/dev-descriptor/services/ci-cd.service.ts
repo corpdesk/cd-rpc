@@ -8,29 +8,30 @@ import {
   CiCdTaskResult,
   getCiCdByName,
   knownCiCds,
-} from '../models/cicd-descriptor.model.js';
+} from '../models/cicd-descriptor.model';
 /* eslint-disable style/brace-style */
-import { CD_FX_FAIL, CdFxStateLevel, type CdFxReturn } from '../../base/i-base.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { GenericService } from '../../base/generic-service.js';
-import { executeCommand } from '../../utils/cmd.util.js';
+import { CD_FX_FAIL, CdFxStateLevel, type CdFxReturn } from '../../base/i-base';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { GenericService } from '../../base/generic-service';
+import { executeCommand } from '../../utils/cmd.util';
 import { join } from 'path';
-import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model.js';
-import { DevModeAction } from '../../dev-mode/index.js';
-import { AppType } from '../models/cd-app.model.js';
-import { CdObjTypeModel } from '../../moduleman/index.js';
+import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model';
+import { DevModeAction } from '../../dev-mode/index';
+import { AppType } from '../models/cd-app.model';
 import { pathToFileURL } from 'url';
-import { toCamelCase, toPascalCase } from '../../utils/cd-naming.util.js';
-import { VersionService } from './version.service.js';
+import { toCamelCase, toPascalCase } from '../../utils/cd-naming.util';
+import { VersionService } from './version.service';
 import { inspect } from 'util';
-import { writePrettyFile } from '../../utils/fs.util.js';
-import { CdAutoGitService } from '../../../app/cd-auto-git/services/cd-auto-git.service.js';
+import { writePrettyFile } from '../../utils/fs.util';
+import { CdAutoGitService } from '../../../app/cd-auto-git/services/cd-auto-git.service';
+import { Base } from '../../base/Base';
+import { BaseService } from '../../base/base.service';
 
-export class CiCdService extends GenericService<CdObjModel> {
+export class CiCdService {
+  b = new BaseService<any>();
   svCdAutoGit = new CdAutoGitService();
   constructor() {
-    super(CdObjModel);
   }
   static async initializeStepMap<T extends { ciCd: CiCdDescriptor[] }>(
     context: any, // Service context (EnvironmentService, EnvironmentService, etc.)

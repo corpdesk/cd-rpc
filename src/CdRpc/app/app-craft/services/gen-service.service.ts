@@ -5,24 +5,22 @@ import {
   AppType,
   CdModuleDescriptor,
   DependencyDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
-import { toKebabCase } from '../../../sys/utils/cd-naming.util.js';
-import { BaseService, CdFxReturn } from '../../../sys/base/index.js';
+} from '../../../sys/dev-descriptor/index';
+import { BaseService } from '../../../sys/base/base.service';
 // import { dirname, join } from "path";
 import { fileURLToPath } from 'url';
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
+import { DevModeAction } from '../../../sys/dev-mode/index';
 import {
   abcdServiceDependencies,
   MOD_CRAFT_SERVICES_TEMPLATE,
   ProcessTemplateOptions,
-} from '../models/default.model.js';
+} from '../models/default.model';
 import { GenComponentService } from './gen-component.service';
-import { VersionService } from '../../../sys/dev-descriptor/services/version.service';
-import { getModCraftOutputDir } from '../models/app-craft.model.js';
+import { getModCraftOutputDir } from '../models/app-craft.model';
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 /**
  * This method should work for any module type.

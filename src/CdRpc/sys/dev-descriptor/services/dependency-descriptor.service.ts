@@ -1,35 +1,36 @@
 /* eslint-disable style/indent */
 /* eslint-disable style/operator-linebreak */
 /* eslint-disable style/brace-style */
-import type { CdFxReturn } from '../../base/i-base.js';
-import type { DependencyDescriptor } from '../models/dependancy-descriptor.model.js';
+import type { CdFxReturn } from '../../base/i-base';
+import type { DependencyDescriptor } from '../models/dependancy-descriptor.model';
 import type {
   OperatingSystemDescriptor,
   WorkstationAccessDescriptor,
   WorkstationDescriptor,
-} from '../models/workstations.model.js';
-import { ProgressTrackerService } from '../../cd-cli/services/progress-tracker.service.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { WorkstationAccessController } from '../controllers/workstation-access.controller.js';
-import { SshService } from './ssh.service.js';
-import { WorkstationService } from './workstation.service.js';
-import { WorkstationAccessService } from './workstation-access.service.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { GenericService } from '../../base/generic-service.js';
-import { DevModeAction } from '../../dev-mode/index.js';
-import { CdModuleDescriptor } from '../models/cd-module-descriptor.model.js';
-import { ComponentType } from '../models/component-descriptor.model.js';
-import { AppType, CdCtx, CdModelDescriptor, CdServiceDescriptor } from '../index.js';
-import { toPascalCase } from '../../utils/cd-naming.util.js';
+} from '../models/workstations.model';
+import { ProgressTrackerService } from '../../cd-cli/services/progress-tracker.service';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { WorkstationAccessController } from '../controllers/workstation-access.controller';
+import { SshService } from './ssh.service';
+import { WorkstationService } from './workstation.service';
+import { WorkstationAccessService } from './workstation-access.service';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { GenericService } from '../../base/generic-service';
+import { DevModeAction } from '../../dev-mode/index';
+import { CdModuleDescriptor } from '../models/cd-module-descriptor.model';
+import { ComponentType } from '../models/component-descriptor.model';
+import { AppType, CdCtx, CdModelDescriptor, CdServiceDescriptor } from '../index';
+import { toPascalCase } from '../../utils/cd-naming.util';
+import { BaseService } from '../../base/base.service';
 
-export class DependencyDescriptorService extends GenericService<CdObjModel> {
+export class DependencyDescriptorService  {
+  b = new BaseService<any>();
   svWorkstation: WorkstationService;
   progressTracker: ProgressTrackerService;
   svSsh: SshService;
   svWorkstationAccess: WorkstationAccessService;
   ctlWorkstationAccess: WorkstationAccessController;
   constructor() {
-    super(CdObjModel);
     this.svWorkstation = new WorkstationService();
     this.progressTracker = new ProgressTrackerService();
     this.svSsh = new SshService();
@@ -330,7 +331,7 @@ export class DependencyDescriptorService extends GenericService<CdObjModel> {
       - mod of mod.ComponentType.ModView
       Other imports:
       import {
-          CreateIParams,
+          IExtServiceInput,
           IQuery,
           IServiceInput,
           IUser,
@@ -354,7 +355,7 @@ export class DependencyDescriptorService extends GenericService<CdObjModel> {
       - mod of mod.ComponentType.ModView
       Other imports:
       import {
-          CreateIParams,
+          IExtServiceInput,
           IQuery,
           IServiceInput,
           IUser,
@@ -414,7 +415,7 @@ export class DependencyDescriptorService extends GenericService<CdObjModel> {
 
     this.b.logWithContext(this, 'rebuildDependencies:end', { moduleData });
     this.b.logWithContext(this, 'rebuildDependencies:controller[0]Dependencies', {
-      controllerData: moduleData.controllers[0].dependencies,
+      entityData: moduleData.controllers[0].dependencies,
     });
     return { state: true, data: moduleData };
   }

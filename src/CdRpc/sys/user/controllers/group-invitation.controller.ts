@@ -10,13 +10,11 @@ import { GenericController } from "../../base/generic-controller";
 
 // export class GroupInvitationController extends CdController {
 export class GroupInvitationController extends GenericController<GroupInvitationModel> {
-    b: BaseService;
-    svGroupInvitation: GroupInvitationService;
+    service: GroupInvitationService;
 
     constructor() {
         super();
-        this.b = new BaseService();
-        this.svGroupInvitation = new GroupInvitationService();
+        this.service = new GroupInvitationService();
     }
 
     // /**
@@ -44,7 +42,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
     //  */
     async Create(req: Request, res: Response) {
         try {
-            await this.svGroupInvitation.create(req, res);
+            await this.service.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Create');
         }
@@ -74,7 +72,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
     async Accept(req: Request, res: Response) {
         try {
             console.log('GroupInvitationController::Accept()/01')
-            await this.svGroupInvitation.accept(req, res);
+            await this.service.accept(req, res);
         } catch (e: any) {
             console.log('GroupInvitationController::Accept()/02')
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Create');
@@ -104,7 +102,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
      */
     async Get(req: Request, res: Response) {
         try {
-            await this.svGroupInvitation.getGroupInvitation(req, res);
+            await this.service.getGroupInvitation(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Get');
         }
@@ -112,7 +110,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
 
     async GetType(req: Request, res: Response) {
         try {
-            await this.svGroupInvitation.getGroupInvitationTypeCount(req, res);
+            await this.service.getGroupInvitationTypeCount(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Get');
         }
@@ -144,7 +142,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
      */
     async GetPaged(req: Request, res: Response) {
         try {
-            await this.svGroupInvitation.getPaged(req, res);
+            await this.service.getPaged(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:GetPaged');
         }
@@ -180,7 +178,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
         console.log('GroupInvitationController::Update()/01');
         try {
             console.log('GroupInvitationController::Update()/02');
-            await this.svGroupInvitation.update(req, res);
+            await this.service.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Update');
         }
@@ -209,7 +207,7 @@ export class GroupInvitationController extends GenericController<GroupInvitation
     //  */
     async Delete(req: Request, res: Response) {
         try {
-            await this.svGroupInvitation.delete(req, res);
+            await this.service.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupInvitationController:Update');
         }

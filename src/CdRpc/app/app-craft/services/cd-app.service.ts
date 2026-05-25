@@ -2,6 +2,7 @@
 
 /* eslint-disable style/brace-style */
 
+import { Request, Response } from 'express';
 import { basename, join, relative, sep } from 'path';
 import {
   CD_FX_FAIL,
@@ -17,7 +18,7 @@ import { CiCdRunnerService } from '../../../sys/dev-descriptor/services/cd-ci-ru
 import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service';
 import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model';
 import { mkdir, writeFile } from 'fs/promises';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import { inferCdObjType } from '../../../sys/utils/cd-naming.util';
 import { VersionService } from '../../../sys/dev-descriptor/services/version.service';
 import {
@@ -25,11 +26,12 @@ import {
   ExpressionContext,
   SeedConfig,
   SeedRoleConfig,
-} from '../models/cd-app.model.js';
-import { CdCtx, CdModuleDescriptor, DirectoryNode } from '../../../sys/dev-descriptor/index.js';
-import { ComponentType } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
+} from '../models/cd-app.model';
+import { CdCtx, CdModuleDescriptor, DirectoryNode } from '../../../sys/dev-descriptor/index';
+import { ComponentType } from '../../../sys/dev-descriptor/models/component-descriptor.model';
 import { CdScannerService } from '../../cd-bio-engine/services/cd-scanner.service';
-// import { cdApiVersionControl } from '../workshop/cd-app/workflow/test-bed/cd-shell-workshop.model.js';
+import { ICdExecutionContext } from '../../../sys/dev-descriptor/models/runtime-descriptor.model';
+// import { cdApiVersionControl } from '../workshop/cd-app/workflow/test-bed/cd-shell-workshop.model';
 
 export class CdAppService {
   cdToken;
@@ -47,6 +49,7 @@ export class CdAppService {
   }
 
   async create(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     moduleType: string,
@@ -61,6 +64,7 @@ export class CdAppService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.CREATE,
       cdObjType,
       moduleName,
@@ -168,6 +172,7 @@ export class CdAppService {
   }
 
   async update(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     moduleType: string,
@@ -183,6 +188,7 @@ export class CdAppService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.CREATE,
       cdObjType,
       moduleName,
@@ -262,6 +268,7 @@ export class CdAppService {
   }
 
   async derive(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     moduleType: string,
@@ -275,6 +282,7 @@ export class CdAppService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.DERIVE,
       cdObjType,
       moduleName,
@@ -297,6 +305,7 @@ export class CdAppService {
   }
 
   async upgrade(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -324,6 +333,7 @@ export class CdAppService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.UPGRADE,
       cdObjType,
       moduleName,
@@ -651,7 +661,7 @@ export class CdAppService {
   //   const cdDir = join(root, '.cd');
   //   await mkdir(cdDir, { recursive: true });
 
-  //   const filePath = join(cdDir, 'cd-app.descriptor.json');
+  //   const filePath = join(cdDir, 'cd-app.descriptoron');
   //   await writeFile(filePath, JSON.stringify(descriptor, null, 2));
 
   //   CdLog.success(`[CdAppService][writeDescriptor()]/filePath: ${filePath}`);
@@ -741,6 +751,7 @@ export class CdAppService {
    * ============================================================
    */
   async scan(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string, // e.g., 'test-bed'
     cdObjName: string, // e.g., 'cd-cli'
     oEnv: string, // e.g., 'cd-app'
@@ -762,7 +773,7 @@ export class CdAppService {
   // private async resolveCdObjPath(cdObjName: string, oEnv: string): Promise<string> {
   //   try {
   //     // Construct dynamic path to the workshop model
-  //     const modelPath = `../workshop/cd-app/workflow/${oEnv}/${cdObjName}-workshop.model.js`;
+  //     const modelPath = `../workshop/cd-app/workflow/${oEnv}/${cdObjName}-workshop.model`;
 
   //     CdLog.debug(`[CdAppService][resolveCdObjPath()] modelPath: ${modelPath}`);
 
@@ -802,7 +813,7 @@ export class CdAppService {
       }
 
       // Construct dynamic path to the workshop model
-      const modelPath = `../workshop/cd-app/workflow/${oEnv}/${cdObjName}-workshop.model.js`;
+      const modelPath = `../workshop/cd-app/workflow/${oEnv}/${cdObjName}-workshop.model`;
 
       CdLog.debug(`[CdAppService][${method}] modelPath: ${modelPath}`);
 
@@ -1315,7 +1326,7 @@ export class CdAppService {
     const cdDir = join(root, '.cd');
     await mkdir(cdDir, { recursive: true });
 
-    const filePath = join(cdDir, 'cd-app.descriptor.json');
+    const filePath = join(cdDir, 'cd-app.descriptoron');
 
     await writeFile(filePath, JSON.stringify(descriptor, null, 2));
 

@@ -45,13 +45,21 @@ export class CdObjTypeModel {
     cdObjTypeName: string;
 
     @Column(
-        'char',
         {
             name: 'doc_id',
-            length: 60,
             default: null
         })
-    docId?: string;
+    docId?: number;
+
+    @Column(
+        'varchar',
+        {
+            name: 'mod_craft_controller',
+            length: 50,
+            nullable: true
+        }
+    )
+    modCraftController?: string;
 
     // HOOKS
     // @BeforeInsert()

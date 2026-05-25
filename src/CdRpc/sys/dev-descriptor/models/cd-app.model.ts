@@ -1,19 +1,19 @@
 // src/CdCli/sys/dev-descriptor/models/cd-app.model.ts
-import type { CdRequest, ICdRequest } from '../../base/i-base.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import type { CdModuleDescriptor } from './cd-module-descriptor.model.js';
-import type { CiCdDescriptor } from './cicd-descriptor.model.js';
-import type { EnvironmentDescriptor } from './environment.model.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { LanguageDescriptor } from './language.model.js';
-import { LicenseDescriptor } from './license.model.js';
+// import type { CdRequest, ICdRequest } from '../../base/i-base';
+import type { BaseDescriptor } from './base-descriptor.model';
+import type { CdModuleDescriptor } from './cd-module-descriptor.model';
+import type { CiCdDescriptor } from './cicd-descriptor.model';
+import type { EnvironmentDescriptor } from './environment.model';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { LanguageDescriptor } from './language.model';
+import { LicenseDescriptor } from './license.model';
 import {
   CdControllerDescriptor,
   CdModelDescriptor,
   CdServiceDescriptor,
   ContributorDescriptor,
   VersionControlDescriptor,
-} from '../index.js';
+} from '../index';
 
 export interface CdAppDescriptor extends BaseDescriptor {
   $schema?: string;

@@ -1,20 +1,20 @@
 // src/CdCli/sys/dev-mode/dev-mode-commands/utils/command-utils.ts
 
-import { CdFxReturn } from '../../../../sys/base/i-base.js';
-import { createCommand } from '../subcommands/create.command.js';
-import { deleteCommand } from '../subcommands/delete.command.js';
-import { deriveCommand } from '../subcommands/derive.command.js';
-import { exitCommand } from '../subcommands/exit.command.js';
-import { migrateCommand } from '../subcommands/migrate.command.js';
-import { readCommand } from '../subcommands/read.command.js';
-import { showCommand } from '../subcommands/show.command.js';
-import { syncCommand } from '../subcommands/sync.command.js';
-import { updateCommand } from '../subcommands/update.command.js';
-import { upgradeCommand } from '../subcommands/upgrade.command.js';
-import { CiCdService } from '../../../../sys/dev-descriptor/index.js';
-import { testCommand } from '../subcommands/test.command.js';
+import { CdFxReturn } from '../../../../sys/base/i-base';
+import { createCommand } from '../subcommands/create.command';
+import { deleteCommand } from '../subcommands/delete.command';
+import { deriveCommand } from '../subcommands/derive.command';
+import { exitCommand } from '../subcommands/exit.command';
+import { migrateCommand } from '../subcommands/migrate.command';
+import { readCommand } from '../subcommands/read.command';
+import { showCommand } from '../subcommands/show.command';
+import { syncCommand } from '../subcommands/sync.command';
+import { updateCommand } from '../subcommands/update.command';
+import { upgradeCommand } from '../subcommands/upgrade.command';
+import { CiCdService } from '../../../../sys/dev-descriptor/index';
+import { testCommand } from '../subcommands/test.command';
 import { scan } from 'rxjs';
-import { scanCommand } from '../subcommands/scan.command.js';
+import { scanCommand } from '../subcommands/scan.command';
 
 
 

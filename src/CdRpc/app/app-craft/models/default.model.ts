@@ -1,23 +1,23 @@
 import { dirname, resolve } from 'path';
-import { HOME } from '../../../sys/utils/fs.util.js';
+import { HOME } from '../../../sys/utils/fs.util';
 import { fileURLToPath } from 'url';
-import config from '../../../../config.js';
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
-import { DependencyDescriptor } from '../../../sys/dev-descriptor/models/dependancy-descriptor.model.js';
-import { CdCtx } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { AppType } from '../../../sys/dev-descriptor/models/cd-app.model.js';
+import config from '../../../../config';
+import { DevModeAction } from '../../../sys/dev-mode/index';
+import { DependencyDescriptor } from '../../../sys/dev-descriptor/models/dependancy-descriptor.model';
+import { CdCtx } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { AppType } from '../../../sys/dev-descriptor/models/cd-app.model';
 import {
   CdControllerDescriptor,
   CdModelDescriptor,
   CdModuleDescriptor,
   CdServiceDescriptor,
   LanguageDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import { CdFxReturn } from '../../../sys/base/i-base';
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 export const MOD_CRAFT_OUTPUT_APP_DIR = resolve(
   HOME,
@@ -92,7 +92,7 @@ export const MOD_CRAFT_CONTROLLERS_TEMPLATE = resolve(
 export const MOD_CRAFT_MODEL_TEMPLATE = resolve(
   HOME,
   'cd-cli',
-  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/models/abcd.model.js',
+  'dist/CdCli/app/app-craft/workshop/cd-module/template/abcd/models/abcd.model',
 );
 
 export const MOD_CRAFT_SERVICES_TEMPLATE = resolve(
@@ -350,7 +350,7 @@ export const abcdServiceDependencies: DependencyDescriptor[] = [
     cdCtx: CdCtx.Sys,
     resolution: { method: 'import', path: '../../../sys/base/i-base' },
     usage: {
-      modulesUsed: ['CreateIParams', 'IQuery', 'IServiceInput', 'IUser', 'ISessionDataExt'],
+      modulesUsed: ['IExtServiceInput', 'IQuery', 'IServiceInput', 'IUser', 'ISessionDataExt'],
     },
   },
 

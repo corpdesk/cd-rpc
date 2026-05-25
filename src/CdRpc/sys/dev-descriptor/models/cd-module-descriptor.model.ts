@@ -1,20 +1,20 @@
-import type { CdServiceDescriptor } from './cd-service-descriptor.model.js';
-import type { EnvironmentDescriptor } from './environment.model.js';
-import type { LanguageDescriptor } from './language.model.js';
-import type { CdModelDescriptor } from './cd-model-descriptor.model.js';
+import type { CdServiceDescriptor } from './cd-service-descriptor.model';
+import type { EnvironmentDescriptor } from './environment.model';
+import type { LanguageDescriptor } from './language.model';
+import type { CdModelDescriptor } from './cd-model-descriptor.model';
 // import type {
 //   // CdServiceDescriptor,
 //   LicenseDescriptor,
 // } from './/service-descriptor.model';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import type { CdControllerDescriptor } from './cd-controller-descriptor.model.js';
-import type { CiCdDescriptor } from './cicd-descriptor.model.js';
+import type { BaseDescriptor } from './base-descriptor.model';
+import type { CdControllerDescriptor } from './cd-controller-descriptor.model';
+import type { CiCdDescriptor } from './cicd-descriptor.model';
 import type {
   ContributorDescriptor,
   VersionControlDescriptor,
-} from './version-control.model.js';
-import { LicenseDescriptor } from './license.model.js';
-import { AppType } from './cd-app.model.js';
+} from './version-control.model';
+import { LicenseDescriptor } from './license.model';
+import { AppType } from './cd-app.model';
 
 export interface CdModuleDescriptor extends BaseDescriptor {
   name: string;

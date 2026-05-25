@@ -1,7 +1,7 @@
 /* eslint-disable style/indent */
-import type { EnvironmentDescriptor } from './environment.model.js';
+import type { EnvironmentDescriptor } from './environment.model';
 // import type { BaseDescriptor } from './app-descriptor.model';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { BaseDescriptor } from './base-descriptor.model';
 
 // Main Descriptor Interface
 export interface DataStoreDescriptor extends DataStoreTypeDescriptor {

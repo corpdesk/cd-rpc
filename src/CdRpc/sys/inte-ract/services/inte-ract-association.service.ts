@@ -7,13 +7,15 @@ import { InteRactAssociationModel } from '../models/inte-ract-association.model'
 import { from, Observable } from 'rxjs';
 import { getConnection } from 'typeorm';
 import { GenericController } from "../../base/generic-controller";
+import { GenericService } from "../../base/generic-service";
 
 // export class InteRactAssociationService extends CdService {
-export class InteRactAssociationService extends GenericController<InteRactAssociationModel> {
+export class InteRactAssociationService extends GenericService<InteRactAssociationModel> {
     err: string[] = []; // error messages
     b: any; // instance of InteRactAssociationService
     cdToken: string;
-    serviceModel: InteRactAssociationModel;
+    serviceModel = InteRactAssociationModel;
+    docName = 'InteRactAssociationService';
     sessModel;
     isInitial; // the first time a bill is created other than being amended
     
@@ -29,9 +31,8 @@ export class InteRactAssociationService extends GenericController<InteRactAssoci
     dRules: any[];
 
     constructor() {
-        super()
+        super(InteRactAssociationModel)
         this.b = new BaseService();
-        this.serviceModel = new InteRactAssociationModel();
     }
 
     
@@ -102,7 +103,7 @@ export class InteRactAssociationService extends GenericController<InteRactAssoci
         console.log('InteRactAssociationService::createI()/createI()/01')
         if (await this.validatecreateI(req, res, serviceInputExt)) {
             console.log('InteRactAssociationService::createI()/02')
-            const account = await this.beforecreateI(req, res, serviceInputExt);
+            const account = await this.beforeCreateI(req, res, serviceInputExt);
             console.log('InteRactAssociationService::createI()/account:', account)
             const result = this.b.createI(req, res, serviceInputExt)
             const afterResult = await this.afterCreate(req, res, result)
@@ -207,7 +208,7 @@ export class InteRactAssociationService extends GenericController<InteRactAssoci
     //  * @param req
     //  * @param res
     //  */
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         console.log('InteRactAssociationService::update()/01');
         let q = this.b.getQuery(req);
         q = this.beforeUpdate(q);
@@ -398,7 +399,7 @@ export class InteRactAssociationService extends GenericController<InteRactAssoci
             })
     }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         console.log('InteRactAssociationService::delete()/q:', q)
         const serviceInput = {

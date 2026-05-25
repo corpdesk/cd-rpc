@@ -2,18 +2,17 @@
 import type {
   TransportCredentials,
   WorkstationAccessDescriptor,
-} from '../models/workstations.model.js';
+} from '../models/workstations.model';
 /* eslint-disable ts/no-require-imports */
 /* eslint-disable style/operator-linebreak */
-import type { CdFxReturn } from '../../base/i-base.js';
-import { SshService } from './ssh.service.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { GenericService } from '../../base/generic-service.js';
+import type { CdFxReturn } from '../../base/i-base';
+import { SshService } from './ssh.service';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { GenericService } from '../../base/generic-service';
 
-export class WorkstationAccessService extends GenericService<CdObjModel> {
+export class WorkstationAccessService{
   svSsh: SshService;
   constructor() {
-    super(CdObjModel);
     this.svSsh = new SshService();
   }
 

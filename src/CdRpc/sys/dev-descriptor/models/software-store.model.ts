@@ -1,7 +1,7 @@
 /* eslint-disable style/brace-style */
 // import type { DependencyDescriptor } from './app-descriptor.model';
 
-import type { DependencyDescriptor } from './dependancy-descriptor.model.js';
+import type { DependencyDescriptor } from './dependancy-descriptor.model';
 
 export const softwareDataStore: DependencyDescriptor[] = [
   {

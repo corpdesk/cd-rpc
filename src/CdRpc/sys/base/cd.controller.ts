@@ -69,7 +69,7 @@ export abstract class CdController {
      * Extract ID from request params
      */
     protected getId(req: Request): string | number {
-        return req.params.id;
+        return req.params.id as string;
     }
 
     /**

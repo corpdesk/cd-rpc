@@ -1,6 +1,6 @@
 import { CdFxReturn } from '../../../sys/base/i-base';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { DevModeAction } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { DevModeAction } from '../../../sys/dev-mode/models/dev-mode.model';
 import { GenControllerService } from '../services/gen-controller.service';
 import { BaseService } from '../../../sys/base/base.service';
 

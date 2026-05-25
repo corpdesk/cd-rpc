@@ -1,4 +1,4 @@
-import { dirname, join } from 'path';
+import path, { dirname, join, } from 'path';
 import { writeFile } from 'fs/promises';
 import prettier from 'prettier';
 import fs from 'fs/promises';
@@ -11,7 +11,7 @@ import {
   CdModuleDescriptor,
   CdModuleTypeDescriptor,
   FieldDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import {
   injectTypeBeforeSnakeSuffix,
   injectTypeBeforeSuffix,
@@ -19,25 +19,25 @@ import {
   toKebabCase,
   toPascalCase,
   toUniversalSnakeCase,
-} from '../../../sys/utils/cd-naming.util.js';
-import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/index.js';
+} from '../../../sys/utils/cd-naming.util';
 import {
   writeFileSafely,
   writePrettyFile,
   writePrettyFileSafely,
-} from '../../../sys/utils/fs.util.js';
+} from '../../../sys/utils/fs.util';
 // import { dirname, join } from "path";
 import { fileURLToPath } from 'url';
-import { getModCraftOutputDir, MOD_CRAFT_WORKSHOP_DIR } from '../models/app-craft.model.js';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+import { getModCraftOutputDir, MOD_CRAFT_WORKSHOP_DIR } from '../models/app-craft.model';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/index.js';
+import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/index';
 import { inspect } from 'util';
 import { CdModuleDescriptorService } from '../../../sys/dev-descriptor/services/cd-module-descriptor.service';
+import { CdFxReturn } from '../../../sys/base/i-base';
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 /**
  * This method should work for any module type.

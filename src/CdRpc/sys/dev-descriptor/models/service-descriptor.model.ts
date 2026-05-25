@@ -1,14 +1,14 @@
 // import type { DependencyDescriptor } from './app-descriptor.model';
 
-import type { ContainerManagerDescriptor } from './container-manager.model.descriptor.js';
-import type { DataStoreDescriptor } from './datastore-descriptor.model.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { ContainerManagerDescriptor } from './container-manager.model.descriptor';
+import type { DataStoreDescriptor } from './datastore-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model';
 import type {
   AccountCredentials,
   ProviderInstruction,
   ServiceProviderDescriptor,
   UsageMetrics,
-} from './service-provider.model.js';
+} from './service-provider.model';
 import {
   type DNSRecord,
   type FileStorageAccess,
@@ -23,7 +23,7 @@ import {
   type PortMapping,
   type VolumeMapping,
   type WorkstationAccessDescriptor,
-} from './workstations.model.js';
+} from './workstations.model';
 
 export interface BaseServiceDescriptor extends BaseDescriptor {
   serviceName: string;

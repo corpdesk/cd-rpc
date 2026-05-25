@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { GenericController } from "../../base/generic-controller";
 
 // export class SchedulerService{
-export class SchedulerService extends GenericController<SchedulerModel> {
+export class SchedulerService {
     getCalendarSumm(cuid){
         return [{}];
     }

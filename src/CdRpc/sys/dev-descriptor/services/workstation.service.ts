@@ -1,18 +1,17 @@
 /* eslint-disable style/operator-linebreak */
 /* eslint-disable style/brace-style */
-import type { CdFxReturn } from '../../base/i-base.js';
+import type { CdFxReturn } from '../../base/i-base';
 import type {
   OperatingSystemDescriptor,
   SshCredentials,
   WorkstationDescriptor,
-} from '../models/workstations.model.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { GenericService } from '../../base/generic-service.js';
+} from '../models/workstations.model';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { GenericService } from '../../base/generic-service';
 
-export class WorkstationService extends GenericService<CdObjModel> {
+export class WorkstationService {
   constructor() {
-    super(CdObjModel);
   }
   async executeScript(
     sshCredentials: SshCredentials,

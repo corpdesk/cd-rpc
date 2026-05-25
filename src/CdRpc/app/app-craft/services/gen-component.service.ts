@@ -11,15 +11,15 @@ import {
   getLanguageByName,
   LanguageName,
   languages,
-} from '../../../sys/dev-descriptor/index.js';
-import { toPascalCase } from '../../../sys/utils/cd-naming.util.js';
-import { BaseService, CdFxReturn, CdFxStateLevel } from '../../../sys/base/index.js';
-import { writePrettyFile, writePrettyFileSafely } from '../../../sys/utils/fs.util.js';
+} from '../../../sys/dev-descriptor/index';
+import { toPascalCase } from '../../../sys/utils/cd-naming.util';
+// import { BaseService, CdFxReturn, CdFxStateLevel } from '../../../sys/base/index';
+import { writePrettyFile, writePrettyFileSafely } from '../../../sys/utils/fs.util';
 import { fileURLToPath } from 'url';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
+import { DevModeAction } from '../../../sys/dev-mode/index';
 import { inspect } from 'util';
-import { ComponentGenerationConfig, MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model.js';
+import { ComponentGenerationConfig, MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model';
 
 // import fs from 'fs';
 import path from 'path';
@@ -35,14 +35,16 @@ import {
   Ext,
   PrimaryComponentType,
   Suffix,
-} from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
+} from '../../../sys/dev-descriptor/models/component-descriptor.model';
 import { GenControllerImplementationService } from './gen-controller-implementation.service';
 import { TemplateLoaderService } from './template-loader.service';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import { GenServiceImplementationService } from './gen-service-implementation.service';
+import { BaseService } from '../../../sys/base/base.service';
+import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
+// const __filename = fileURLToPath(import.meta.url);
 
 const execPromise = util.promisify(exec);
 
@@ -1163,7 +1165,7 @@ export class GenComponentService {
       model: 'model',
     };
 
-    return knownTypes[candidate] ?? candidate;
+    return knownTypes[candidate] ?? candidate as PrimaryComponentType;
   }
 
   // Reuse your enums/types

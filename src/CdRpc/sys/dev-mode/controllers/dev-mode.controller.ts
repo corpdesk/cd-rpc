@@ -1,27 +1,28 @@
 /* eslint-disable node/prefer-global/process */
 /* eslint-disable style/brace-style */
 /* eslint-disable no-case-declarations */
-import inquirer from 'inquirer';
-import autocompletePrompt from 'inquirer-autocomplete-prompt';
+// import inquirer from 'inquirer';
+// import autocompletePrompt from 'inquirer-autocomplete-prompt';
+
 
 // Register autocomplete prompt with Inquirer
-inquirer.registerPrompt('autocomplete', autocompletePrompt);
+// inquirer.registerPrompt("autocomplete", autocompletePrompt);
 
 export class DevModeController {
   private contextStack: string[] = []; // Stack to manage context (e.g., app → module → controller)
 
   // Mock data for demonstration
-  private apps = ['cd-api', 'cd-frontend', 'cd-admin'];
+  private apps = ["cd-api", "cd-frontend", "cd-admin"];
   private modules = {
-    'cd-api': ['users', 'orders', 'reports'],
-    'cd-frontend': ['dashboard', 'analytics', 'settings'],
-    'cd-admin': ['roles', 'permissions', 'logs'],
+    "cd-api": ["users", "orders", "reports"],
+    "cd-frontend": ["dashboard", "analytics", "settings"],
+    "cd-admin": ["roles", "permissions", "logs"],
   };
 
   private controllers = {
-    users: ['userController', 'profileController', 'authController'],
-    orders: ['orderController', 'paymentController', 'deliveryController'],
-    reports: ['reportController', 'chartController', 'exportController'],
+    users: ["userController", "profileController", "authController"],
+    orders: ["orderController", "paymentController", "deliveryController"],
+    reports: ["reportController", "chartController", "exportController"],
   };
 
   executeCommand(
@@ -30,7 +31,7 @@ export class DevModeController {
     actionName: string,
     options: any,
   ) {
-    if (moduleName === 'dev' && !controllerName && !actionName) {
+    if (moduleName === "dev" && !controllerName && !actionName) {
       // No additional arguments; launch REPL
       this.launchRepl();
     } else {
@@ -69,11 +70,11 @@ export class DevModeController {
   }
 
   async launchRepl() {
-    console.log('Entering development mode...');
-    console.log('Type `help` for a list of available commands.');
+    console.log("Entering development mode...");
+    console.log("Type `help` for a list of available commands.");
 
-    const repl = (await import('node:repl')).start({
-      prompt: '> ',
+    const repl = (await import("node:repl")).start({
+      prompt: "> ",
       eval: async (
         input: string,
         context: any,
@@ -85,8 +86,8 @@ export class DevModeController {
           const [command, ...args] = input.trim().split(/\s+/);
 
           // Exit the REPL on 'exit' command
-          if (command === 'exit') {
-            console.log('Exiting development mode...');
+          if (command === "exit") {
+            console.log("Exiting development mode...");
             process.exit(0);
           }
 
@@ -98,18 +99,18 @@ export class DevModeController {
       },
     });
 
-    repl.on('exit', () => {
-      console.log('Exited development mode.');
+    repl.on("exit", () => {
+      console.log("Exited development mode.");
       process.exit(0);
     });
   }
 
   async processReplCommand(command: string, args: string[], callback: any) {
     try {
-      if (command === 'show') {
+      if (command === "show") {
         const options = this.parseReplArgs(args); // Parse args like `--apps`
-        await this.processCommand('dev', 'show', 'execute', options);
-        callback(null, ''); // Clear REPL line after execution
+        await this.processCommand("dev", "show", "execute", options);
+        callback(null, ""); // Clear REPL line after execution
       } else {
         callback(new Error(`Unknown command: ${command}`));
       }
@@ -121,7 +122,7 @@ export class DevModeController {
   parseReplArgs(args: string[]): any {
     const options: any = {};
     for (let i = 0; i < args.length; i++) {
-      if (args[i].startsWith('--')) {
+      if (args[i].startsWith("--")) {
         const key = args[i].slice(2);
         options[key] = true;
       }
@@ -130,31 +131,83 @@ export class DevModeController {
   }
 
   // Auto-suggestion helper
+  // private async autoComplete(
+  //   choices: string[],
+  //   message: string,
+  // ): Promise<string> {
+  //   const { default: inquirer } = await import('inquirer');
+  //   const { selected } = await inquirer.prompt<{
+  //     selected: string;
+  //   }>([
+  //     {
+  //       type: 'autocomplete',
+  //       name: 'selected',
+  //       message,
+  //       source: async (_answersSoFar, input: string | undefined) => {
+  //         input = input || '';
+  //         return choices.filter((choice) =>
+  //           choice.toLowerCase().includes(input.toLowerCase()),
+  //         );
+  //       },
+  //     },
+  //   ]);
+
+  //   return selected;
+  // }
+  // private async autoComplete(
+  //   choices: string[],
+  //   message: string,
+  // ): Promise<string> {
+  //   const { default: inquirer } = await import("inquirer");
+  //   const autocomplete = await import("inquirer-autocomplete-prompt");
+
+  //   inquirer.registerPrompt("autocomplete", autocomplete.default);
+
+  //   const answers = await inquirer.prompt([
+  //     {
+  //       type: "autocomplete" as any,
+  //       name: "selected",
+  //       message,
+  //       source: async (_answersSoFar: any, input?: string) => {
+  //         input = input || "";
+
+  //         return choices.filter((choice) =>
+  //           choice.toLowerCase().includes(input.toLowerCase()),
+  //         );
+  //       },
+  //     },
+  //   ]);
+
+  //   return answers.selected;
+  // }
   private async autoComplete(
     choices: string[],
     message: string,
   ): Promise<string> {
-    const { selected } = await inquirer.prompt<{
-      selected: string;
-    }>([
-      {
-        type: 'autocomplete',
-        name: 'selected',
-        message,
-        source: async (_answersSoFar, input: string | undefined) => {
-          input = input || '';
-          return choices.filter((choice) =>
+    const { search } = await import("@inquirer/prompts");
+
+    const selected = await search({
+      message,
+
+      source: async (input?: string) => {
+        input = input || "";
+
+        return choices
+          .filter((choice) =>
             choice.toLowerCase().includes(input.toLowerCase()),
-          );
-        },
+          )
+          .map((choice) => ({
+            name: choice,
+            value: choice,
+          }));
       },
-    ]);
+    });
 
     return selected;
   }
 
   async showApps() {
-    console.log('Available apps:');
+    console.log("Available apps:");
     this.apps.forEach((app) => console.log(`- ${app}`));
   }
 
@@ -188,7 +241,7 @@ export class DevModeController {
     switch (level) {
       case 0:
         // Select an app
-        const app = await this.autoComplete(this.apps, 'Select an app to use:');
+        const app = await this.autoComplete(this.apps, "Select an app to use:");
         console.log(`Switched to app: ${app}`);
         this.contextStack.push(app);
         break;
@@ -198,7 +251,7 @@ export class DevModeController {
         const modules = this.modules[this.contextStack[0]] || [];
         const module = await this.autoComplete(
           modules,
-          'Select a module to use:',
+          "Select a module to use:",
         );
         console.log(`Switched to module: ${module}`);
         this.contextStack.push(module);
@@ -209,20 +262,20 @@ export class DevModeController {
         const controllers = this.controllers[this.contextStack[1]] || [];
         const controller = await this.autoComplete(
           controllers,
-          'Select a controller to use:',
+          "Select a controller to use:",
         );
         console.log(`Switched to controller: ${controller}`);
         this.contextStack.push(controller);
         break;
 
       default:
-        console.error('Cannot go deeper. Maximum context level reached.');
+        console.error("Cannot go deeper. Maximum context level reached.");
     }
   }
 
   async exitContext() {
     if (this.contextStack.length === 0) {
-      console.log('You are already at the top level.');
+      console.log("You are already at the top level.");
       return;
     }
     const exited = this.contextStack.pop();

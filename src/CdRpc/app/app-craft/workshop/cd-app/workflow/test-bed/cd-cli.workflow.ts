@@ -1,16 +1,16 @@
 import {
   CiCdDescriptor,
   CICdPipeline,
-} from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
-import { workshopConfig } from '../../../../models/app-craft.model.js';
+} from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model';
+import { workshopConfig } from '../../../../models/app-craft.model';
 import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
 import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
-import { HOME } from '../../../../../../sys/utils/fs.util.js';
-// import { MOD_CRAFT_OUTPUT_APP_DIR } from "../default.model.js";
+import { HOME } from '../../../../../../sys/utils/fs.util';
+// import { MOD_CRAFT_OUTPUT_APP_DIR } from "../default.model";
 import { inspect } from 'util';
-import { DevModeAction } from '../../../../../../sys/dev-mode/index.js';
-import { CdAppDescriptor, envCdCli } from '../../../../../../sys/dev-descriptor/index.js';
-import { MOD_CRAFT_OUTPUT_APP_DIR } from '../../../../models/default.model.js';
+import { DevModeAction } from '../../../../../../sys/dev-mode/index';
+import { CdAppDescriptor, envCdCli } from '../../../../../../sys/dev-descriptor/index';
+import { MOD_CRAFT_OUTPUT_APP_DIR } from '../../../../models/default.model';
 
 export class CdCliWorkFlow {
   createWorkFlow(descriptor: CdAppDescriptor, moduleType: string, extraParam: any): CiCdDescriptor {
@@ -673,7 +673,7 @@ export class CdCliWorkFlow {
                     token: extraParam.cdToken,
                   },
                   args: {
-                    path: `${cdApiDir}/.cd/cd-app.descriptor.json`,
+                    path: `${cdApiDir}/.cd/cd-app.descriptoron`,
                     contents: `${JSON.stringify(descriptor)}`,
                   },
                 },

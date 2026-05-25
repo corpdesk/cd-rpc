@@ -1,14 +1,14 @@
 import { createClient } from "redis";
 // import Redis from 'ioredis';
 import Redis, { Redis as RedisClient } from "ioredis";
-import { CdObjModel } from "../../moduleman/models/cd-obj.model.js";
+import { CdObjModel } from "../../moduleman/models/cd-obj.model";
 import { CD_FX_FAIL, CdFxReturn } from "../../base/i-base";
-import { CdObjTypeModel } from "../../moduleman/models/cd-obj-type.model.js";
+import { CdObjTypeModel } from "../../moduleman/models/cd-obj-type.model";
 import {
   CdDescriptor,
   mapDescriptorToCdObj,
-} from "../../dev-descriptor/models/dev-descriptor.model.js";
-import CdLog from "../../comm/controllers/cd-logger.controller.js";
+} from "../../dev-descriptor/models/dev-descriptor.model";
+import CdLog from "../../comm/controllers/cd-logger.controller";
 
 // export class CdCliStoreService {
 //   client: RedisClient;
@@ -291,7 +291,8 @@ export class CdCliStoreService {
 
       for (const d of cdObjects) {
         CdLog.debug("CdCliStoreService::createCdObj()/processing descriptor:", d);
-        const cdObj: CdObjModel = mapDescriptorToCdObj(d);
+        // const cdObj: CdObjModel = mapDescriptorToCdObj(d);
+        const cdObj: CdObjModel = d;
         cdObj.cdObjTypeGuid = descriptorCdObjTypeGuid;
         cdObj.cdObjGuid = cdObj.cdObjGuid || this.generateGuid();
 

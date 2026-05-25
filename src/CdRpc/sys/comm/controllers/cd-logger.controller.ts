@@ -4,7 +4,7 @@
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import { CdAiLogRouterService } from '../../../app/cd-ai/services/cd-ai-log-router.service';
-// import { CdAiLogRouterService } from '../../../app/cd-ai/index.js';
+// import { CdAiLogRouterService } from '../../../app/cd-ai/index';
 
 // let chalk: any;
 

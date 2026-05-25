@@ -1,10 +1,11 @@
-import config from '../../../../config.js';
+import config from '../../../../config';
 import { CdFxReturn } from '../../base/i-base';
-import { CdCliProfileController } from '../controllers/cd-cli-profile.cointroller.js';
-import { ProfileContainer } from '../models/cd-cli-profile.model.js';
-import CdLog from '../../comm/controllers/cd-logger.controller.js';
-import { SessonController } from '../../user/index.js';
+import { CdCliProfileController } from '../controllers/cd-cli-profile.cointroller';
+import { ProfileContainer } from '../models/cd-cli-profile.model';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+// import { SessonController } from '../../user/index';
 import { HttpService } from '../../base/http.service';
+import { SessonController } from '../../user/controllers/session.controller';
 
 export class ProfileStoreService {
   private static profilesRet: CdFxReturn<ProfileContainer> | null = null;

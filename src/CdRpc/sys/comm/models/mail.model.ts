@@ -103,6 +103,3 @@ export function stripHTML(html: string): string {
     ],
   });
 }
-// function uuidv4(): any {
-//   throw new Error("Function not implemented.");
-// }

@@ -1,8 +1,8 @@
-import type { FunctionDescriptor } from './function-descriptor.model.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import { ComponentDescriptor, ComponentType } from './component-descriptor.model.js';
-import type { DependencyDescriptor } from './dependancy-descriptor.model.js';
-import { ViewModelDescriptor } from './view-model-descriptor.model.js';
+import type { FunctionDescriptor } from './function-descriptor.model';
+import type { BaseDescriptor } from './base-descriptor.model';
+import { ComponentDescriptor, ComponentType } from './component-descriptor.model';
+import type { DependencyDescriptor } from './dependancy-descriptor.model';
+import { ViewModelDescriptor } from './view-model-descriptor.model';
 
 // export interface CdControllerDescriptor extends BaseDescriptor {
 //   name: string; // The name of the controller

@@ -1,10 +1,10 @@
-import type { CdVaultItem } from './cd-cli-vault.model.js';
+import type { CdVaultItem } from './cd-cli-vault.model';
 /* eslint-disable style/brace-style */
 // import { fileURLToPath } from 'node:url';
-import CdLog from '../../comm/controllers/cd-logger.controller.js';
-import { CdCliProfileController } from '../controllers/cd-cli-profile.cointroller.js';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { CdCliProfileController } from '../controllers/cd-cli-profile.cointroller';
 
-// const __filename = fileURLToPath(import.meta.url);
+// // const __filename = fileURLToPath(import.meta.url);
 
 // const __dirname = path.dirname(__filename);
 

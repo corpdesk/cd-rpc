@@ -10,7 +10,7 @@ import {
   CdFileDescriptor,
   CdFileWrapper,
   CdRoadmapDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 
 /**
  * Service to manage descriptor files with consistent file metadata.

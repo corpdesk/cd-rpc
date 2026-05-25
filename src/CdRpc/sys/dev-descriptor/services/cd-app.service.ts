@@ -1,22 +1,22 @@
 /* eslint-disable style/brace-style */
-import { CD_FX_FAIL, type CdFxReturn, type CdRequest, type IQuery } from '../../base/i-base.js';
-import type { CdDescriptor } from '../models/dev-descriptor.model.js';
-import { HttpService } from '../../base/http.service.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { DevDescriptorService } from './dev-descriptor.service.js';
-import { GenericService } from '../../base/generic-service.js';
-import { CdAutoGitService } from '../../../app/cd-auto-git/services/cd-auto-git.service.js';
-import { AppType, CdAppDescriptor } from '../models/cd-app.model.js';
-import { VersionService } from './version.service.js';
-import { join } from 'path';
+import { CD_FX_FAIL, type CdFxReturn, type IQuery } from '../../base/i-base';
+import type { CdDescriptor } from '../models/dev-descriptor.model';
+import { HttpService } from '../../base/http.service';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { DevDescriptorService } from './dev-descriptor.service';
+import { GenericService } from '../../base/generic-service';
+import { CdAutoGitService } from '../../../app/cd-auto-git/services/cd-auto-git.service';
+import { AppType, CdAppDescriptor } from '../models/cd-app.model';
+import { VersionService } from './version.service';
+import path, { join } from 'path';
 // import {
 //   MOD_CRAFT_WORKFLOW_DIR,
 //   MOD_CRAFT_WORKSHOP_DIR,
-// } from '../../../app/app-craft/workshop/cd-api/workflow/default.model.js';
+// } from '../../../app/app-craft/workshop/cd-api/workflow/default.model';
 import { readdirSync, readFileSync, statSync } from 'fs';
-import { toCamelCase, toPascalCase } from '../../utils/cd-naming.util.js';
-import { CdCtx, CdModuleDescriptor } from '../models/cd-module-descriptor.model.js';
+import { toCamelCase, toPascalCase } from '../../utils/cd-naming.util';
+import { CdCtx, CdModuleDescriptor } from '../models/cd-module-descriptor.model';
 import { inspect } from 'util';
 import {
   CiCdDescriptor,
@@ -24,18 +24,19 @@ import {
   CiCdService,
   envCdApi,
   VersionControlDescriptor,
-} from '../index.js';
-import { CdModuleDescriptorService } from './cd-module-descriptor.service.js';
-import { actionTargets, DevModeAction } from '../../dev-mode/index.js';
+} from '../index';
+import { CdModuleDescriptorService } from './cd-module-descriptor.service';
+import { actionTargets, DevModeAction } from '../../dev-mode/index';
 // import { App } from '~/app.js';
-import { MOD_CRAFT_WORKFLOW_APP_DIR } from '../../../app/app-craft/models/default.model.js';
-import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model.js';
+import { MOD_CRAFT_WORKFLOW_APP_DIR } from '../../../app/app-craft/models/default.model';
+import { MOD_CRAFT_WORKSHOP_DIR } from '../../../app/app-craft/models/app-craft.model';
 
-export class CdAppService extends GenericService<CdObjModel> {
+export class CdAppService {
   cdToken;
   svDevDescriptors;
+  serviceModel = CdObjModel;
+  docName = 'CdAppDescriptor';
   constructor() {
-    super(CdObjModel);
     this.svDevDescriptors = new DevDescriptorService();
   }
 
@@ -310,7 +311,7 @@ export class CdAppService extends GenericService<CdObjModel> {
         extraParams.actionTargetName,
         'workflow',
         oEnv,
-        `${cdObjName}-workshop.model.js`, // For app descriptors, use the cdObjName to point to the very app descriptor.
+        `${cdObjName}-workshop.model`, // For app descriptors, use the cdObjName to point to the very app descriptor.
       );
       CdLog.debug(
         `CdAppService::deriveCdAppDescriptor()/cdAppWorkshopModelPath:${cdAppWorkshopModelPath}`,

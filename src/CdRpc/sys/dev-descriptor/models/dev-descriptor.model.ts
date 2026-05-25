@@ -1,13 +1,13 @@
 import { dirname, resolve } from 'path';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import type { BaseDescriptor } from './base-descriptor.model';
 import { fileURLToPath } from 'url';
-import { HOME } from '../../utils/fs.util.js';
+import { HOME } from '../../utils/fs.util';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-export interface CdDescriptor extends CdObjModel {
+export interface CdDescriptor extends Omit<CdObjModel, 'jDetails'> {
   jDetails?: TypeDescriptor[];
 }
 
@@ -38,7 +38,7 @@ export const DEV_DESCRIPTORS_SERVICE_DIR = resolve(
 /**
  * Utility function to convert CdDescriptor into CdObjModel
  */
-export function mapDescriptorToCdObj(descriptor: CdObjModel): CdObjModel {
+export function mapDescriptorToCdObj(descriptor: CdDescriptor): CdObjModel {
   console.log('DevDescriptorModel::mapDescriptorToCdObj()/starting...');
   const cdObj = new CdObjModel();
   cdObj.cdObjId = descriptor.cdObjId;

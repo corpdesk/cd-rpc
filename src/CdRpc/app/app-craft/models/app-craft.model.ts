@@ -3,14 +3,16 @@ import { dirname, join, resolve } from 'node:path';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { AppCraftController } from '../controllers/app-craft.controller';
 import { fileURLToPath } from "url";
-import { HOME } from '../../../sys/utils/fs.util.js';
-import { AppType } from '../../../sys/dev-descriptor/index.js';
+// import { HOME } from '../../../sys/utils/fs.util';
+import { AppType } from '../../../sys/dev-descriptor/index';
 import { CdFxStateLevel, ICdRequest, ICdResponse } from './../../../sys/base/i-base';
+import { HOME } from '../../../sys/utils/fs.util';
+// import { HOME } from '../../../../utils/fs.util';
 
 
 // Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 export interface ITestLog {
   timestamp: string;
@@ -210,15 +212,15 @@ export const TEMPLATE_CMD = {
 
 export const MOD_CRAFT_WORKSHOP_DIR = resolve(
   HOME,
-  'cd-cli',
-  "dist/CdCli/app/app-craft/workshop"
+  'cd-rpc',
+  "dist/src/CdRpc/app/app-craft/workshop"
 );
 
-// /home/emp-12/cd-cli/dist/CdCli/app/app-craft/workshop/cd-api/output/cd-ai
+// /home/emp-12/cd-rpc/dist/CdRpc/app/app-craft/workshop/cd-api/output/cd-ai
 // export const MOD_CRAFT_OUTPUT_DIR = join(
 //   process.cwd(), // or adjust to match dist path if needed
 //   "dist",
-//   "CdCli",
+//   "CdRpc",
 //   "app",
 //   "app-craft",
 //   "workshop",
@@ -266,11 +268,11 @@ export function workshopConfig(
   moduleType: string | null,
 ): WorkshopConfig {
   CdLog.debug('Starting function workshopConfig()');
-  const basePath = `./src/CdCli/app/app-craft/workshop/${moduleType}`;
+  const basePath = `./src/CdRpc/app/app-craft/workshop/${moduleType}`;
   return {
     moduleTemplateRepo: `https://github.com/corpdesk/abcd.git`,
     moduleTemplatePath: `${basePath}/template/abcd`,
-    moduleModelPath: `${basePath}/model/${moduleName}-module.descriptor.json`,
+    moduleModelPath: `${basePath}/model/${moduleName}-module.descriptoron`,
     moduleWorkflowPaths: {
       create: `${basePath}/workflow/${moduleName}.create.workflow.json`,
       createTs: `${basePath}/workflow/${moduleName}.create.workflow.ts`,

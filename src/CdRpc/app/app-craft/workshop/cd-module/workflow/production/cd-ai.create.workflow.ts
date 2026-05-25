@@ -1,13 +1,13 @@
-import { CdModuleDescriptor } from "../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js";
-import { CiCdDescriptor } from "../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js";
-import { workshopConfig } from "../../../../models/app-craft.model.js";
+import { CdModuleDescriptor } from "../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model";
+import { CiCdDescriptor } from "../../../../../../sys/dev-descriptor/models/cicd-descriptor.model";
+import { workshopConfig } from "../../../../models/app-craft.model";
 import CdLog from "../../../../../../sys/comm/controllers/cd-logger.controller";
 import { CdFxStateLevel } from "../../../../../../sys/base/i-base";
-import { HOME } from "../../../../../../sys/utils/fs.util.js";
-// import { MOD_CRAFT_OUTPUT_DIR } from "../default.model.js";
+import { HOME } from "../../../../../../sys/utils/fs.util";
+// import { MOD_CRAFT_OUTPUT_DIR } from "../default.model";
 import { inspect } from "util";
-import { MOD_CRAFT_OUTPUT_API_DIR, MOD_CRAFT_OUTPUT_MODULE_DIR } from "../../../../../../app/app-craft/models/default.model.js";
-// import { MOD_CRAFT_OUTPUT_DIR } from "../../../cd-module/workflow/default.model.js";
+import { MOD_CRAFT_OUTPUT_API_DIR, MOD_CRAFT_OUTPUT_MODULE_DIR } from "../../../../../../app/app-craft/models/default.model";
+// import { MOD_CRAFT_OUTPUT_DIR } from "../../../cd-module/workflow/default.model";
 
 export class CdAiWorkFlow {
   createWorkFlow(

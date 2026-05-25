@@ -6,17 +6,17 @@
  * - other custom environment
  *
  * The difference can be enforced with the BaseDescriptor.context
- * The context be be in the name of the application or profile name at the cd-cli.config.json
+ * The context be be in the name of the application or profile name at the cd-cli.configon
  */
 /* eslint-disable style/operator-linebreak */
-import type { CdDescriptor } from '../models/dev-descriptor.model.js';
-import { CD_FX_FAIL, type CdFxReturn, type IQuery } from '../../base/i-base.js';
-import { CdCliProfileController } from '../../cd-cli/controllers/cd-cli-profile.cointroller.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import {} from '../models/environment.model.js';
-import { CiCdService } from '../services/ci-cd.service.js';
-import { EnvironmentService } from '../services/environment.service.js';
-import { DevDescriptorController } from './dev-descriptor.controller.js';
+import type { CdDescriptor } from '../models/dev-descriptor.model';
+import { CD_FX_FAIL, type CdFxReturn, type IQuery } from '../../base/i-base';
+import { CdCliProfileController } from '../../cd-cli/controllers/cd-cli-profile.cointroller';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import {} from '../models/environment.model';
+import { CiCdService } from '../services/ci-cd.service';
+import { EnvironmentService } from '../services/environment.service';
+import { DevDescriptorController } from './dev-descriptor.controller';
 
 export class EnvironmentController {
   svEnvironment: EnvironmentService;

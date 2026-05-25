@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { CiCdService } from '../../../../sys/dev-descriptor/index.js';
-import { CdFxReturn } from '../../../../sys/base/i-base.js';
+import { CiCdService } from '../../../../sys/dev-descriptor/index';
+import { CdFxReturn } from '../../../../sys/base/i-base';
 
 
 // ✅ Shared post-execution handler

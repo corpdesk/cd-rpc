@@ -1,7 +1,7 @@
 // import type { LanguageDescriptor } from './dev-descriptor.model';
 
-import { CdFxReturn } from '../../base/i-base.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import { CdFxReturn } from '../../base/i-base';
+import type { BaseDescriptor } from './base-descriptor.model';
 
 // export interface LanguageDescriptor extends BaseDescriptor {
 //   name: string; // Name of the language

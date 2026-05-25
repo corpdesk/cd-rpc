@@ -2,7 +2,7 @@ import {
   CdControllerDescriptor,
   CdModelDescriptor,
   CdModuleDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import {
   CdFxReturn,
   CdFxStateLevel,
@@ -11,19 +11,21 @@ import {
   IQuery,
   MANAGED_FIELDS,
 } from '../../../sys/base/i-base';
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
-import { toCamelCase, toPascalCase } from '../../../sys/utils/cd-naming.util.js';
+import { DevModeAction } from '../../../sys/dev-mode/index';
+import { toCamelCase, toPascalCase } from '../../../sys/utils/cd-naming.util';
 import { BaseService } from '../../../sys/base/base.service';
 import { HttpService } from '../../../sys/base/http.service';
-import { ITestLog } from '../models/app-craft.model.js';
+import { ITestLog } from '../models/app-craft.model';
 import { TestDataService } from './test-data.service';
-import { SessonController } from '../../../sys/user/index.js';
-import { CdCliProfileController } from '../../../sys/cd-cli/index.js';
-import config from '../../../../config.js';
+// import { SessonController } from '../../../sys/user/controllers/session.controller';
+import { SessonController } from '../../../sys/user/controllers/session.controller';
+import { CdCliProfileController } from '../../../sys/cd-cli/index';
+import config from '../../../../config';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { CrudTestConfig, CrudTestResult } from '../models/default.model.js';
+import { CrudTestConfig, CrudTestResult } from '../models/default.model';
 import Table from 'cli-table3';
 import chalk from 'chalk';
+
 
 export class CrudTestService {
   b = new BaseService();

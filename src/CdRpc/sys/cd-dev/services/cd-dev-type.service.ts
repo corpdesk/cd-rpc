@@ -10,17 +10,20 @@ import { CdDevTypeModel } from '../models/cd-dev-type.model';
 import { siGet } from '../../base/base.model';
 import { Logging } from '../../base/winston.log';
 import { CdDevViewModel } from '../models/cd-dev-view.model';
+import { GenericService } from "../../base/generic-service";
 
 
 
-export class CdDevTypeService extends CdService {
+// export class CdDevTypeService extends CdService {
+export class CdDevTypeService extends GenericService<CdDevTypeModel> {
     logger: Logging;
     b: any; // instance of BaseService
     cdToken: string;
     srvSess: SessionService;
     srvUser: UserService;
     user: IUser;
-    serviceModel: CdDevTypeModel;
+    serviceModel = CdDevTypeModel;
+    docName: string;
     modelName: "CdDevTypeModel";
     sessModel;
     // moduleModel: ModuleModel;
@@ -36,10 +39,9 @@ export class CdDevTypeService extends CdService {
     dRules: any[];
 
     constructor() {
-        super()
+        super(CdDevTypeModel)
         this.b = new BaseService();
         this.logger = new Logging();
-        this.serviceModel = new CdDevTypeModel();
     }
 
      /**
@@ -197,7 +199,7 @@ export class CdDevTypeService extends CdService {
         let data = (req as any).post.dat.f_vals[0].data
         this.logger.logInfo('CdDevTypeService::createM()/data:', data)
         // this.b.models.push(CdDevTypeModel)
-        // this.b.init(req, res)
+        // this.b.init()
 
         for (var cdDevData of data) {
             this.logger.logInfo('cdDevData', cdDevData)
@@ -304,7 +306,7 @@ export class CdDevTypeService extends CdService {
         }
     }
 
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         // this.logger.logInfo('CdDevTypeService::update()/01');
         let q = this.b.getQuery(req);
         q = this.beforeUpdate(q);
@@ -649,7 +651,7 @@ export class CdDevTypeService extends CdService {
             })
     }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         this.logger.logInfo('CdDevTypeService::delete()/q:', q)
         const serviceInput = {

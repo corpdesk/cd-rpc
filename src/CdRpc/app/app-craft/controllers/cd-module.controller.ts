@@ -1,8 +1,10 @@
+import { Request, Response } from 'express';
 import { CdAssertReturn, CdFxReturn, IQuery } from '../../../sys/base/i-base';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { CdModuleService } from '../services/cd-module.service';
 import { TestBedService } from '../services/test-bed.service';
+import { ICdExecutionContext } from '../../../sys/dev-descriptor/models/runtime-descriptor.model';
 
 export class CdModuleController {
   svCdModule: CdModuleService;
@@ -21,6 +23,7 @@ export class CdModuleController {
    * @returns
    */
   async create(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -35,10 +38,10 @@ export class CdModuleController {
     switch (oEnv) {
       case 'workshop':
         CdLog.debug(`CdModuleController::create()/case:workshop`);
-        return this.svCdModule.create(actionTargetName, moduleName, oEnv, repoName);
+        return this.svCdModule.create(cdCtx, actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
         CdLog.debug(`CdModuleController::create()/case:test-bed`);
-        return this.svTestBed.create(actionTargetName, moduleName, oEnv, repoName);
+        return this.svTestBed.create(cdCtx, actionTargetName, moduleName, oEnv, repoName);
     }
 
     return {
@@ -53,6 +56,7 @@ export class CdModuleController {
   }
 
   async update(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -67,10 +71,10 @@ export class CdModuleController {
     switch (oEnv) {
       case 'workshop':
         CdLog.debug(`CdModuleController::update()/case:workshop`);
-        return this.svCdModule.update(actionTargetName, moduleName, oEnv, repoName);
+        return this.svCdModule.update(cdCtx, actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
         CdLog.debug(`CdModuleController::update()/case:test-bed`);
-        return this.svTestBed.update(actionTargetName, moduleName, oEnv, repoName);
+        return this.svTestBed.update(cdCtx, actionTargetName, moduleName, oEnv, repoName);
     }
 
     return {
@@ -81,6 +85,7 @@ export class CdModuleController {
   }
 
   async delete(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -95,10 +100,10 @@ export class CdModuleController {
     switch (oEnv) {
       case 'workshop':
         CdLog.debug(`CdModuleController::delete()/case:workshop`);
-        return this.svCdModule.delete(actionTargetName, moduleName, oEnv, repoName);
+        return this.svCdModule.delete(cdCtx, actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
         CdLog.debug(`CdModuleController::delete()/case:test-bed`);
-        return this.svTestBed.delete(actionTargetName, moduleName, oEnv, repoName);
+        return this.svTestBed.delete(cdCtx, actionTargetName, moduleName, oEnv, repoName);
     }
 
     return {
@@ -109,6 +114,7 @@ export class CdModuleController {
   }
 
   async test(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -123,10 +129,10 @@ export class CdModuleController {
     switch (oEnv) {
       case 'workshop':
         CdLog.debug(`CdModuleController::test()/case:workshop`);
-        return this.svCdModule.test(actionTargetName, moduleName, oEnv, repoName);
+        return this.svCdModule.test(cdCtx, actionTargetName, moduleName, oEnv, repoName);
       case 'test-bed':
         CdLog.debug(`CdModuleController::test()/case:test-bed`);
-        return this.svTestBed.test(actionTargetName, moduleName, oEnv, repoName);
+        return this.svTestBed.test(cdCtx, actionTargetName, moduleName, oEnv, repoName);
     }
 
     return {
@@ -138,6 +144,7 @@ export class CdModuleController {
 
   
   async upgrade(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -155,6 +162,7 @@ export class CdModuleController {
       case 'workshop':
         CdLog.debug(`CdModuleController::upgrade()/case:workshop`);
         return this.svCdModule.upgrade(
+          cdCtx,
           actionTargetName,
           moduleName,
           oEnv,
@@ -165,6 +173,7 @@ export class CdModuleController {
       case 'test-bed':
         CdLog.debug(`CdModuleController::upgrade()/case:test-bed`);
         return this.svTestBed.upgrade(
+          cdCtx,
           actionTargetName,
           moduleName,
           oEnv,

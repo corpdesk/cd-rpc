@@ -1,12 +1,12 @@
-import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
-import { workshopConfig } from '../../../../models/app-craft.model.js';
+import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model';
+import { workshopConfig } from '../../../../models/app-craft.model';
 import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
 import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { inspect } from 'util';
-import { DevModeAction } from '../../../../../../sys/dev-mode/index.js';
-import { MOD_CRAFT_WORKSHOP_DIR } from '../../../../models/default.model.js';
-import { AppType } from '../../../../../../sys/dev-descriptor/index.js';
+import { DevModeAction } from '../../../../../../sys/dev-mode/index';
+import { MOD_CRAFT_WORKSHOP_DIR } from '../../../../models/default.model';
+import { AppType } from '../../../../../../sys/dev-descriptor/index';
 
 export class CdRfcWorkFlow {
   appType = AppType.CdApiModule;

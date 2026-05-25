@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { BaseService } from '../../base/base.service';
 
 // export class CalendarController {
-export class CalendarController extends GenericController<CalendarModel> {
-    b: BaseService;
+export class CalendarController {
+    b: BaseService<any>;
     constructor(){
         this.b = new BaseService();
     }

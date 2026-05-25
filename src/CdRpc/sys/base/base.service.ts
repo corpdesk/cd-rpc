@@ -1,3 +1,4 @@
+import { DataSource, Repository } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import * as Lá from "lodash";
 import { instanceToPlain } from "class-transformer";
@@ -19,6 +20,8 @@ import {
   ValidationRules,
   AbstractBaseService,
   CdFxReturn,
+  ICdWireOptions,
+  DEFAULT_RESPONSE,
 } from "./i-base";
 import { EntityMetadata, ObjectLiteral, UpdateResult } from "typeorm";
 import { NextFunction, Request, Response } from "express";
@@ -41,6 +44,10 @@ import { JsonHelper } from "../utils/json-helper";
 import { inspect } from "util";
 import chalk from "chalk";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { toKebabCase } from "../utils/cd-naming.util";
+import { RuntimeContextService } from "./runtime-context.service";
+import { pathToFileURL } from "url";
+// import { CdModelController} from "../../app/app-craft/controllers/cd-model.controller";
 
 const USER_ANON = 1000;
 const INVALID_REQUEST = "invalid request";
@@ -54,7 +61,7 @@ export class BaseService<
   T extends ObjectLiteral,
 > extends AbstractBaseService<T> {
   cdToken!: string;
-  cdResp: ICdResponse; // cd response
+  cdResp: ICdResponse = DEFAULT_RESPONSE; // cd response
   cls!: string;
   err: string[] = []; // error messages
   db: any;
@@ -101,7 +108,7 @@ export class BaseService<
   private docRepository: any;
   ds: any = null;
 
-  async init(req: Request, res: Response) {
+  async init() {
     this.logger.logDebug("BaseService::init()/01:");
     try {
       if (!this.db) {
@@ -171,84 +178,353 @@ export class BaseService<
    * @param clsCtx
    * @returns
    */
+  // async resolveCls(req: Request, res: Response, clsCtx: any) {
+  //   const svSess = new SessionService();
+
+  //   try {
+  //     this.logger.logDebug("BaseService::resolveCls()/01:");
+  //     this.logger.logDebug("BaseService::resolveCls/clsCtx.path:", clsCtx.path);
+
+  //     // 1. Import controller module safely
+  //     let eImport: any;
+  //     try {
+  //       eImport = await import(clsCtx.path);
+  //     } catch (err) {
+  //       this.logger.logDebug("BaseService::resolveCls()/02:");
+  //       const eCode = "BaseService:resolveCls";
+  //       const i = {
+  //         messages: [
+  //           `Controller file not found at path: ${clsCtx.path};Error:${(err as Error).toString()}`,
+  //         ],
+  //         code: eCode,
+  //         app_msg: `Error at ${eCode}: Error:${(err as Error).toString()}`,
+  //       };
+  //       await this.setAppState(false, i, svSess.sessResp);
+  //       return await this.respond(req, res);
+  //     }
+
+  //     this.logger.logDebug("BaseService::resolveCls()/03:");
+
+  //     // 2. Validate controller class
+  //     const eCls = eImport[clsCtx.clsName];
+  //     if (!eCls) {
+  //       this.logger.logDebug("BaseService::resolveCls()/04:");
+  //       const eCode = "BaseService:resolveCls";
+  //       const i = {
+  //         messages: [
+  //           `Controller class '${clsCtx.clsName}' not found in ${clsCtx.path}`,
+  //         ],
+  //         code: eCode,
+  //         app_msg: `Error at ${eCode}: Invalid controller class.`,
+  //       };
+  //       await this.setAppState(false, i, svSess.sessResp);
+  //       return await this.respond(req, res);
+  //     }
+
+  //     this.logger.logDebug("BaseService::resolveCls()/05:");
+
+  //     // 3. Instantiate controller
+  //     const cls = new eCls();
+  //     this.ds = clsCtx.dataSource;
+
+  //     this.logger.logDebug(
+  //       `BaseService::resolveCls()/(req as any).post:${inspect((req as any).post)}`,
+  //     );
+  //     this.logger.logDebug("BaseService::resolveCls()/06:");
+
+  //     // 4. Add session data if available
+  //     if (this.sess) {
+  //       (req as any).post.sessData = this.sess;
+  //     }
+
+  //     // 5. Validate action existence
+  //     if (typeof cls[clsCtx.action] !== "function") {
+  //       this.logger.logDebug("BaseService::resolveCls()/07:");
+  //       const eCode = "BaseService:resolveCls";
+  //       const i = {
+  //         messages: [
+  //           `Action '${clsCtx.action}' not found in controller '${clsCtx.clsName}'`,
+  //         ],
+  //         code: eCode,
+  //         app_msg: `Error at ${eCode}: Invalid controller action.`,
+  //       };
+  //       await this.setAppState(false, i, svSess.sessResp);
+  //       return await this.respond(req, res);
+  //     }
+  //     this.logger.logDebug("BaseService::resolveCls()/08:");
+  //     // 6. Execute controller action
+  //     await cls[clsCtx.action](req, res);
+  //   } catch (e: any) {
+  //     await this.serviceErr(req, res, e, "BaseService:resolveCls");
+  //   }
+  // }
   async resolveCls(req: Request, res: Response, clsCtx: any) {
-    const svSess = new SessionService();
-
     try {
-      this.logger.logDebug("BaseService::resolveCls()/01:");
-      this.logger.logDebug("BaseService::resolveCls/clsCtx.path:", clsCtx.path);
+      const svSess = new SessionService();
 
-      // 1. Import controller module safely
-      let eImport: any;
+      // Testing if we are able to extract the cd execution context from the request.
+      // This context is expected to be set by the API Gateway and should contain information
+      // about the request that is relevant for the execution of the CD logic, such as requestId, user info, etc.
+      let cdCtx = RuntimeContextService.get();
+      this.logger.logDebug(
+        `BaseService::resolveCls()/ cdCtx.requestId:${cdCtx.requestId}`,
+      );
+
+      /////////////////////////////////////////////////////////////
+      // Resolve controller module
+      /////////////////////////////////////////////////////////////
+
+      let importedModule: any;
+
       try {
-        eImport = await import(clsCtx.path);
-      } catch (err) {
-        this.logger.logDebug("BaseService::resolveCls()/02:");
-        const eCode = "BaseService:resolveCls";
-        const i = {
-          messages: [
-            `Controller file not found at path: ${clsCtx.path};Error:${(err as Error).toString()}`,
-          ],
-          code: eCode,
-          app_msg: `Error at ${eCode}: Missing controller file:Error:${(err as Error).toString()}`,
-        };
-        await this.setAppState(false, i, svSess.sessResp);
+        this.logger.logDebug(
+          `BaseService::resolveCls()/ clsCtx.path:${clsCtx.path}`,
+        );
+        importedModule = await import(clsCtx.path);
+      } catch (e: any) {
+        this.logger.logError(
+          `BaseService::resolveCls()/ Error1:${(e as Error).message}`,
+        );
+        const eCode = "BaseService:resolveCls:Import";
+
+        await this.setAppState(
+          false,
+          {
+            messages: [
+              `Controller import failed`,
+              `path:${clsCtx.path}`,
+              `error:${(e as Error).message}`,
+            ],
+            code: eCode,
+            app_msg: (e as Error).message,
+          },
+          svSess.sessResp,
+        );
+
         return await this.respond(req, res);
       }
 
-      this.logger.logDebug("BaseService::resolveCls()/03:");
+      /////////////////////////////////////////////////////////////
+      // Resolve controller class
+      /////////////////////////////////////////////////////////////
 
-      // 2. Validate controller class
-      const eCls = eImport[clsCtx.clsName];
-      if (!eCls) {
-        this.logger.logDebug("BaseService::resolveCls()/04:");
-        const eCode = "BaseService:resolveCls";
-        const i = {
-          messages: [
-            `Controller class '${clsCtx.clsName}' not found in ${clsCtx.path}`,
-          ],
-          code: eCode,
-          app_msg: `Error at ${eCode}: Invalid controller class.`,
-        };
-        await this.setAppState(false, i, svSess.sessResp);
+      const ControllerClass = importedModule[clsCtx.clsName];
+
+      if (!ControllerClass) {
+        this.logger.logError(
+          `BaseService::resolveCls()/ Error2: Controller class '${clsCtx.clsName}' not found in ${clsCtx.path}`,
+        );
+        const eCode = "BaseService:resolveCls:Controller";
+
+        await this.setAppState(
+          false,
+          {
+            messages: [`Controller class not found`, `class:${clsCtx.clsName}`],
+            code: eCode,
+            app_msg: "Invalid controller class",
+          },
+          svSess.sessResp,
+        );
+
         return await this.respond(req, res);
       }
 
-      this.logger.logDebug("BaseService::resolveCls()/05:");
+      /////////////////////////////////////////////////////////////
+      // Instantiate controller
+      /////////////////////////////////////////////////////////////
 
-      // 3. Instantiate controller
-      const cls = new eCls();
+      const controller = new ControllerClass();
+
       this.ds = clsCtx.dataSource;
 
-      this.logger.logDebug(
-        `BaseService::resolveCls()/(req as any).post:${inspect((req as any).post)}`,
-      );
-      this.logger.logDebug("BaseService::resolveCls()/06:");
+      /////////////////////////////////////////////////////////////
+      // Backward compatibility
+      /////////////////////////////////////////////////////////////
 
-      // 4. Add session data if available
       if (this.sess) {
         (req as any).post.sessData = this.sess;
       }
 
-      // 5. Validate action existence
-      if (typeof cls[clsCtx.action] !== "function") {
-        this.logger.logDebug("BaseService::resolveCls()/07:");
-        const eCode = "BaseService:resolveCls";
-        const i = {
-          messages: [
-            `Action '${clsCtx.action}' not found in controller '${clsCtx.clsName}'`,
-          ],
-          code: eCode,
-          app_msg: `Error at ${eCode}: Invalid controller action.`,
-        };
-        await this.setAppState(false, i, svSess.sessResp);
+      /////////////////////////////////////////////////////////////
+      // Inject runtime context
+      /////////////////////////////////////////////////////////////
+
+      if (cdCtx) {
+        this.logger.logDebug(
+          `BaseService::resolveCls()/ Starting to inject runtime context into controller...`,
+        );
+        this.logger.logDebug(
+          `BaseService::resolveCls()/ this.cdResp.app_state:${this.cdResp.app_state}`,
+        );
+        cdCtx.response = this.cdResp;
+        cdCtx.response.app_state = this.cdResp.app_state;
+
+        // RuntimeContextService.set(cdCtx);
+        RuntimeContextService.update(cdCtx);
+
+        // legacy bridge
+        (req as any).cdCtx = cdCtx;
+
+        // optional controller injection
+        controller.cdCtx = cdCtx;
+      }
+
+      /////////////////////////////////////////////////////////////
+      // Validate action
+      /////////////////////////////////////////////////////////////
+
+      const action = controller[clsCtx.action];
+      this.logger.logDebug(`BaseService::resolveCls()/ action:${action}`);
+
+      if (typeof action !== "function") {
+        this.logger.logDebug(
+          `BaseService::resolveCls()/ Error3: Action '${clsCtx.action}' not found in controller '${clsCtx.clsName}'`,
+        );
+        const eCode = "BaseService:resolveCls:Action";
+
+        await this.setAppState(
+          false,
+          {
+            messages: [
+              `Controller action not found`,
+              `action:${clsCtx.action}`,
+            ],
+            code: eCode,
+            app_msg: "Invalid controller action",
+          },
+          svSess.sessResp,
+        );
+
         return await this.respond(req, res);
       }
-      this.logger.logDebug("BaseService::resolveCls()/08:");
-      // 6. Execute controller action
-      await cls[clsCtx.action](req, res);
+
+      /////////////////////////////////////////////////////////////
+      // Execute action
+      /////////////////////////////////////////////////////////////
+
+      this.logger.logDebug(
+        `BaseService::resolveCls()/executing action:${clsCtx.action}`,
+      );
+
+      /**
+       * Backward compatible invocation
+       *
+       * OLD:
+       *   action(req,res)
+       *
+       * FUTURE:
+       *   action(req,res,cdCtx)
+       */
+
+      let ret: any;
+      if (action.length >= 3) {
+        // await controller[clsCtx.action](req, res, cdCtx);
+        await action.call(controller, req, res, cdCtx);
+      } else {
+        // await controller[clsCtx.action](req, res);
+        await action.call(controller, req, res);
+      }
+
+      // this.cdResp.data = ret;
+      // await this.respond(req, res);
+
+      // this.logger.logDebug(
+      //   `BaseService::resolveCls()/completed requestId:${cdCtx?.requestId}`,
+      // );
     } catch (e: any) {
-      await this.serviceErr(req, res, e, "BaseService:resolveCls");
+      return await this.serviceErr(req, res, e, "BaseService:resolveCls");
+    } finally {
+      /////////////////////////////////////////////////////////////
+      // Cleanup runtime context
+      /////////////////////////////////////////////////////////////
+
+      RuntimeContextService.destroy();
+    }
+  }
+
+  private async respondWithError(
+    req: Request,
+    res: Response,
+    svSess: SessionService,
+    code: string,
+    message: string,
+  ) {
+    const i = {
+      messages: [message],
+      code,
+      app_msg: message,
+    };
+
+    await this.setAppState(false, i, svSess.sessResp);
+
+    return await this.respond(req, res);
+  }
+
+  async invokeCdRequest<T = any>(
+    cdRequest?: ICdRequest,
+    options?: ICdWireOptions,
+  ): Promise<CdFxReturn<T>> {
+    this.logger.logDebug(
+      "BaseService::invokeCdRequest() → Starting dispatch...",
+    );
+
+    if (!cdRequest) {
+      return { state: false, message: "cdRequest is undefined or null." };
+    }
+
+    this.logger.logDebug(
+      `BaseService::invokeCdRequest() → cdRequest received: ${inspect(cdRequest, { depth: 5 })}`,
+    );
+
+    const { ctx, m, c, a, args, dat } = cdRequest;
+
+    try {
+      const contextRoot = ctx.toLowerCase() === "sys" ? "sys" : "app";
+      // const moduleName = `${m}`;
+      const controllerName = `${c}Controller`;
+      const controllerkebab = toKebabCase(c);
+      const modulePath = `../../${contextRoot}/${m}/controllers/${controllerkebab}.controller.js`;
+
+      this.logger.logDebug(
+        `BaseService::invokeCdRequest() → Importing: ${modulePath}`,
+      );
+
+      const importedModule = await import(modulePath);
+      const ControllerClass = importedModule?.[controllerName];
+
+      if (!ControllerClass) {
+        return {
+          state: false,
+          message: `Controller not found: ${controllerName} at ${modulePath}`,
+        };
+      }
+
+      const controllerInstance = new ControllerClass();
+
+      if (typeof controllerInstance[a] !== "function") {
+        return { state: false, message: `Action method not found: ${a}` };
+      }
+
+      const result = await controllerInstance[a](
+        ...(args ? Object.values(args) : []),
+        dat,
+      );
+
+      if (!result?.state) {
+        this.logger.logError(
+          `BaseService::invokeCdRequest() → Task failed: ${result.message}`,
+        );
+        return result;
+      }
+
+      return result as CdFxReturn<T>;
+    } catch (err: any) {
+      const message = `Error executing cdRequest: ${err.message}`;
+      this.logger.logError(`BaseService::invokeCdRequest() → ${message}`);
+      return {
+        state: false,
+        message,
+      };
     }
   }
 
@@ -280,6 +556,27 @@ export class BaseService<
     return await this.respond(req, res);
   }
 
+  async serviceErrI(e: any, eCode: any, lineNumber?: any) {
+    const svSess = new SessionService();
+    try {
+      svSess.sessResp.cd_token = this.cdToken;
+    } catch (er) {
+      svSess.sessResp.cd_token = "";
+      this.err.push(e.toString(er));
+    }
+
+    svSess.sessResp.ttl = svSess.getTtl();
+    this.setAppState(true, this.i, svSess.sessResp);
+    this.err.push(e.toString());
+    const i = {
+      messages: await this.err,
+      code: eCode,
+      app_msg: `Error at ${eCode}: ${e.toString()}`,
+    };
+    await this.setAppState(false, i, svSess.sessResp);
+    this.cdResp.data = [];
+  }
+
   async returnErr(req: Request, res: Response, i: IRespInfo) {
     const sess = this.getSess(req, res);
     await this.setAppState(false, i, sess);
@@ -303,15 +600,34 @@ export class BaseService<
     return ret;
   }
 
+  /**
+   * Validate request
+   * @param req
+   * @param res
+   * @returns
+   */
   async valid(req: Request, res: Response): Promise<boolean> {
-    const pl = (req as any).post;
-    this.logger.logDebug("BaseService::valid()(req as any).post:", {
-      pl: JSON.stringify((req as any).post),
-    });
+    const svSess = new SessionService();
+    const pl = (req as any).post as ICdRequest;
+    this.logger.logDebug(
+      `BaseService::valid()(req as any).post: ${inspect(pl, { depth: 3 })}`,
+    );
     this.pl = pl;
     if (await this.noToken(req, res)) {
       return true;
     } else {
+      this.logger.logDebug(
+        `BaseService::valid(): This request requires token validation.`,
+      );
+      /**
+       * Confirm that the token in the payload is valid.
+       */
+      const tokenIsValid = await svSess.validateToken(req);
+      if (tokenIsValid) {
+        this.cdToken = (req as any).post.dat.token;
+        return true;
+      }
+
       if (!this.cdToken) {
         await this.setSess(req, res);
       }
@@ -562,7 +878,7 @@ export class BaseService<
   async preFlight(req: Request, res: Response) {
     this.logger.logDebug("**********starting preFlight(res)*********");
     this.logger.logDebug(
-      `BaseService::getPlData()/this.cdResp:`,
+      `BaseService::preFlight()/this.cdResp:`,
       JSON.stringify(this.cdResp),
     );
 
@@ -579,7 +895,7 @@ export class BaseService<
         this.logger.logError(e.toString());
       }
     }
-    this.logger.logDebug(`BaseService::getPlData()/15`);
+    this.logger.logDebug(`BaseService::preFlight()/15`);
 
     // Return the final response (JSON parsed again)
     return JSON.parse(safeResp);
@@ -767,6 +1083,34 @@ export class BaseService<
     }
   }
 
+  /**
+   *
+   * @param req
+   * @param extData // used to target any property of 'f_vals' other than 'data'
+   * @param fValsIndex // used if f_val items are multiple
+   * @returns
+   */
+  async getPlArgs(req: Request): Promise<any> {
+    const svSess = new SessionService();
+    this.logger.logDebug("BaseService::getPlArgs()/01");
+    let ret = null;
+    const request = (req as any).post as ICdRequest;
+    this.logger.logDebug(
+      `BaseService::getPlArgs()/(req as any).post: ${inspect(request.args, { depth: 2 })}`,
+    );
+    try {
+      ret = request.args;
+      this.logger.logDebug(
+        `BaseService::getPlArgs()/ret: ${inspect(ret, { depth: 2 })}`,
+      );
+      return ret;
+    } catch (e: any) {
+      this.logger.logError("BaseService::getPlArgs()/error:", e);
+      this.setAlertMessage(e.toString(), svSess, false);
+      return {};
+    }
+  }
+
   async setPlData(
     req: Request,
     item: ObjectItem,
@@ -890,7 +1234,7 @@ export class BaseService<
   }
 
   async getEntityPropertyMap(req: Request, res: Response, model: any) {
-    await this.init(req, res);
+    await this.init();
     // this.logger.logDebug('BaseService::getEntityPropertyMap()/model:', model)
     const entityMetadata: EntityMetadata = await this.ds.getMetadata(model);
     // this.logger.logDebug('BaseService::getEntityPropertyMap()/entityMetadata:', entityMetadata)
@@ -933,7 +1277,7 @@ export class BaseService<
     });
     // this.logger.logDebug('BaseService::validateUnique()/(req as any).post.dat.f_vals[0]:', (req as any).post.dat.f_vals[0])
     this.logger.logDebug("BaseService::validateUnique()/params:", params);
-    await this.init(req, res);
+    await this.init();
     // assign payload data to this.userModel
     //** */ params.controllerInstance.userModel = this.getPlData(req);
     // set connection
@@ -1081,7 +1425,7 @@ export class BaseService<
       JSON.stringify(cRules),
     );
     const svSess = new SessionService();
-    await this.init(req, res);
+    await this.init();
     const rqFieldNames = cRules.required as string[];
     this.logger.logDebug(
       "BaseService::validateRequired()/rqFieldNames:",
@@ -1126,7 +1470,7 @@ export class BaseService<
       JSON.stringify(cRules),
     );
     const svSess = new SessionService();
-    await this.init(req, res);
+    await this.init();
     const rqFieldNames = cRules.required as string[];
     this.logger.logDebug(
       "BaseService::validateRequired()/rqFieldNames:",
@@ -1175,7 +1519,7 @@ export class BaseService<
       (req as any).post.dat.f_vals[0],
     );
     this.logger.logDebug("BaseService::validateUniqueI()/params:", params);
-    await this.init(req, res);
+    await this.init();
     // assign payload data to this.userModel
     //** */ params.controllerInstance.userModel = this.getPlData(req);
     // set connection
@@ -1268,7 +1612,7 @@ export class BaseService<
     /**
      * Initialize the repo
      */
-    await this.init(req, res);
+    await this.init();
     this.logger.logInfo("BaseService::create()/02");
     await this.setRepo(serviceInput);
     this.logger.logInfo("BaseService::create()/03");
@@ -1401,7 +1745,7 @@ export class BaseService<
     serviceInputExt: IExtServiceInput<any>,
   ): Promise<any> {
     this.logger.logDebug("BaseService::createI()/01");
-    await this.init(req, res);
+    await this.init();
     let newDocData;
     let ret: any;
     try {
@@ -1501,7 +1845,7 @@ export class BaseService<
   }
 
   async saveDoc(req: Request, res: Response, serviceInput: IServiceInput<any>) {
-    await this.init(req, res);
+    await this.init();
 
     this.logger.logDebug("BaseService::saveDoc()/01");
     // const docRepository: any = await this.ds.getRepository(DocModel);
@@ -1750,7 +2094,7 @@ export class BaseService<
     serviceInput: IServiceInput<T>,
   ): Promise<any> {
     this.logger.logDebug("BaseService::read()/01");
-    await this.init(req, res);
+    await this.init();
     this.logger.logDebug("BaseService::read()/02");
     this.logger.logDebug(
       "BaseService::read()/serviceInput:",
@@ -1776,7 +2120,7 @@ export class BaseService<
               modelName: serviceInput.modelName,
             },
           );
-          // await this.init(req, res);
+          // await this.init();
           // await this.setRepo(serviceInput);
           this.logger.logDebug("BaseService::read()/041");
           this.logger.logDebug(
@@ -1816,10 +2160,86 @@ export class BaseService<
     // this.serviceErr(res, err, 'BaseService:read');
   }
 
+  async readI(
+    serviceInput: IServiceInput<T>,
+  ): Promise<T[] | { result: T[]; fieldMap: any } | number> {
+    this.logger.logDebug("BaseService::read()/01");
+    await this.init();
+    this.logger.logDebug("BaseService::read()/02");
+    this.logger.logDebug(
+      "BaseService::read()/serviceInput:",
+      inspect(serviceInput, { depth: 2 }),
+    );
+    // const repo: any = await this.repo(req, res, serviceInput.serviceModel);
+
+    await this.setRepo(serviceInput);
+
+    this.logger.logDebug("BaseService::read()/03");
+    let r: any = null;
+    switch (serviceInput.cmd?.action) {
+      case "find":
+        try {
+          this.logger.logDebug("BaseService::read()/031");
+          this.logger.logDebug(
+            "BaseService::read()/04/serviceInput.serviceModel:",
+            serviceInput.serviceModel,
+          );
+          this.logger.logDebug(
+            "BaseService::read()/04/serviceInput.modelName:",
+            {
+              modelName: serviceInput.modelName,
+            },
+          );
+          // await this.init();
+          // await this.setRepo(serviceInput);
+          this.logger.logDebug("BaseService::read()/041");
+          this.logger.logDebug(
+            "BaseService::read()/this.repo:",
+            inspect(this.repo, { depth: 2 }),
+          );
+          r = await this.repo.find(serviceInput.cmd?.query);
+          this.logger.logDebug(
+            `BaseService::read()/04/r:${inspect(r, { depth: 2 })}`,
+          );
+          if (serviceInput.extraInfo) {
+            this.logger.logDebug("BaseService::read()/05");
+            return {
+              result: r,
+              fieldMap: await this.feildMap(serviceInput),
+            };
+          } else {
+            this.logger.logDebug("BaseService::read()/06");
+            return await r;
+          }
+        } catch (err) {
+          this.logger.logDebug("BaseService::read()/07");
+          await this.serviceErrI(err, "BaseService:read");
+          return [];
+        }
+        break;
+      case "count":
+        try {
+          r = await this.repo.count(serviceInput.cmd?.query);
+          this.logger.logDebug("BaseService::read()/r:", r);
+          return r;
+        } catch (err) {
+          await this.serviceErrI(err, "BaseService:read");
+          return 0;
+        }
+        break;
+    }
+
+    // this.serviceErr(res, err, 'BaseService:read');
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////
   // Read method
-  async read2(req: any, res: any, si: IServiceInput<any>): Promise<any> {
-    await this.init(req, res);
+  async read2(
+    req: Request,
+    res: Response,
+    si: IServiceInput<any>,
+  ): Promise<any> {
+    await this.init();
     // const repo = this.getRepository(si.serviceModel);
     await this.setRepo(si);
     let result;
@@ -1864,7 +2284,7 @@ export class BaseService<
     res: Response,
     serviceInput: IServiceInput<any>,
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
     this.logger.logDebug(
       "BaseService::readCount()/repo/model:",
       serviceInput.serviceModel,
@@ -1904,7 +2324,7 @@ export class BaseService<
     res: Response,
     serviceInput: IServiceInput<any>,
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
 
     this.logger.logDebug(
       "BaseService::readQB()/repo/model:",
@@ -2130,7 +2550,7 @@ export class BaseService<
     jsonField: string,
     keys: string[],
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
     this.logger.logDebug(
       "BaseService::readJSONColumnQB()/repo/model:",
       serviceInput.serviceModel,
@@ -2180,7 +2600,7 @@ export class BaseService<
     jsonField: string,
     updates: Record<string, any>,
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
     this.logger.logDebug(
       "BaseService::updateJSONColumnQB()/repo/model:",
       serviceInput.serviceModel,
@@ -2278,7 +2698,7 @@ export class BaseService<
     jsonField: string,
     keys: string[],
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
     this.logger.logDebug(
       "BaseService::deleteJSONColumnFieldQB()/repo/model:",
       serviceInput.serviceModel,
@@ -2336,7 +2756,7 @@ export class BaseService<
     res: Response,
     serviceInput: IServiceInput<any>,
   ): Promise<any> {
-    await this.init(req, res);
+    await this.init();
     // const repo = this.ds.getRepository(serviceInput.serviceModel);
     this.logger.logDebug(
       "BaseService::readPaged()/repo/model:",
@@ -2553,7 +2973,7 @@ export class BaseService<
   async update(req: Request, res: Response, serviceInput: IServiceInput<any>) {
     let ret: any = [];
     try {
-      await this.init(req, res);
+      await this.init();
       // await this.setRepo(serviceInput.serviceModel)
       await this.setRepo(serviceInput);
       // const serviceRepository = await this.ds.getRepository(serviceInput.serviceModel);
@@ -2766,7 +3186,7 @@ export class BaseService<
   async delete(req: Request, res: Response, serviceInput: IServiceInput<any>) {
     this.logger.logDebug("BaseService::delete()/01");
     let ret: any = [];
-    await this.init(req, res);
+    await this.init();
     await this.setRepo(serviceInput);
     // await this.setRepo(serviceInput.serviceModel)
     // const serviceRepository = await this.ds.getRepository(serviceInput.serviceModel);
@@ -2893,7 +3313,7 @@ export class BaseService<
     serviceInput: IServiceInput<any>,
   ): Promise<any> {
     this.logger.logDebug("BaseService::readJSON()/01");
-    await this.init(req, res);
+    await this.init();
     // await this.setRepo(serviceInput.serviceModel)
     await this.setRepo(serviceInput);
     this.logger.logDebug("BaseService::readJSON()/02");
@@ -2996,10 +3416,10 @@ export class BaseService<
     instruction: JSDPInstruction,
   ): Promise<any[]> {
     try {
-      await this.init(req, res);
+      await this.init();
 
       this.logger.logDebug(
-        `[BaseService][findByJSDPInstruction] instruction: ${inspect(instruction, { depth: 3 })}`
+        `[BaseService][findByJSDPInstruction] instruction: ${inspect(instruction, { depth: 3 })}`,
       );
 
       /**
@@ -3102,10 +3522,7 @@ export class BaseService<
        */
       const op = (instruction as any).op || "eq";
 
-      this.logger.logDebug(
-        "[BaseService][findByJSDPInstruction] op:",
-        op,
-      );
+      this.logger.logDebug("[BaseService][findByJSDPInstruction] op:", op);
 
       switch (op) {
         case "eq":
@@ -3143,7 +3560,9 @@ export class BaseService<
        */
       const rows = await qb.getMany();
 
-      this.logger.logDebug(`[BaseService][findByJSDPInstruction] rows: ${inspect(rows, {depth: 3})}`);
+      this.logger.logDebug(
+        `[BaseService][findByJSDPInstruction] rows: ${inspect(rows, { depth: 3 })}`,
+      );
 
       return rows;
     } catch (e: any) {

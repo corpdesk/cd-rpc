@@ -4,13 +4,13 @@ import {
   CdModuleDescriptor,
   FieldDescriptor,
   MigrationInstruction,
-} from '../../../sys/dev-descriptor/index.js';
-import { MOD_CRAFT_SYNC_DATASOURCE } from '../models/default.model.js';
-import { fileExists, HOME } from '../../../sys/utils/fs.util.js';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+} from '../../../sys/dev-descriptor/index';
+import { MOD_CRAFT_SYNC_DATASOURCE } from '../models/default.model';
+import { fileExists, HOME } from '../../../sys/utils/fs.util';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { executeCommand } from '../../../sys/utils/cmd.util.js';
-import config, { AppDataSource, loadEntityPaths, mysqlConfig } from '../../../../config.js';
+import { executeCommand } from '../../../sys/utils/cmd.util';
+import {  loadEntityPaths } from '../../../../config';
 import { DataSource } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions.js';
 import * as dotenv from 'dotenv';

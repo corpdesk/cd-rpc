@@ -5,11 +5,11 @@
 /* eslint-disable node/prefer-global/process */
 /* eslint-disable unused-imports/no-unused-vars */
 
-import { CdSchedulerDescriptor } from '../../cd-scheduler/models/cd-scheduler.model.js';
-import { CdFxReturn, ICdRequest } from '../../base/index.js';
-import { CdObjTypeModel } from '../../moduleman/index.js';
-import { AppType, BaseDescriptor, CdEnvName } from '../../dev-descriptor/index.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
+import { CdSchedulerDescriptor } from '../../cd-scheduler/models/cd-scheduler.model';
+import { CdFxReturn, ICdRequest } from '../../base/i-base';
+import { CdObjTypeModel } from '../../moduleman/models/cd-obj-type.model';
+import { AppType, BaseDescriptor, CdEnvName } from '../../dev-descriptor/index';
+import CdLog from '../../comm/controllers/cd-logger.controller';
 
 export interface DevModeModel {
   method: 'wizard' | 'manual' | 'ai' | 'json' | 'context';

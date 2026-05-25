@@ -1,7 +1,7 @@
-import type { CdFxReturn, CdRequest, IQuery } from '../../base/i-base.js';
-import type { CdDescriptor } from '../models/dev-descriptor.model.js';
-import { CdAppService } from '../services/cd-app.service.js';
-import { CdAppDescriptor } from '../models/cd-app.model.js';
+import type { CdFxReturn, IQuery } from '../../base/i-base';
+import type { CdDescriptor } from '../models/dev-descriptor.model';
+import { CdAppService } from '../services/cd-app.service';
+import { CdAppDescriptor } from '../models/cd-app.model';
 
 export class CdAppController {
   svCdApp;

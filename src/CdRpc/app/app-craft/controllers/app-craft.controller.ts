@@ -8,19 +8,19 @@ import * as path from 'node:path';
 import { join } from 'node:path';
 // import { fileURLToPath } from 'node:url';
 import util, { promisify } from 'node:util';
-import { CONFIG_FILE_PATH } from '../../../../config.js';
-import inquirer from 'inquirer';
-import { SSH_TO_DEV_PROMPT_DATA, workshopConfig } from '../models/app-craft.model.js';
+import { CONFIG_FILE_PATH } from '../../../../config';
+// import inquirer from 'inquirer';
+import { SSH_TO_DEV_PROMPT_DATA, workshopConfig } from '../models/app-craft.model';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { ProfileContainer, ProfileModel } from '../../../sys/cd-cli/models/cd-cli-profile.model.js';
+import { ProfileContainer, ProfileModel } from '../../../sys/cd-cli/models/cd-cli-profile.model';
 import CdCliVaultController from '../../../sys/cd-cli/controllers/cd-cli-vault.controller';
-import { AppType } from '../../../sys/dev-descriptor/index.js';
+import { AppType } from '../../../sys/dev-descriptor/index';
 import { CdFxReturn } from '../../../sys/base/i-base';
 import { AppCraftService } from '../services/app-craft.service';
 
 const execPromise = promisify(exec);
 // Construct __dirname for ES Modules
-// const __filename = fileURLToPath(import.meta.url);
+// // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
 export class AppCraftController {
@@ -44,7 +44,7 @@ export class AppCraftController {
       }
 
       // Resolve the project root dynamically
-      // const __filename = fileURLToPath(import.meta.url);
+      // // const __filename = fileURLToPath(import.meta.url);
       const projectRoot = path.resolve(path.dirname(__filename), './..'); // Adjusts based on current directory depth
 
       // Use configuration parameter for templates directory
@@ -170,7 +170,7 @@ export class AppCraftController {
       CdLog.debug(`profileDetails: ${JSON.stringify(profileDetails)}`);
       // If no profile or details found, prompt the user
       if (!profileDetails) {
-        // const inquirer: any = await import('inquirer');
+        const inquirer: any = await import('inquirer');
         const answers = await inquirer.prompt(SSH_TO_DEV_PROMPT_DATA);
 
         profileDetails = {

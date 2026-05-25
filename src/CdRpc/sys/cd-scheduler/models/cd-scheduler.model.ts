@@ -4,9 +4,9 @@ import {
     Column,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { BaseDescriptor, BashScriptDescriptor, MigrationDescriptor, TestingFrameworkDescriptor } from '../../dev-descriptor/index.js';
+import { BaseDescriptor, BashScriptDescriptor, MigrationDescriptor, TestingFrameworkDescriptor } from '../../dev-descriptor/index';
 import { CdFxStateLevel, FxStateSemantics, ICdRequest } from '../../base/i-base';
-import { CdVaultItem } from '../../cd-cli/models/cd-cli-vault.model.js';
+import { CdVaultItem } from '../../cd-cli/models/cd-cli-vault.model';
 
 @Entity({
   name: "cd_scheduler",

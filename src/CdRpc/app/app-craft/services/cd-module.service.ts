@@ -1,6 +1,7 @@
 /* eslint-disable style/brace-style */
 
-import { basename, join } from 'path';
+import { Request, Response } from 'express';
+import path, { basename, join } from 'path';
 import { GenericService } from '../../../sys/base/generic-service';
 import { HttpService } from '../../../sys/base/http.service';
 import {
@@ -11,17 +12,18 @@ import {
   IQuery,
 } from '../../../sys/base/i-base';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model';
 import { CiCdRunnerService } from '../../../sys/dev-descriptor/services/cd-ci-runner.service';
 import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service';
-import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
-import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model.js';
+import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model';
+import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model';
+import fs from 'fs';
 import { mkdir, writeFile } from 'fs/promises';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
-import { inferCdObjType } from '../../../sys/utils/cd-naming.util.js';
-import { executeCommand } from '../../../sys/utils/cmd.util.js';
-import { CdAutoGitController } from '../../cd-auto-git/index.js';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
+import { inferCdObjType } from '../../../sys/utils/cd-naming.util';
+import { executeCommand } from '../../../sys/utils/cmd.util';
+import { CdAutoGitController } from '../../cd-auto-git/index';
 import { VersionService } from '../../../sys/dev-descriptor/services/version.service';
 import { CdAutoGitService } from '../../cd-auto-git/services/cd-auto-git.service';
 import {
@@ -31,8 +33,9 @@ import {
   CdRoadmapDescriptor,
   CICdHistory,
   CICdPipeline,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import { CdDescriptorFileService } from './cd-descriptor-file.service';
+import { ICdExecutionContext } from '../../../sys/dev-descriptor/models/runtime-descriptor.model';
 
 export class CdModuleService {
   cdToken;
@@ -63,6 +66,7 @@ export class CdModuleService {
    * @returns 
    */
   async create(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -76,6 +80,7 @@ export class CdModuleService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.CREATE,
       cdObjType,
       moduleName,
@@ -186,6 +191,7 @@ export class CdModuleService {
   }
 
   async update(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -199,6 +205,7 @@ export class CdModuleService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.UPDATE,
       cdObjType,
       moduleName,
@@ -223,6 +230,7 @@ export class CdModuleService {
   }
 
   async delete(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -236,6 +244,7 @@ export class CdModuleService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.DELETE,
       cdObjType,
       moduleName,
@@ -260,6 +269,7 @@ export class CdModuleService {
   }
 
   async test(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -273,6 +283,7 @@ export class CdModuleService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.TEST,
       cdObjType,
       moduleName,
@@ -297,6 +308,7 @@ export class CdModuleService {
   }
 
   async upgrade(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -324,6 +336,7 @@ export class CdModuleService {
     const cdObjType = inferCdObjType(this.constructor.name);
     const runner = new CiCdRunnerService();
     const { descriptor, workflowModel } = await runner.loadModuleDescriptorAndWorkflow(
+      cdCtx,
       DevModeAction.UPDATE,
       cdObjType,
       moduleName,

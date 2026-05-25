@@ -1,5 +1,5 @@
 
-import { DevModeAction } from '../../../sys/dev-mode/index.js';
+import { DevModeAction } from '../../../sys/dev-mode/index';
 // import { GenDependencyService } from '../services/gen-dependency.service';
 import {
   AppType,
@@ -8,10 +8,10 @@ import {
   CdModuleDescriptor,
   CdServiceDescriptor,
   DependencyDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 import { CdFxReturn } from '../../../sys/base/i-base';
 import { BaseService } from '../../../sys/base/base.service';
-import { ComponentType } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
+import { ComponentType } from '../../../sys/dev-descriptor/models/component-descriptor.model';
 
 export class GenDependencyService {
   b = new BaseService();

@@ -6,12 +6,12 @@ import {
   type ICdResponse,
   type IQuery,
   type ISessResp,
-} from '../../base/i-base.js';
+} from '../../base/i-base';
 import type {
   CdDescriptor,
   TypeDescriptor,
   TypeDetails,
-} from '../models/dev-descriptor.model.js';
+} from '../models/dev-descriptor.model';
 import { dirname, join } from 'node:path';
 import fs from 'node:fs';
 // import { fileURLToPath } from 'node:url';
@@ -21,23 +21,24 @@ import util from 'node:util';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import ts from 'typescript';
-import { HttpService } from '../../base/http.service.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
+import { HttpService } from '../../base/http.service';
+import CdLog from '../../comm/controllers/cd-logger.controller';
 
 // import { CdObjService } from '../../moduleman/services/dev-descriptor.service';
-import { SessonController } from '../../user/controllers/session.controller.js';
-import { DevDescriptorService } from '../services/dev-descriptor.service.js';
-import { CdObjTypeModel } from '../../moduleman/models/cd-obj-type.model.js';
-import { CdCliStoreService } from '../../cd-cli/services/cd-cli-store.service.js';
-import { CdObjService } from '../../moduleman/services/cd-obj.service.js';
-import { CdObjModel } from '../../moduleman/index.js';
+import { SessonController } from '../../user/controllers/session.controller';
+import { DevDescriptorService } from '../services/dev-descriptor.service';
+import { CdObjTypeModel } from '../../moduleman/models/cd-obj-type.model';
+import { CdCliStoreService } from '../../cd-cli/services/cd-cli-store.service';
+import { CdObjService } from '../../moduleman/services/cd-obj.service';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
 import { fileURLToPath } from 'node:url';
+import { CdObjViewModel } from '../../moduleman/models/cd-obj-view.model';
 
 // let chalk: any;
 
 // Fix for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 export class DevDescriptorController {
   svServer = new HttpService();
@@ -46,7 +47,7 @@ export class DevDescriptorController {
 
   isDev = false;
   modelsDir = '';
-  savedDescriptors: CdObjModel[] = [];
+  savedDescriptors: CdObjViewModel[] = [];
   constructor() {
     this.isDev = process.env.NODE_ENV === 'development';
     this.modelsDir = join(__dirname, '../src/CdCli/sys/dev-descriptor/models');
@@ -82,13 +83,10 @@ export class DevDescriptorController {
               this.savedDescriptors,
             );
 
-            const jDetails: TypeDescriptor[] = this.extractTypeDetails(node);
-            srcDescriptors.push({
-              cdObjId,
-              cdObjName,
-              jDetails,
-              cdObjTypeGuid: '',
-            });
+            const jDetails: string = JSON.stringify(
+              this.extractTypeDetails(node),
+            );
+            srcDescriptors.push({ cdObjId, cdObjName, jDetails, cdObjTypeGuid: '' });
           }
         });
       }
@@ -231,7 +229,7 @@ export class DevDescriptorController {
   // generateObjectId
   getCdObjIdByName(
     name: string,
-    descriptors: CdObjModel[],
+    descriptors: CdObjModel[] | CdObjViewModel[],
   ): number | undefined {
     const found = descriptors.find((desc) => desc.cdObjName === name);
     return found ? found.cdObjId : -1;
@@ -356,27 +354,15 @@ export class DevDescriptorController {
     };
   }
 
-  async fetchSavedDescriptors(): Promise<CdObjModel[]> {
+  async fetchSavedDescriptors(): Promise<CdObjViewModel[]> {
     const q: IQuery = {
       select: ['cdObjId', 'cdObjName'],
       where: { cdObjTypeGuid: '5ab9a944-1014-4664-ad96-8ceb737d1857' },
     };
     const svCdObj = new CdObjService();
-    const res = (await svCdObj.getCdObj(q)) as CdFxReturn<CdObjModel[]>;
+    const res = (await svCdObj.getCdObjI(q)) as CdObjViewModel[];
     CdLog.debug(`DevDescriptorController::fetchSavedDescriptors()/res:${res}`);
-
-    if (!res.state || !res.data) {
-      CdLog.error(`There was an error syncing descriptors`);
-      return [];
-    }
-
-    if (res.data && !res.state) {
-      CdLog.error(`There was an error syncing descriptors:${res.message}`);
-      return [];
-    }
-
-    const descriptors: CdObjModel[] = res.data;
-    return descriptors;
+    return res;
   }
 
   async syncDescriptors(

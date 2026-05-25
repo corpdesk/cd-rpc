@@ -1,4 +1,5 @@
 
+
 import { MysqlDataSource } from "./data-source"
 import { NextFunction, Request, Response } from "express"
 import { IExtServiceInput, ICdRequest, ICdResponse, IControllerContext, IQuery, IRespInfo, IServiceInput, ISessResp, ObjectItem, CacheData, IQbInput } from './i-base';
@@ -19,8 +20,8 @@ export class Base {
         return this.repo.find()
     }
 
-    async one(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.userId)
+    async one(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt((req as any).params.userId)
 
 
         const user = await this.repo.findOne({
@@ -33,13 +34,13 @@ export class Base {
         return user
     }
 
-    async save(request: Request, response: Response, serviceInput:IServiceInput, next: NextFunction) {
+    async save(request: Request, response: Response, serviceInput:IServiceInput<any>, next: NextFunction) {
         const item = Object.assign(serviceInput.serviceInstance, serviceInput.data)
         return this.repo.save(item)
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
+        const id = parseInt((request as any).params.id)
 
         let userToRemove = await this.repo.findOneBy({ userId: id })
 

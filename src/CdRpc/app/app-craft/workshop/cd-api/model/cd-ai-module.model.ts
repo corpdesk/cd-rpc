@@ -1,14 +1,13 @@
-import { DevDescriptorService } from "../../../../../sys/moduleman/index.js";
 import { BaseService } from "../../../../../sys/base/base.service";
 import {
   CdCtx,
   CdModuleDescriptor,
   CdModuleTypeDescriptor,
-} from "../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js";
-import { DevModeModel } from "../../../../../sys/dev-mode/models/dev-mode.model.js";
+} from "../../../../../sys/dev-descriptor/models/cd-module-descriptor.model";
+import { DevModeModel } from "../../../../../sys/dev-mode/models/dev-mode.model";
 import { CdModuleDescriptorService } from "../../../../../sys/dev-descriptor/services/cd-module-descriptor.service";
 import { CdFxReturn } from "../../../../../sys/base/i-base";
-import { ComponentType } from "../../../../../sys/dev-descriptor/models/component-descriptor.model.js";
+import { ComponentType } from "../../../../../sys/dev-descriptor/models/component-descriptor.model";
 
 export class CdAiModel {
   getCustomModuleItems(): CdModuleDescriptor {

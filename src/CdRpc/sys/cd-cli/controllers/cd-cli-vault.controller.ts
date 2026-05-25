@@ -6,17 +6,17 @@
 /* eslint-disable node/prefer-global/buffer */
 /* eslint-disable node/prefer-global/process */
 
-import type { ProfileModel } from '../models/cd-cli-profile.model.js';
-import type { CdVaultItem, EncryptionMeta } from '../models/cd-cli-vault.model.js';
+import type { ProfileModel } from '../models/cd-cli-profile.model';
+import type { CdVaultItem, EncryptionMeta } from '../models/cd-cli-vault.model';
 import crypto from 'node:crypto';
 import fs, { existsSync, mkdirSync } from 'node:fs';
 import path, { join } from 'node:path';
 // import { loadCdCliConfig } from '../../../../config';
 import axios from 'axios';
-import inquirer from 'inquirer';
-import CdLog from '../../comm/controllers/cd-logger.controller.js';
-import { ENCRYPTION_CONFIGS, VAULT_DIRECTORY } from '../models/cd-cli-vault.model.js';
-import { CdCliProfileController } from './cd-cli-profile.cointroller.js';
+// import inquirer from 'inquirer';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { ENCRYPTION_CONFIGS, VAULT_DIRECTORY } from '../models/cd-cli-vault.model';
+import { CdCliProfileController } from './cd-cli-profile.cointroller';
 
 // Ensure the vault directory exists
 if (!existsSync(VAULT_DIRECTORY)) {
@@ -30,7 +30,7 @@ class CdCliVaultController {
   }
 
   static async getEncryptionKey(): Promise<Buffer> {
-    // const inquirer: any = await import('inquirer');
+    const inquirer: any = await import('inquirer');
     let encryptionKey = process.env.CD_CLI_ENCRYPT_KEY;
 
     if (!encryptionKey) {

@@ -3,8 +3,8 @@ import { BaseService } from '../../base/base.service';
 import { GenericController } from "../../base/generic-controller";
 
 // export class SchedulerController {
-export class SchedulerController extends GenericController<SchedulerModel> {
-    b: BaseService;
+export class SchedulerController {
+    b: BaseService<any>;
     constructor(){
         this.b = new BaseService();
     }

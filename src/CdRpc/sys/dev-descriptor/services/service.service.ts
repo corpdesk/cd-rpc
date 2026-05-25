@@ -1,16 +1,15 @@
 /* eslint-disable style/brace-style */
 /* eslint-disable style/operator-linebreak */
-import { GenericService } from '../../base/generic-service.js';
-import type { CdFxReturn } from '../../base/i-base.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
+import { GenericService } from '../../base/generic-service';
+import type { CdFxReturn } from '../../base/i-base';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
 import type {
   BaseServiceDescriptor,
   CloudServiceDescriptor,
-} from '../models/service-descriptor.model.js';
+} from '../models/service-descriptor.model';
 
-export class ServiceService extends GenericService<CdObjModel> {
+export class ServiceService  {
   constructor() {
-    super(CdObjModel);
   }
   async startService(
     service: BaseServiceDescriptor,

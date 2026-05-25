@@ -1,22 +1,24 @@
 /* eslint-disable style/brace-style */
 
 import { GenericService } from '../../../sys/base/generic-service';
-import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model.js';
+import { CdObjModel } from '../../../sys/moduleman/models/cd-obj.model';
 import {
   CD_FX_FAIL,
   type CdFxReturn,
   type IQuery,
 } from '../../../sys/base/i-base';
 import { HttpService } from '../../../sys/base/http.service';
-import { CdModelDescriptor } from '../../../sys/dev-descriptor/models/cd-model-descriptor.model.js';
-import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model.js';
+import { CdModelDescriptor } from '../../../sys/dev-descriptor/models/cd-model-descriptor.model';
+import { CdDescriptor } from '../../../sys/dev-descriptor/models/dev-descriptor.model';
 import { DevDescriptorService } from '../../../sys/dev-descriptor/services/dev-descriptor.service';
 
-export class CdCiCdService extends GenericService<CdObjModel> {
+export class CdCiCdService {
   cdToken;
   svDevDescriptors;
+  serviceModel: new () => CdObjModel;
+  docName = 'CdObj';
+
   constructor() {
-    super(CdObjModel);
     this.svDevDescriptors = new DevDescriptorService();
   }
 

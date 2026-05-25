@@ -1,10 +1,10 @@
-import { BaseService, CdFxReturn, CdFxStateLevel } from '../../base/index.js';
+// import { BaseService, CdFxReturn, CdFxStateLevel } from '../../base/index';
 import {
   toCamelCase,
   toKebabCase,
   toPascalCase,
   toUniversalSnakeCase,
-} from '../../utils/cd-naming.util.js';
+} from '../../utils/cd-naming.util';
 import {
   CdControllerDescriptor,
   CdCtx,
@@ -21,30 +21,35 @@ import {
   LanguageName,
   languages,
   RelationshipDescriptor,
-} from '../index.js';
+} from '../index';
 import { basename, join } from 'path';
 import { readFileSync } from 'fs';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
+import CdLog from '../../comm/controllers/cd-logger.controller';
 import { inspect } from 'util';
-import { VersionService } from './version.service.js';
-import { getParentDirectory } from '../../utils/fs.util.js';
+import { VersionService } from './version.service';
+// import { getParentDirectory } from '../../utils/fs.util';
 import {
   MOD_CRAFT_WORKSHOP_DIR,
   ValidationPolicy,
-} from '../../../app/app-craft/models/default.model.js';
+} from '../../../app/app-craft/models/default.model';
 import {
   ComponentAttributes,
   ComponentDescriptor,
   ComponentType,
   DerivedSuffix,
-} from '../models/component-descriptor.model.js';
-import { cdFx } from '../../base/cd-fx-return.util.js';
-import { isModelComponent } from '../../utils/cd-descriptors.utils.js';
-import { FunctionDescriptor } from '../models/function-descriptor.model.js';
-import { DevModeAction } from '../../dev-mode/index.js';
+} from '../models/component-descriptor.model';
+import { cdFx } from '../../base/cd-fx-return.util';
+// import { isModelComponent } from '../../utils/cd-descriptors.utils';
+import { FunctionDescriptor } from '../models/function-descriptor.model';
+import { DevModeAction } from '../../dev-mode/index';
+import { BaseService } from '../../base/base.service';
+import { CdFxReturn, CdFxStateLevel } from '../../base/i-base';
+import { getParentDirectory } from '../../utils/fs.util';
+import { Logging } from '../../base/winston.log';
 
 export class CdModuleDescriptorService {
   b = new BaseService();
+  logger: Logging;
   svDependencyDescriptor = new DependencyDescriptorService();
   extension: string = '';
   private policyCtx: { base: CdModuleDescriptor; custom: CdModuleDescriptor } | null = null;
@@ -53,6 +58,8 @@ export class CdModuleDescriptorService {
   private validationPolicies: ValidationPolicy[] = [];
   // private policies: ValidationPolicy[] = [];
   constructor() {
+    this.logger = new Logging();
+    this.logger.logDebug('[CdRpc][CdModuleDescriptorService][constructor] Starting constructor');
     const extensionResult = getExtensionByLangProfile(
       LanguageName.TypeScript,
       languages,
@@ -1487,10 +1494,12 @@ export class CdModuleDescriptorService {
   }
 
   async deriveCdModuleDescriptor(basePath: string): Promise<CdFxReturn<CdModuleDescriptor>> {
-    CdLog.debug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/01`);
+    const { default: path } = await import('path');
+    const { fs } = await import('fs-extra');
+    this.logger.logDebug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/01`);
     const ctxDir = getParentDirectory(basePath);
-    CdLog.debug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/basePath:${basePath}`);
-    CdLog.debug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/ctxDir:${ctxDir}`);
+    this.logger.logDebug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/basePath:${basePath}`);
+    this.logger.logDebug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/ctxDir:${ctxDir}`);
 
     if (!ctxDir) {
       return {
@@ -1501,8 +1510,8 @@ export class CdModuleDescriptorService {
     }
 
     const ctxStr = basename(ctxDir); // e.g. 'sys' or 'app'
-    CdLog.debug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/ctxStr:${ctxStr}`);
-    CdLog.debug(
+    this.logger.logDebug(`CdModuleDescriptorService::deriveCdModuleDescriptor()/ctxStr:${ctxStr}`);
+    this.logger.logDebug(
       `CdModuleDescriptorService::deriveCdModuleDescriptor()/CdCtx:${inspect(CdCtx, { depth: null })}`,
     );
 
@@ -1952,21 +1961,29 @@ export class CdModuleDescriptorService {
     action?: DevModeAction
   ): Promise<CdFxReturn<CdModuleDescriptor | null>> {
     try {
-      CdLog.debug('CdModuleDescritorService::cdApiModuleData()/01');
-      CdLog.debug(
+      this.logger.logDebug('CdModuleDescritorService::cdApiModuleData()/01');
+      this.logger.logDebug(
+        'CdModuleDescritorService::cdApiModuleData()/cdObjName: ' +
+          inspect(cdObjName, { depth: 2 }),
+      );
+      this.logger.logDebug(
+        'CdModuleDescritorService::cdApiModuleData()/cdObjTypeName: ' +
+          inspect(cdObjTypeName, { depth: 2 }),
+      );
+      this.logger.logDebug(
         'CdModuleDescritorService::cdApiModuleData()/extraParams: ' +
           inspect(extraParams, { depth: 2 }),
       );
 
       // 1) Build full path to the JSON descriptor
       const workflowPath = `${MOD_CRAFT_WORKSHOP_DIR}/${extraParams.appType}/workflow/${cdObjName}.module.json`;
-      CdLog.debug(`CdModuleDescritorService::cdApiModuleData()/workflowPath:${workflowPath}`);
+      this.logger.logDebug(`CdModuleDescritorService::cdApiModuleData()/workflowPath:${workflowPath}`);
 
       // 2) Read and parse custom module descriptor
       const fileContents = readFileSync(workflowPath, 'utf-8');
       const custom: CdModuleDescriptor = JSON.parse(fileContents);
-      CdLog.debug('CdModuleDescritorService::cdApiModuleData()/02');
-
+      this.logger.logDebug('CdModuleDescritorService::cdApiModuleData()/02');
+      this.logger.logDebug('CdModuleDescritorService::cdApiModuleData()/custom: ' + inspect(custom, { depth: 2 }));
       // 3) Set version control for the module
       const svVersion = new VersionService();
       const vcResult = await svVersion.getVersionControl(
@@ -1975,6 +1992,7 @@ export class CdModuleDescriptorService {
         extraParams.appType,
         extraParams.oEnv,
       );
+      this.logger.logDebug(`CdModuleDescritorService::cdApiModuleData()/  vcResult:${inspect(vcResult, { depth: 2 })}`);
       if (!vcResult || !vcResult.state || !vcResult.data) {
         return {
           state: false,
@@ -1994,7 +2012,7 @@ export class CdModuleDescriptorService {
         base.controllers[1],
         'debug',
       );
-      // CdLog.debug(`CdModuleDescriptorService::cdApiModuleData:${inspect(base.controllers, {depth: 3})}`, )
+      // this.logger.logDebug(`CdModuleDescriptorService::cdApiModuleData:${inspect(base.controllers, {depth: 3})}`, )
 
       // 5) Validate + merge using registered policies
       const result = await this.applyPolicies(base);

@@ -4,6 +4,7 @@ import fs, { existsSync, mkdirSync } from 'node:fs';
 import path, { join } from 'node:path';
 import { VAULT_DIRECTORY } from '../models/cd-cli-vault.model';
 import CdCliVaultController from './cd-cli-vault.controller';
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 // jest.mock('path', () => ({
 //   join: (...args: string[]) => args.join('/'),
@@ -74,6 +75,6 @@ describe('cdCliVaultController - Encryption Key Management', () => {
 
     expect(() => {
       CdCliVaultController.getEncryptionKey();
-    }).toThrowError(/Invalid encryption key length/);
+    }).toThrow(/Invalid encryption key length/);
   });
 });

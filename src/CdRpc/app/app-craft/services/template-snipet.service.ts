@@ -1,11 +1,11 @@
-import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model.js';
+import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model';
 import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
 import { BaseService } from '../../../sys/base/base.service';
-import { toPascalCase } from '../../../sys/utils/cd-naming.util.js';
+import { toPascalCase } from '../../../sys/utils/cd-naming.util';
 import { GenComponentService } from './gen-component.service';
-import { ComponentAttributes } from '../../../sys/dev-descriptor/models/component-descriptor.model.js';
-import { MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model.js';
-import { CdControllerDescriptor, CdServiceDescriptor } from '../../../sys/dev-descriptor/index.js';
+import { ComponentAttributes } from '../../../sys/dev-descriptor/models/component-descriptor.model';
+import { MOD_CRAFT_CD_API_TEMPLATE } from '../models/default.model';
+import { CdControllerDescriptor, CdServiceDescriptor } from '../../../sys/dev-descriptor/index';
 import { TemplateLoaderService } from './template-loader.service';
 
 export class TemplateSnippetService {

@@ -18,8 +18,14 @@ import {
 } from "typeorm";
 // import { UiSystemDescriptor } from "../dev-descriptor/models/ui-system-descriptor.model";
 import { LogLevel } from "./winston.log";
+import { UiSystemDescriptor } from "../dev-descriptor/models/ui-system-descriptor.model";
+import { TransportDescriptor } from "../dev-descriptor/models/network-descriptor.model";
+import {
+  RuntimeDescriptor,
+  TracingDescriptor,
+} from "../dev-descriptor/models/function-descriptor.model";
 
-export const SYS_CTX = 'Sys';
+export const SYS_CTX = "Sys";
 export const DEFAULT_DAT: EnvelopDat = {
   f_vals: [
     {
@@ -32,58 +38,93 @@ export const DEFAULT_DAT: EnvelopDat = {
 
 export const DEFAULT_ARGS = {};
 
+export const DEFAULT_ENVELOPE: ICdRequest = {
+  ctx: SYS_CTX,
+  m: "",
+  c: "",
+  a: "",
+  dat: DEFAULT_DAT,
+  args: DEFAULT_ARGS,
+};
+
 export const DEFAULT_ENVELOPE_CREATE: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'Create',
+  m: "",
+  c: "",
+  a: "Create",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
 };
 
 export const DEFAULT_ENVELOPE_GET: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'Get',
+  m: "",
+  c: "",
+  a: "Get",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
 };
 
 export const DEFAULT_ENVELOPE_GET_PAGED: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'GetCount',
+  m: "",
+  c: "",
+  a: "GetCount",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
 };
 
 export const DEFAULT_ENVELOPE_GET_TYPE: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'GetCount',
+  m: "",
+  c: "",
+  a: "GetCount",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
 };
 
 export const DEFAULT_ENVELOPE_UPDATE: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'Update',
+  m: "",
+  c: "",
+  a: "Update",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
 };
 
 export const DEFAULT_ENVELOPE_DELETE: ICdRequest = {
   ctx: SYS_CTX,
-  m: '',
-  c: '',
-  a: 'Delete',
+  m: "",
+  c: "",
+  a: "Delete",
   dat: DEFAULT_DAT,
   args: DEFAULT_ARGS,
+};
+
+/** Fields managed by backend that must not be supplied by client */
+export const MANAGED_FIELDS = ["Guid", "docId", "Enabled"];
+
+export const DEFAULT_RESPONSE: ICdResponse = {
+  app_state: {
+    success: false,
+    info: {
+      messages: [],
+      code: "",
+      app_msg: "",
+    },
+    sess: {
+      cd_token: "",
+      jwt: null,
+      ttl: 600,
+    },
+    cache: {},
+    sConfig: {
+      usePush: true,
+      usePolling: true,
+      useCacheStore: true,
+    },
+  },
+  data: [],
 };
 
 export interface CdResponse {
@@ -133,7 +174,7 @@ export interface BaseServiceInterface<T> {
     req: Request | null,
     res: Response | null,
     serviceInput: IServiceInput<T>,
-  ) => Promise<CdFxReturn<T> | T | ICdResponse | void >;
+  ) => Promise<CdFxReturn<T> | T | ICdResponse | void>;
   read: (
     req: Request | null,
     res: Response | null,
@@ -151,7 +192,9 @@ export interface BaseServiceInterface<T> {
   ) => Promise<CdFxReturn<DeleteResult> | DeleteResult | ICdResponse>;
 }
 
-export abstract class AbstractBaseService<T> implements BaseServiceInterface<T> {
+export abstract class AbstractBaseService<
+  T,
+> implements BaseServiceInterface<T> {
   abstract create(
     req: Request | null,
     res: Response | null,
@@ -370,6 +413,11 @@ export interface IQbFilter {
   conjType?: string;
   dataType: string;
   jPath?: string;
+}
+
+export interface IExtServiceInput<T> {
+  serviceInput: IServiceInput<T>;
+  entityData: any;
 }
 
 /**
@@ -805,10 +853,10 @@ export interface ObjectItem {
 }
 
 // Extended Service Input for internal use within services, allowing for additional context and data to be passed alongside the standard service input.
-export interface IExtServiceInput<T> {
-  serviceInput: IServiceInput<T>;
-  entityData: T;
-}
+// export interface IExtServiceInput<T> {
+//   serviceInput: IServiceInput<T>;
+//   entityData: any;
+// }
 
 export interface CacheData {
   key: string;
@@ -914,6 +962,80 @@ export enum RunMode {
   UNRESTRICTED_DEVELOPER_MODE = 10,
 }
 
+export interface ICdWireOptions {
+  transport?: TransportDescriptor;
+
+  runtime?: RuntimeDescriptor;
+
+  tracing?: TracingDescriptor;
+
+  session?: CdWireSessionDescriptor;
+
+  metadata?: Record<string, any>;
+}
+
+export interface CdWireSessionDescriptor {
+  /**
+   * Unique execution session identity
+   */
+  sessionId?: string;
+
+  /**
+   * Timeout control for entire session lifecycle
+   */
+  timeout?: {
+    ms: number;
+    strategy?: "hard" | "soft"; // hard = kill, soft = allow completion
+  };
+
+  /**
+   * Retry policy (NOT transport-level retry, but execution retry)
+   */
+  retry?: {
+    enabled: boolean;
+    maxAttempts: number;
+    backoff?: "fixed" | "linear" | "exponential";
+    intervalMs?: number;
+    retryOn?: string[]; // error codes or names
+  };
+
+  /**
+   * Idempotency control (important for RPC/HTTP/AI retries)
+   */
+  idempotency?: {
+    key?: string;
+    enabled?: boolean;
+  };
+
+  /**
+   * Execution lifespan control
+   */
+  lifecycle?: {
+    persistSession?: boolean;
+    expireAfterMs?: number;
+  };
+}
+
+export interface ICdWireExecutor {
+  /**
+   * Unique executor identifier
+   */
+  readonly name: string;
+
+  /**
+   * Supported transport mode
+   */
+  readonly mode: string;
+
+  /**
+   * Execute CdRequest using transport-specific strategy
+   */
+  execute<T = any>(
+    request: ICdRequest,
+    options?: ICdWireOptions,
+  ): Promise<CdFxReturn<T>>;
+}
+
 /**
  * This is an effort to standardize corpdesk return by a function or method.
  * All corpdesk functions and methods are expected to implement CdFxReturn (progressively)
@@ -926,7 +1048,7 @@ export enum RunMode {
  * The principle if borrowed from Go's tuple returns
  */
 export interface CdFxReturn<T> {
-  data: T | null;
+  data?: T | null;
   state: boolean | CdFxStateLevel;
   message?: string; // Optional error/success message
 }
@@ -958,8 +1080,8 @@ export interface FxStateMeta {
   label: string;
   color?: string;
   icon?: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
-  category?: 'error' | 'success' | 'warning' | 'info';
+  severity?: "low" | "medium" | "high" | "critical";
+  category?: "error" | "success" | "warning" | "info";
 }
 
 export interface FxStateSemantics {
@@ -971,6 +1093,15 @@ export const CD_FX_FAIL = {
   state: false,
   message: "Failed!",
 };
+
+/**
+ * For use in utility run() with anticipated errors
+ */
+export interface CdErrorRecognition {
+  pattern: string | RegExp; // To match against stderr or combined output
+  state: CdFxStateLevel; // Mapped response level
+  message?: string; // Friendly message if match is found
+}
 
 export interface EnvConfig {
   /** Unique ID for this client application instance */
@@ -1158,7 +1289,7 @@ export interface ThemeShellConfig {
 }
 
 // -------------------------------------------------------------
-// UI CONFIG — harmonized with your shellconfig.json
+// UI CONFIG — harmonized with your shellconfigon
 // -------------------------------------------------------------
 export interface UiShellConfig {
   // /** e.g. "material-design", "bootstrap-538" */
@@ -1220,7 +1351,6 @@ export interface UiShellConfig {
    * Admin-only overrides
    */
   adminOverrideAllowed?: boolean;
-
 }
 
 // -------------------------------------------------------------
@@ -1279,7 +1409,7 @@ export interface IShellConfig {
    * NEW: Environment configuration
    * ADDED: To match existing data structure in use
    */
-  envConfig?: EnvConfig
+  envConfig?: EnvConfig;
   // {
   //   appId?: string;
   //   wsMode?: string;
@@ -1308,11 +1438,11 @@ export interface IShellConfig {
 }
 
 export interface IEntityMemberProfile extends IUserProfile {
-  entityGuid: string;          // coopGuid, schoolGuid, companyGuid, etc
-  entityType: string;          // resolved dynamically by module
-  memberMeta?: any;            // module-owned metadata
-  roles?: any[];               // module-defined roles
-  permissions?: any[];         // optional, module-defined
+  entityGuid: string; // coopGuid, schoolGuid, companyGuid, etc
+  entityType: string; // resolved dynamically by module
+  memberMeta?: any; // module-owned metadata
+  roles?: any[]; // module-defined roles
+  permissions?: any[]; // optional, module-defined
 }
 
 export interface IEntityProfile {
@@ -1327,7 +1457,7 @@ export interface ICdMemberProfile {
     req: Request,
     res: Response,
     userProfile: IUserProfile,
-    entityGuid: string
+    entityGuid: string,
   ): Promise<IEntityMemberProfile>;
 }
 
@@ -1339,7 +1469,7 @@ export interface IProfileMutationHandler {
       path: any[];
       value: any;
       action: string;
-    }
+    },
   ): Promise<any>;
 }
 
@@ -1357,9 +1487,9 @@ export interface IProfileSyncHandler {
  * The core of 'Identity-based Pathing'
  */
 export interface JPathQuery {
-  field: string;         // The unique attribute (e.g., 'consumerName', 'id', 'guid')
-  value: any;           // The target value to match
-  op?: 'eq' | 'contains'; // Optional: Extensibility for the RFC/Patent
+  field: string; // The unique attribute (e.g., 'consumerName', 'id', 'guid')
+  value: any; // The target value to match
+  op?: "eq" | "contains"; // Optional: Extensibility for the RFC/Patent
 }
 
 export type JPathSegment = string | number | JPathQuery;
@@ -1368,10 +1498,76 @@ export type JPathSegment = string | number | JPathQuery;
  * The JSDP Instruction (The upgrade from JUpdateInstruction)
  */
 export interface JSDPInstruction {
-  v?: "1.0";              // Protocol versioning for forward-compatibility
+  v?: "1.0"; // Protocol versioning for forward-compatibility
   modelField?: string; // name of the json column. Capacity to update multiple json columns in a given row
   path: JPathSegment[];
   value: any;
-  action: 'create' | 'update' | 'delete' | 'upsert' | 'read'; 
-  conditions?: any;      // Space for 'Logic-gated' updates (R&D focus)
+  action: "create" | "update" | "delete" | "upsert" | "read";
+  conditions?: any; // Space for 'Logic-gated' updates (R&D focus)
+}
+
+// prettier-config.ts
+
+export interface FormatterConfigEntry {
+  parser: import("prettier").BuiltInParserName;
+  // Add more properties if needed, e.g., printWidth, tabWidth, etc.
+}
+
+export type FormatterConfigMap = Record<string, FormatterConfigEntry>;
+
+/**
+ * File extension to Prettier parser map
+ */
+export const formatterConfig: FormatterConfigMap = {
+  ".ts": { parser: "typescript" },
+  ".cts": { parser: "typescript" },
+  ".mts": { parser: "typescript" },
+  ".js": { parser: "babel" },
+  ".cjs": { parser: "babel" },
+  ".mjs": { parser: "babel" },
+  ".json": { parser: "json" },
+  ".html": { parser: "html" },
+  ".md": { parser: "markdown" },
+  ".css": { parser: "css" },
+  ".scss": { parser: "scss" },
+  ".yml": { parser: "yaml" },
+  ".yaml": { parser: "yaml" },
+};
+
+export enum CdRFC {
+  /**
+   * RFC-0001
+   * Naming, structure, and coding conventions
+   */
+  CD_CODES_STD = "corpdesk-rfc-0001",
+
+  /**
+   * RFC-0003
+   * Execution protocol
+   */
+  CD_EXECUTION_MODEL = "corpdesk-rfc-0003",
+
+  /**
+   * RFC-0004
+   * Mathematical expression model (Γ)
+   */
+  CD_EXPRESSION_MODEL = "corpdesk-rfc-0004",
+
+  /**
+   * RFC-0005
+   * Zygote processing & scanning
+   */
+  CD_ZYGOTE_PROCESSING = "corpdesk-rfc-0005",
+
+  /**
+   * RFC-0006
+   * Adaptive Validation & Evolution Engine (AVEC)
+   */
+  CD_AVEC = "corpdesk-rfc-0006",
+
+  /**
+   * RFC-0007
+   * Biological Processing Engine (BPE)
+   */
+  CD_BIO_ENGINE = "corpdesk-rfc-0007",
 }

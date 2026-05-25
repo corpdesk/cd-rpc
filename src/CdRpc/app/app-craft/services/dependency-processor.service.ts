@@ -5,7 +5,7 @@ import {
   CdCtx,
   CdModuleDescriptor,
   DependencyDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
+} from '../../../sys/dev-descriptor/index';
 
 export class DependencyProcessorService {
   b = new BaseService();

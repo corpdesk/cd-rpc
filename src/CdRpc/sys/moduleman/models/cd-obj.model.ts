@@ -4,6 +4,7 @@ import {
     Column,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { ICdRequest } from '../../base/i-base';
 
 @Entity(
     {
@@ -204,3 +205,15 @@ export class CdObjModel {
     jDetails?: string ; // allow string or json or any type. Objects can be categorized and treated differently for different cd-obj types
 
 }
+
+export const defaultCdObjEnv: ICdRequest = {
+  ctx: 'Sys',
+  m: 'Moduleman',
+  c: 'CdObj',
+  a: '',
+  dat: {
+    f_vals: [],
+    token: '',
+  },
+  args: {},
+};

@@ -1,5 +1,5 @@
-import { DevModeAction, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index.js";
-import { AppType, envCdApi, envCdApiApp, envCdApiSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index.js";
+import { DevModeAction, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index";
+import { AppType, envCdApi, envCdApiApp, envCdApiSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index";
 import { CdFxReturn } from "../../../../../../sys/base/i-base";
 
 export const cdAiVersionControl: VersionControlDescriptor = {
@@ -76,7 +76,7 @@ export const cdAiVersionControl: VersionControlDescriptor = {
       {
         name: 'CdAppDescriptor',
         environment: envCdApi,
-        path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptor.json',
+        path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptoron',
         purpose: 'cd-api root directory',
       },
     ],

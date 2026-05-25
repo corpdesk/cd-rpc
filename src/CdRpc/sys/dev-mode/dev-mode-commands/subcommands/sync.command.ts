@@ -1,8 +1,8 @@
 /**
  * sync descriptor-data --name knownCiCds  --type CiCdDescriptor --db redis;
  */
-import CdLog from '../../../../sys/cd-comm/controllers/cd-logger.controller.js';
-import { DevDescriptorController } from '../../../../sys/dev-descriptor/controllers/dev-descriptor.controller.js';
+import CdLog from '../../../../sys/comm/controllers/cd-logger.controller';
+import { DevDescriptorController } from '../../../../sys/dev-descriptor/controllers/dev-descriptor.controller';
 import chalk from 'chalk';
 
 // let chalk: any;

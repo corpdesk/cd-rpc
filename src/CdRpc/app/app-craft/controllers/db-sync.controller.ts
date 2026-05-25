@@ -2,7 +2,7 @@
 
 import { DbSyncService } from "../services/db-sync.service";
 import { CdFxReturn, CdFxStateLevel } from "../../../sys/base/i-base";
-import { cdFx } from "../../../sys/base/cd-fx-return.util.js";
+import { cdFx } from "../../../sys/base/cd-fx-return.util";
 
 export class DbSyncController {
   /**

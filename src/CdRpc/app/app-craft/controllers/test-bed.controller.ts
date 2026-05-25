@@ -1,12 +1,14 @@
+import { Request, Response } from 'express';
 import { CdAssertReturn, CdFxReturn, IQuery } from '../../../sys/base/i-base';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { TestBedService } from '../services/test-bed.service';
-import { VersionControlDescriptor } from '../../../sys/dev-descriptor/index.js';
+import { VersionControlDescriptor } from '../../../sys/dev-descriptor/index';
 import { GenDbSchemaService } from '../services/gen-db-schema.service';
 import { DbMigrationService } from '../services/do-migration.service';
 import { ModuleRegisterService } from '../../../sys/moduleman/services/module-register.service';
 import { CrudTestService } from '../services/crud-test.service';
+import { ICdExecutionContext } from '../../../sys/dev-descriptor/models/runtime-descriptor.model';
 
 export class TestBedController {
   svTestBed: TestBedService;
@@ -35,13 +37,14 @@ export class TestBedController {
 
   // name, type, cdToken
   async create(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
     repoName: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
     CdLog.debug('Starting TestBedController::create()');
-    return this.svTestBed.create(actionTargetName, moduleName, oEnv, repoName);
+    return this.svTestBed.create(cdCtx, actionTargetName, moduleName, oEnv, repoName);
   }
 
   async read(q?: IQuery): Promise<CdFxReturn<CdModuleDescriptor[] | null>> {
@@ -49,15 +52,18 @@ export class TestBedController {
   }
 
   async update(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     moduleType: string,
     cdToken: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
-    return this.svTestBed.update(actionTargetName, moduleName, moduleType, cdToken);
+    return this.svTestBed.update(cdCtx, actionTargetName, moduleName, moduleType, cdToken);
   }
 
   async upgrade(
+    cdCtx: ICdExecutionContext,
+    res: Response,
     actionTargetName: string,
     moduleName: string,
     oEnv: string,
@@ -67,6 +73,7 @@ export class TestBedController {
   ): Promise<CdFxReturn<null | CdAssertReturn[]>> {
     CdLog.debug('Starting TestBedController::upgrade()');
     return this.svTestBed.upgrade(
+      cdCtx,
       actionTargetName,
       moduleName,
       oEnv,
@@ -77,13 +84,14 @@ export class TestBedController {
   }
 
   async delete(
+    cdCtx: ICdExecutionContext,
     actionTargetName: string,
     moduleName: string,
     moduleType: string,
     cdToken: string,
   ): Promise<CdFxReturn<null | CdAssertReturn[]>>{
     CdLog.debug('Starting TestBedController::delete()');
-    return this.svTestBed.delete(actionTargetName, moduleName, moduleType, cdToken);
+    return this.svTestBed.delete(cdCtx, actionTargetName, moduleName, moduleType, cdToken);
   }
 
   // Get all applications

@@ -1,50 +1,50 @@
 /* eslint-disable style/indent */
 /* eslint-disable antfu/if-newline */
 
-import type { DependencyDescriptor } from '../models/dependancy-descriptor.model.js';
-import type { CdDescriptor } from '../models/dev-descriptor.model.js';
-import { CdAutoGitController } from '../../../app/cd-auto-git/controllers/cd-auto-git.controller.js';
-import { BaseService } from '../../base/base.service.js';
-import { HttpService } from '../../base/http.service.js';
-import { getCiCdByName, knownCiCds } from '../models/cicd-descriptor.model.js';
-import { CdEnvName, type EnvironmentDescriptor } from '../models/environment.model.js';
+import type { DependencyDescriptor } from '../models/dependancy-descriptor.model';
+import type { CdDescriptor } from '../models/dev-descriptor.model';
+import { CdAutoGitController } from '../../../app/cd-auto-git/controllers/cd-auto-git.controller';
+import { BaseService } from '../../base/base.service';
+import { HttpService } from '../../base/http.service';
+import { getCiCdByName, knownCiCds } from '../models/cicd-descriptor.model';
+import { CdEnvName, type EnvironmentDescriptor } from '../models/environment.model';
 import {
   type BaseServiceDescriptor,
   getServiceByName,
   services,
-} from '../models/service-descriptor.model.js';
+} from '../models/service-descriptor.model';
 import {
   getWorkstationByName,
   type WorkstationDescriptor,
   workstations,
-} from '../models/workstations.model.js';
+} from '../models/workstations.model';
 /* eslint-disable style/operator-linebreak */
 /* eslint-disable style/brace-style */
-import { CD_FX_FAIL, type CdFxReturn, type IQuery } from '../../base/i-base.js';
-import { CdCliProfileController } from '../../cd-cli/controllers/cd-cli-profile.cointroller.js';
-import { ProgressTrackerService } from '../../cd-cli/services/progress-tracker.service.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { ServiceController } from '../controllers/service.controller.js';
-import { WorkstationAccessController } from '../controllers/workstation-access.controller.js';
-import { getEnvironmentVariablesByContext } from '../models/os.model.js';
+import { CD_FX_FAIL, type CdFxReturn, type IQuery } from '../../base/i-base';
+import { CdCliProfileController } from '../../cd-cli/controllers/cd-cli-profile.cointroller';
+import { ProgressTrackerService } from '../../cd-cli/services/progress-tracker.service';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { ServiceController } from '../controllers/service.controller';
+import { WorkstationAccessController } from '../controllers/workstation-access.controller';
+import { getEnvironmentVariablesByContext } from '../models/os.model';
 import {
   getTestingFrameworkByContext,
   testingFrameworks,
-} from '../models/testing-framework.model.js';
+} from '../models/testing-framework.model';
 import {
   getVersionControlByContext,
   repoRegistry,
-} from '../models/version-control.model.js';
-import { CiCdService } from './ci-cd.service.js';
-import { DependencyDescriptorService } from './dependency-descriptor.service.js';
-import { DevDescriptorService } from './dev-descriptor.service.js';
-import { SshService } from './ssh.service.js';
-import { WorkstationService } from './workstation.service.js';
-import { ProfileModel } from '../../cd-cli/models/cd-cli-profile.model.js';
-import { CdObjModel } from '../../moduleman/models/cd-obj.model.js';
-import { GenericService } from '../../base/generic-service.js';
+} from '../models/version-control.model';
+import { CiCdService } from './ci-cd.service';
+import { DependencyDescriptorService } from './dependency-descriptor.service';
+import { DevDescriptorService } from './dev-descriptor.service';
+import { SshService } from './ssh.service';
+import { WorkstationService } from './workstation.service';
+import { ProfileModel } from '../../cd-cli/models/cd-cli-profile.model';
+import { CdObjModel } from '../../moduleman/models/cd-obj.model';
+import { GenericService } from '../../base/generic-service';
 
-export class EnvironmentService extends GenericService<CdObjModel> {
+export class EnvironmentService {
   cdToken: string = '';
   svDevDescriptors: DevDescriptorService;
   svWorkstation: WorkstationService;
@@ -64,7 +64,6 @@ export class EnvironmentService extends GenericService<CdObjModel> {
   }[] = [];
 
   constructor() {
-    super(CdObjModel);
     this.svDevDescriptors = new DevDescriptorService();
     this.svWorkstation = new WorkstationService();
     this.svDependency = new DependencyDescriptorService();
@@ -608,7 +607,7 @@ export class EnvironmentService extends GenericService<CdObjModel> {
     CdLog.debug(`EnvironmentService::buildEnvironmentData()/name:${name}`);
     CdLog.debug(`EnvironmentService::buildEnvironmentData()/workstation:${workstation}`);
     /**
-     * pull appropriate profile from the cd-cli.config.json (which is a session storage from database)
+     * pull appropriate profile from the cd-cli.configon (which is a session storage from database)
      */
     const ctlCdCliProfile = new CdCliProfileController();
     const ret = await ctlCdCliProfile.getProfileByName(name);

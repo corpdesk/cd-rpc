@@ -1,13 +1,13 @@
 // import type { CdFxReturn } from './interfaces/cd-fx-return.interface.js';
 // import type { CloudServiceDescriptor } from './interfaces/web-service-descriptor.interface.js';
-// import type { ServiceService } from './service.service.js';
+// import type { ServiceService } from './service.service';
 // import { Body, Controller, Post } from '@nestjs/common.js';
 
-import type { CdFxReturn } from '../../base/i-base.js';
-import type { BaseServiceDescriptor } from '../models/service-descriptor.model.js';
-import { SemanticVersionObject } from '../models/version-control.model.js';
-import { ServiceService } from '../services/service.service.js';
-import { VersionService } from '../services/version.service.js';
+import type { CdFxReturn } from '../../base/i-base';
+import type { BaseServiceDescriptor } from '../models/service-descriptor.model';
+import { SemanticVersionObject } from '../models/version-control.model';
+import { ServiceService } from '../services/service.service';
+import { VersionService } from '../services/version.service';
 
 export class VersionController {
   svVersion = new VersionService();

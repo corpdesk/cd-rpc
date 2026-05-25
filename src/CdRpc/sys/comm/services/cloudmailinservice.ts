@@ -6,8 +6,8 @@ import { BaseService } from '../../base/base.service';
 import { GenericController } from "../../base/generic-controller";
 
 // export class CloudmailinService {
-export class CloudmailinService extends GenericController<CloudmailinModel> {
-    b: BaseService;
+export class CloudmailinService {
+    b: BaseService<any>;
     cdPush: CdPushController;
     constructor() {
         // console.log('starting NodemailerController::constructor()');

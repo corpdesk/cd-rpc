@@ -1,5 +1,5 @@
-import { DevModeAction, getCreateRegistry, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index.js";
-import { AppType, envCdCli, envCdCliApp, envCdCliSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index.js";
+import { DevModeAction, getCreateRegistry, getRegistry, IDevModeInstructionDescriptor } from "../../../../../../sys/dev-mode/index";
+import { AppType, envCdCli, envCdCliApp, envCdCliSys, envTestBed, envWorkshop, VersionControlDescriptor } from "../../../../../../sys/dev-descriptor/index";
 import { CdFxReturn } from "../../../../../../sys/base/i-base";
 
 export const cdApiVersionControl: VersionControlDescriptor = {

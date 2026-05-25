@@ -3,20 +3,17 @@ import { BaseService } from '../../base/base.service';
 import { CdDevTypeService } from '../services/cd-dev-type.service';
 import { CdDevService } from '../services/cd-dev.service';
 import { GenericController } from "../../base/generic-controller";
-import { CdCliProfileModel } from "../../cd-cli/models/cd-cli-profile.model";
 import { CdDevModel } from "../models/cd-dev.model";
 
 // export class CdDevController {
 export class CdDevController extends GenericController<CdDevModel> {
-
-    b: BaseService;
-    svCdDev: CdDevService;
-    svCdDevType: CdDevTypeService
+    service: CdDevService;
+    serviceType: CdDevTypeService
 
     constructor() {
-        this.b = new BaseService();
-        this.svCdDev = new CdDevService();
-        this.svCdDevType = new CdDevTypeService();
+        super();
+        this.service = new CdDevService();
+        this.serviceType = new CdDevTypeService();
     }
 
     // /**
@@ -44,7 +41,7 @@ export class CdDevController extends GenericController<CdDevModel> {
     //  */
     async Create(req: Request, res: Response) {
         try {
-            await this.svCdDev.create(req, res);
+            await this.service.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:Create');
         }
@@ -57,7 +54,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async CreateM(req: Request, res: Response) {
         try {
-            await this.svCdDev.createM(req, res);
+            await this.service.createM(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:CreateM');
         }
@@ -65,7 +62,7 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async CreateSL(req: Request, res: Response) {
         try {
-            await this.svCdDev.createSL(req, res);
+            await this.service.createSL(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:CreateSL');
         }
@@ -99,7 +96,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async Get(req: Request, res: Response) {
         try {
-            await this.svCdDev.getCdDev(req, res);
+            await this.service.getCdDev(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:Get');
         }
@@ -107,7 +104,7 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async GetSL(req: Request, res: Response) {
         try {
-            await this.svCdDev.getCdDevSL(req, res);
+            await this.service.getCdDevSL(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:GetSL');
         }
@@ -138,8 +135,8 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async GetType(req: Request, res: Response) {
         try {
-            // await this.svCdDev.getCdDevType(req, res);
-            await this.svCdDev.getCdObjTypeCount(req, res);
+            // await this.service.getCdDevType(req, res);
+            await this.service.getCdObjTypeCount(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:Get');
         }
@@ -147,8 +144,8 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async GetType2(req: Request, res: Response) {
         try {
-            // await this.svCdDev.getCdDevType(req, res);
-            await this.svCdDev.getCdDevType2(req, res);
+            // await this.service.getCdDevType(req, res);
+            await this.service.getCdDevType2(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:GetType2');
         }
@@ -156,8 +153,8 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async SearchCdDevTypes(req: Request, res: Response) {
         try {
-            // await this.svCdDev.getCdDevType(req, res);
-            await this.svCdDev.searchCdDevTypes(req, res);
+            // await this.service.getCdDevType(req, res);
+            await this.service.searchCdDevTypes(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:GetType2');
         }
@@ -192,7 +189,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async GetCount(req: Request, res: Response) {
         try {
-            await this.svCdDev.getCdDevQB(req, res);
+            await this.service.getCdDevQB(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:GetCount');
         }
@@ -227,7 +224,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async GetPaged(req: Request, res: Response) {
         try {
-            await this.svCdDev.getCdDevPaged(req, res);
+            await this.service.getCdDevPaged(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Get');
         }
@@ -235,7 +232,7 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async GetPagedSL(req: Request, res: Response) {
         try {
-            await this.svCdDev.getPagedSL(req, res);
+            await this.service.getPagedSL(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:GetSL');
         }
@@ -273,7 +270,7 @@ export class CdDevController extends GenericController<CdDevModel> {
         console.log('CdDevController::Update()/01');
         try {
             console.log('CdDevController::Update()/02');
-            await this.svCdDev.update(req, res);
+            await this.service.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Update');
         }
@@ -283,7 +280,7 @@ export class CdDevController extends GenericController<CdDevModel> {
         console.log('CdDevController::UpdateSL()/01');
         try {
             console.log('CdDevController::UpdateSL()/02');
-            await this.svCdDev.updateSL(req, res);
+            await this.service.updateSL(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:UpdateSL');
         }
@@ -313,7 +310,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async Delete(req: Request, res: Response) {
         try {
-            await this.svCdDev.delete(req, res);
+            await this.service.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Update');
         }
@@ -321,7 +318,7 @@ export class CdDevController extends GenericController<CdDevModel> {
 
     async DeleteSL(req: Request, res: Response) {
         try {
-            await this.svCdDev.deleteSL(req, res);
+            await this.service.deleteSL(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'BillController:DeleteSL');
         }
@@ -335,7 +332,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async CreateType(req: Request, res: Response) {
         try {
-            await this.svCdDevType.create(req, res);
+            await this.serviceType.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:CreateType');
         }
@@ -349,7 +346,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async UpdateType(req: Request, res: Response) {
         try {
-            await this.svCdDevType.update(req, res);
+            await this.serviceType.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:EditType');
         }
@@ -363,7 +360,7 @@ export class CdDevController extends GenericController<CdDevModel> {
      */
     async DeleteType(req: Request, res: Response) {
         try {
-            await this.svCdDevType.delete(req, res);
+            await this.serviceType.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevController:DeleteType');
         }

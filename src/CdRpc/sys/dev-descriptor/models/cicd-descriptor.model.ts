@@ -1,18 +1,18 @@
 /* eslint-disable style/brace-style */
 /* eslint-disable antfu/if-newline */
 
-import type { CdFxReturn, CdFxStateLevel } from '../../base/i-base.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
-import type { EnvironmentDescriptor } from './environment.model.js';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { EnvironmentService } from '../services/environment.service.js';
-import { CdSchedulerTask, WorkflowTask } from '../../cd-scheduler/models/cd-scheduler.model.js';
+import type { CdFxReturn, CdFxStateLevel } from '../../base/i-base';
+import type { BaseDescriptor } from './base-descriptor.model';
+import type { EnvironmentDescriptor } from './environment.model';
+import CdLog from '../../comm/controllers/cd-logger.controller';
+import { EnvironmentService } from '../services/environment.service';
+import { CdSchedulerTask, WorkflowTask } from '../../cd-scheduler/models/cd-scheduler.model';
 import {
   CdDocDescriptor,
   CdFileDescriptor,
   RelationshipDescriptor,
   SourceContributor,
-} from '../index.js';
+} from '../index';
 
 // /////////////////////////////////////////////////////////////////////////////////////////
 

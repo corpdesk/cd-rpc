@@ -4,17 +4,18 @@ import { BaseService } from '../../base/base.service';
 import { CdController } from '../../base/cd.controller';
 import { CdDevProjectService } from '../services/cd-dev-project.service';
 import { GenericController } from "../../base/generic-controller";
-import { CdCliProfileModel } from "../../cd-cli/models/cd-cli-profile.model";
+import { CdDevProjectModel } from "../models/cd-dev-project.model";
+// import { CdCliProfileModel } from "../../cd-cli/models/cd-cli-profile.model";
 
 // export class CdDevProjectController extends CdController {
-export class CdDevProjectController extends GenericController<CdCliProfileModel> {
-    b: BaseService;
-    svCdDevProject: CdDevProjectService;
+export class CdDevProjectController extends GenericController<CdDevProjectModel> {
+    service: CdDevProjectService;
+    
 
     constructor() {
         super();
         this.b = new BaseService();
-        this.svCdDevProject = new CdDevProjectService();
+        this.service = new CdDevProjectService();
 
     }
 
@@ -42,7 +43,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
      */
     async Create(req: Request, res: Response) {
         try {
-            await this.svCdDevProject.create(req, res);
+            await this.service.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:Create');
         }
@@ -71,7 +72,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
     //  */
     async Get(req: Request, res: Response) {
         try {
-            await this.svCdDevProject.getCdDevProject(req, res);
+            await this.service.getCdDevProject(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:Get');
         }
@@ -80,7 +81,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
 
     // async GetCdDevProjectProfile(req: Request, res: Response) {
     //     try {
-    //         await this.svCdDevProject.getCdDevProjectProfile(req, res);
+    //         await this.service.getCdDevProjectProfile(req, res);
     //     } catch (e: any) {
     //         await this.b.serviceErr(req, res, e, 'CdDevProjectController:GetProfile');
     //     }
@@ -111,7 +112,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
      */
     // async ActivateAbcd(req: Request, res: Response) {
     //     try {
-    //         await this.svCdDevProject.activateAbcd(req, res);
+    //         await this.service.activateAbcd(req, res);
     //     } catch (e: any) {
     //         await this.b.serviceErr(req, res, e, 'CdDevProjectController:ActivateAbcd');
     //     }
@@ -119,7 +120,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
 
     // async GetType(req: Request, res: Response) {
     //     try {
-    //         await this.svCdDevProject.getCdDevProjectTypeCount(req, res);
+    //         await this.service.getCdDevProjectTypeCount(req, res);
     //     } catch (e: any) {
     //         this.b.serviceErr(req, res, e, 'CdDevProjectController:Get');
     //     }
@@ -152,7 +153,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
     //  */
     async GetCount(req: Request, res: Response) {
         try {
-            await this.svCdDevProject.getCdDevProjectCount(req, res);
+            await this.service.getCdDevProjectCount(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:GetCount');
         }
@@ -179,7 +180,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
      */
     async GetTypeCount(req: Request, res: Response) {
         try {
-            await this.svCdDevProject.getCdDevProjectTypeCount(req, res);
+            await this.service.getCdDevProjectTypeCount(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:GetTypeCount');
         }
@@ -215,7 +216,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
         console.log('CdDevProjectController::Update()/01');
         try {
             console.log('CdDevProjectController::Update()/02');
-            await this.svCdDevProject.update(req, res);
+            await this.service.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:Update');
         }
@@ -275,7 +276,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
         console.log('CdDevProjectController::UpdateCdDevProject()/01');
         try {
             console.log('CdDevProjectController::UpdateCdDevProject()/02');
-            await this.svCdDevProject.updateCdDevProject(req, res);
+            await this.service.updateCdDevProject(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:UpdateCdDevProject');
         }
@@ -306,7 +307,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
     //  */
     async Delete(req: Request, res: Response) {
         try {
-            await this.svCdDevProject.delete(req, res);
+            await this.service.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'CdDevProjectController:Update');
         }
@@ -379,7 +380,7 @@ export class CdDevProjectController extends GenericController<CdCliProfileModel>
     //     console.log('CdDevProjectController::UpdateCdDevProjectProfile()/01');
     //     try {
     //         console.log('CdDevProjectController::UpdateCdDevProjectProfile()/02');
-    //         await this.svCdDevProject.updateCdDevProjectProfile(req, res);
+    //         await this.service.updateCdDevProjectProfile(req, res);
     //     } catch (e: any) {
     //         await this.b.serviceErr(req, res, e, 'CdDevProjectController::UpdateCdDevProjectProfile');
     //     }

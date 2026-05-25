@@ -2,9 +2,9 @@ import {
   DevModeAction,
   SHARED_OPTIONS,
   UPGRADE_EXTRA_OPTIONS,
-} from '../../models/dev-mode.model.js';
-import { DevModeService } from '../../services/dev-mode.service.js';
-import { handleCommandResponse } from '../utils/post-execution.utils.js';
+} from '../../models/dev-mode.model';
+import { DevModeService } from '../../services/dev-mode.service';
+import { handleCommandResponse } from '../utils/post-execution.utils';
 
 const UPGRADE_OPTIONS = [...SHARED_OPTIONS, ...UPGRADE_EXTRA_OPTIONS];
 

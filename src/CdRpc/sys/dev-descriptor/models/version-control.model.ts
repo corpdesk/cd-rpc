@@ -1,6 +1,6 @@
-import type { BaseServiceDescriptor, VendorDescriptor } from './service-descriptor.model.js';
+import type { BaseServiceDescriptor, VendorDescriptor } from './service-descriptor.model';
 // import type { ServiceDescriptor } from './app-descriptor.model';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import type { BaseDescriptor } from './base-descriptor.model';
 // import type { ServiceDescriptor } from './service-provider.model';
 
 // import type { VersionControlDescriptor } from './dev-descriptor.model';
@@ -12,8 +12,10 @@ import {
   EnvironmentDescriptor,
   envTestBed,
   envWorkshop,
-} from './environment.model.js';
-import { AppType, CdAppDescriptor, CICdHistory, CICdPipeline, CICdTask } from '../index.js';
+} from './environment.model';
+import { CICdHistory, CICdPipeline } from './cicd-descriptor.model';
+import { AppType, CdAppDescriptor } from './cd-app.model';
+// import { AppType, CdAppDescriptor, CICdHistory, CICdPipeline, CICdTask } from '../index';
 // Example Usage
 
 /**
@@ -308,7 +310,7 @@ export const repoRegistry: VersionControlDescriptor[] = [
         {
           name: 'CdAppDescriptor',
           environment: envCdApi,
-          path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptor.json',
+          path: '/home/emp-12/cd-projects/cd-api/.cd/cd-app.descriptoron',
           purpose: 'cd-api root directory',
         },
       ],

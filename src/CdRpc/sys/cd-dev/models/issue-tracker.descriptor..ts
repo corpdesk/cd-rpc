@@ -12,7 +12,7 @@ import {
 } from "./workstations.model";
 
 // export const issueTrackingAppDescriptor: CdAppDescriptor = {
-//   $schema: "https://example.com/schemas/issue-tracking-index.json", // Optional schema for future use
+//   $schema: "https://example.com/schemas/issue-tracking-indexon", // Optional schema for future use
 //   name: "IssueTracker",
 //   typeName: [AppType.Frontend, AppType.Api, AppType.Cli], // Corpdesk is a hybrid of these types
 //   developmentEnvironment: {

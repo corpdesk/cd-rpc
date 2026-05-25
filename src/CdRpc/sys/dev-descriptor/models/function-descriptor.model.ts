@@ -1,6 +1,6 @@
-import { ICdRequest } from '../../base/i-base.js';
-import { DependencyDescriptor } from '../index.js';
-import type { BaseDescriptor } from './base-descriptor.model.js';
+import { ICdRequest } from '../../base/i-base';
+import { DependencyDescriptor } from '../index';
+import type { BaseDescriptor } from './base-descriptor.model';
 
 export interface FunctionDescriptor extends BaseDescriptor {
   name: string; // override the BaseDescriptor, which is optional

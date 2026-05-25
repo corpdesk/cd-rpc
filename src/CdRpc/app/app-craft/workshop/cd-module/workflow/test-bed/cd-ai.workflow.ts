@@ -1,9 +1,9 @@
-import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model.js';
+import { CdModuleDescriptor } from '../../../../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { CiCdDescriptor } from '../../../../../../sys/dev-descriptor/models/cicd-descriptor.model';
 import CdLog from '../../../../../../sys/comm/controllers/cd-logger.controller';
 import { CdFxStateLevel } from '../../../../../../sys/base/i-base';
 import { inspect } from 'util';
-import { AppType } from '../../../../../../sys/dev-descriptor/index.js';
+import { AppType } from '../../../../../../sys/dev-descriptor/index';
 
 export class CdAiWorkFlow {
   appType = AppType.CdApiModule;

@@ -1,24 +1,87 @@
 // <proj-directory>/src/config.ts
 import mysql from "mysql2";
-import Redis, { Cluster, RedisOptions, ClusterNode } from 'ioredis';
+import Redis, { Cluster, RedisOptions, ClusterNode } from "ioredis";
 import * as fs from "fs";
 import * as dotenv from "dotenv";
 import "reflect-metadata";
 import { DataSource, DataSourceOptions, DatabaseType } from "typeorm";
-import path, { dirname, join } from "path";
-import { RunMode } from "./CdRpc/sys/base/i-base";
+import path, { dirname, join, resolve } from "path";
+import { ISessResp, RunMode } from "./CdRpc/sys/base/i-base";
 import { inspect } from "util";
 import { ModuleConfig } from "./CdRpc/sys/moduleman/models/module.model";
 import { fileURLToPath } from "url";
 dotenv.config();
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
+// // const __filename = fileURLToPath(import.meta.url);
+// // const __dirname = dirname(__filename);
 
-export const CONFIG_FILE_PATH = join(process.env.HOME || '~/', '.cd-cli/cd-cli.profiles.json');
+// export const APP_ROOT = process.cwd();
+
+// export const IS_TS_RUNTIME =
+//   process.argv.some((a) => a.includes("ts-node")) ||
+//   !!process[Symbol.for("ts-node.register.instance")];
+
+// export const RUNTIME_EXTENSION =
+//   IS_TS_RUNTIME ? ".ts" : ".js";
+
+// export const WORKSHOP_ROOT = resolve(
+//   APP_ROOT,
+//   IS_TS_RUNTIME
+//     ? "src/CdRpc/app/app-craft/workshop"
+//     : "dist/src/CdRpc/app/app-craft/workshop",
+// );
+
+/**
+ * IMPORTANT:
+ *
+ * __dirname points to:
+ *
+ * DEV:
+ *   /home/emp-12/cd-rpc/src
+ *
+ * PROD:
+ *   /home/emp-12/cd-rpc/dist/src
+ *
+ * We therefore move upward accordingly.
+ */
+
+/**
+ * Runtime detection
+ */
+export const IS_TS_RUNTIME =
+  process.argv.some((a) => a.includes("ts-node")) ||
+  !!process[Symbol.for("ts-node.register.instance")];
+
+/**
+ * Runtime extension
+ */
+export const RUNTIME_EXTENSION =
+  IS_TS_RUNTIME ? ".ts" : ".js";
+
+/**
+ * Project root
+ */
+export const PROJECT_ROOT = IS_TS_RUNTIME
+  ? resolve(__dirname, "..")
+  : resolve(__dirname, "../..");
+
+/**
+ * Workshop root
+ */
+export const WORKSHOP_ROOT = resolve(
+  PROJECT_ROOT,
+  IS_TS_RUNTIME
+    ? "src/CdRpc/app/app-craft/workshop"
+    : "dist/src/CdRpc/app/app-craft/workshop",
+);
+
+export const CONFIG_FILE_PATH = join(
+  process.env.HOME || "~/",
+  ".cd-cli/cd-cli.profiles.json",
+);
 
 // 1. Define strict types for your configuration
-type RedisMode = 'PUSH_CLUSTER' | 'PUSH_SENTINEL' | 'PUSH_SINGLE';
+type RedisMode = "PUSH_CLUSTER" | "PUSH_SENTINEL" | "PUSH_SINGLE";
 
 interface PushConfig {
   mode: RedisMode;
@@ -50,7 +113,7 @@ interface PushConfig {
 const entitiesConfigPath = path.join(
   __dirname,
   "configs",
-  "module-entities.json"
+  "module-entities.json",
 );
 
 export function loadEntityPaths(): string[] {
@@ -59,7 +122,10 @@ export function loadEntityPaths(): string[] {
     return modules
       .filter((m: ModuleConfig) => m.enabled)
       .map((m: ModuleConfig) =>
-        path.join(__dirname, `CdRpc/${m.ctx}/${m.moduleName}/models/*.model.ts`)
+        path.join(
+          __dirname,
+          `CdRpc/${m.ctx}/${m.moduleName}/models/*.model.ts`,
+        ),
       );
   } catch (err) {
     console.error("Failed to load entity modules:", err);
@@ -70,14 +136,19 @@ export function loadEntityPaths(): string[] {
 export function loadSyncableEntities(): string[] {
   try {
     console.log("start loading syncable entities...");
-    const modules: ModuleConfig[] = JSON.parse(fs.readFileSync(entitiesConfigPath, "utf8"));
+    const modules: ModuleConfig[] = JSON.parse(
+      fs.readFileSync(entitiesConfigPath, "utf8"),
+    );
     console.log(
-      `config/loadSyncableEntities()/modules:${inspect(modules, { depth: 2 })}`
+      `config/loadSyncableEntities()/modules:${inspect(modules, { depth: 2 })}`,
     );
     return modules
       .filter((m: ModuleConfig) => m.syncable)
       .map((m: ModuleConfig) =>
-        path.join(__dirname, `CdRpc/${m.ctx}/${m.moduleName}/models/*.model.ts`)
+        path.join(
+          __dirname,
+          `CdRpc/${m.ctx}/${m.moduleName}/models/*.model.ts`,
+        ),
       );
   } catch (err) {
     console.error("Failed to load entity modules:", err);
@@ -204,20 +275,15 @@ export async function sqliteConfigFx(connName: string): Promise<any> {
   };
 }
 
-const API_HOST_NAME =
-  process.env.API_HOST_NAME || "localhost";
+const API_HOST_NAME = process.env.API_HOST_NAME || "localhost";
 
-const API_HOST_IP =
-  process.env.API_HOST_IP || "127.0.0.1";
+const API_HOST_IP = process.env.API_HOST_IP || "127.0.0.1";
 
-const API_PORT =
-  process.env.API_PORT || "3001";
+const API_PORT = process.env.API_PORT || "3001";
 
-const API_ROUTE =
-  process.env.API_ROUTE || "/api";
+const API_ROUTE = process.env.API_ROUTE || "/api";
 
-const API_URL =
-  process.env.API_URL || "https://localhost";
+const API_URL = process.env.API_URL || "https://localhost";
 
 const API_ENDPOINT = `${API_URL}:${API_PORT}${API_ROUTE}`;
 
@@ -225,12 +291,7 @@ const API_ENDPOINT = `${API_URL}:${API_PORT}${API_ROUTE}`;
 // RPC SERVER CONFIG
 // -----------------------------------------------------------------------------
 
-
-
-const RPC_URL =
-  process.env.RPC_URL || "https://localhost";
-
-
+const RPC_URL = process.env.RPC_URL || "https://localhost";
 
 const RPC_HOST_NAME = process.env.RPC_HOST_NAME;
 const RPC_HOST_IP = process.env.RPC_HOST_IP;
@@ -260,7 +321,8 @@ export const empMailConfig = {
   smtpPort: 465,
 };
 export default {
-  cdApiLocal: 'cd-api-local',
+  cdApiLocal: "cd-api-local",
+  cdGitConfig: "cd-git-config",
   runMode: RunMode.UNRESTRICTED_DEVELOPER_MODE,
   ds: {
     sqlite: new DataSource(sqliteConfig),
@@ -290,6 +352,12 @@ export default {
     route: RPC_ROUTE,
     url: RPC_URL,
     endpoint: RPC_ENDPOINT,
+  },
+  cdApi: {
+    endpoint: "https://localhost:3001/api",
+    serverHost: "localhost",
+    serverPort: "3001",
+    entryPoint: "/api",
   },
   pushService: {
     sio: {
@@ -390,7 +458,7 @@ export default {
         `https://${RPC_HOST_NAME}`,
         `https://www.${RPC_HOST_NAME}`,
         `https://cd-user.${RPC_HOST_NAME}`,
-        `https://cd-comm.${RPC_HOST_NAME}`,
+        `https://comm.${RPC_HOST_NAME}`,
         `https://cd-moduleman.${RPC_HOST_NAME}`,
       ],
       preflightContinue: false,
@@ -431,15 +499,15 @@ export default {
   // },
   push: {
     // Cast the mode or default to single instance
-    mode: (process.env.PUSH_MODE as RedisMode) || 'PUSH_SINGLE',
+    mode: (process.env.PUSH_MODE as RedisMode) || "PUSH_SINGLE",
     serverHost: "https://146.190.165.51",
-    serverPort: parseInt(process.env.SIO_PORT || '3000', 10),
-    redisHost: process.env.REDIS_HOST || '127.0.0.1',
-    redisPort: parseInt(process.env.REDIS_PORT || '6379', 10),
-    
+    serverPort: parseInt(process.env.SIO_PORT || "3000", 10),
+    redisHost: process.env.REDIS_HOST || "127.0.0.1",
+    redisPort: parseInt(process.env.REDIS_PORT || "6379", 10),
+
     startupNodes: [
       {
-        host: process.env.REDIS_HOST || '127.0.0.1',
+        host: process.env.REDIS_HOST || "127.0.0.1",
         port: 6380,
       },
       {
@@ -450,13 +518,13 @@ export default {
 
     sentinalOptions: {
       sentinels: [
-        { 
-          host: process.env.REDIS_HOST || '127.0.0.1', 
-          port: parseInt(process.env.REDIS_PORT || '6379', 10) 
+        {
+          host: process.env.REDIS_HOST || "127.0.0.1",
+          port: parseInt(process.env.REDIS_PORT || "6379", 10),
         },
-        { 
-          host: "asdap.africa", 
-          port: parseInt(process.env.REDIS_PORT || '6379', 10) 
+        {
+          host: "asdap.africa",
+          port: parseInt(process.env.REDIS_PORT || "6379", 10),
         },
       ],
       name: "master01",
@@ -468,7 +536,31 @@ export default {
   usePush: true,
   usePolling: true,
   useCacheStore: true,
+  modules: {
+    sys: {
+      // optional if needed later
+    },
+    app: {
+      AppCraft: {
+        databaseSyncScript: path.join(
+          process.env.HOME || "",
+          "cd-cli/dist/sync-db.datasource.js",
+        ),
+      },
+      // Add other modules here
+    },
+  },
 };
+
+export let AllowModelSyncing = false;
+
+export function enableModelSyncing() {
+  AllowModelSyncing = true;
+}
+
+export function disableModelSyncing() {
+  AllowModelSyncing = false;
+}
 
 export function mailConfig(username: string, password: string) {
   return {
@@ -484,3 +576,8 @@ export function mailConfig(username: string, password: string) {
     logger: true,
   };
 }
+
+export const DEFAULT_SESS: ISessResp = {
+  jwt: null,
+  ttl: 300,
+};

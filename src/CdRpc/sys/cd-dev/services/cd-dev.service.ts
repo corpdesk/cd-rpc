@@ -19,15 +19,18 @@ import { IUserProfile, userProfileDefault } from '../../user/models/user.model';
 import { CdDevProjectViewModel } from '../models/cd-dev-project-view.model';
 import { Like, Not } from 'typeorm';
 import { QueryTransformer } from '../../utils/query-transformer';
+import { GenericService } from "../../base/generic-service";
 
-export class CdDevService extends CdService {
+// export class CdDevService extends CdService<any> {
+export class CdDevService extends GenericService<CdDevModel> {
     logger: Logging;
     b: any; // instance of BaseService
     cdToken: string;
     srvSess: SessionService;
     srvUser: UserService;
     user: IUser;
-    serviceModel: CdDevModel;
+    serviceModel = CdDevModel;
+    docName: string;
     modelName: "CdDevModel";
     sessModel;
     sessDataExt: ISessionDataExt;
@@ -44,10 +47,9 @@ export class CdDevService extends CdService {
     dRules: any[];
 
     constructor() {
-        super()
+        super(CdDevModel)
         this.b = new BaseService();
         this.logger = new Logging();
-        this.serviceModel = new CdDevModel();
     }
 
     async initSession(req: Request, res: Response) {
@@ -292,7 +294,7 @@ export class CdDevService extends CdService {
         let data = (req as any).post.dat.f_vals[0].data
         this.logger.logInfo('CdDevService::createM()/data:', data)
         // this.b.models.push(CdDevModel)
-        // this.b.init(req, res)
+        // this.b.init()
 
         for (var cdDevData of data) {
             this.logger.logInfo('cdDevData', cdDevData)
@@ -427,7 +429,7 @@ export class CdDevService extends CdService {
         }
     }
 
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
         // this.logger.logInfo('CdDevService::update()/01');
         let q = this.b.getQuery(req);
         q = this.beforeUpdate(q);
@@ -527,8 +529,6 @@ export class CdDevService extends CdService {
             q = this.b.getQuery(req);
         }
         this.logger.logInfo('CdDevService::getCdDev/f:', q);
-        // const serviceInput = siGet(q,this)
-        this.serviceModel = new CdDevModel();
         const serviceInput: IServiceInput<any> = this.b.siGet(q, 'CdDevService:getCdDev' ,CdDevModel)
         serviceInput.serviceModelInstance = this.serviceModel
         serviceInput.serviceModel = CdDevModel
@@ -620,7 +620,7 @@ export class CdDevService extends CdService {
      * @param req 
      * @param res 
      */
-    getCdDevType(req: Request, res: Response) {
+    async getCdDevType(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         this.logger.logInfo('CdDevService::getCdDev/f:', q);
         const serviceInput = {
@@ -659,7 +659,7 @@ export class CdDevService extends CdService {
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Fetch all enabled CdDevTypes
-    async getCdDevType2(req: any, res: any): Promise<void> {
+    async getCdDevType2(req: Request, res: Response): Promise<void> {
         const q = this.b.getQuery(req);
         const serviceInput: IServiceInput<any> = {
             serviceInstance: this,
@@ -683,7 +683,7 @@ export class CdDevService extends CdService {
     }
 
     // Search CdDevTypes with dynamic filtering
-    async searchCdDevTypes(req: any, res: any): Promise<void> {
+    async searchCdDevTypes(req: Request, res: Response): Promise<void> {
         try {
 
             await this.transformSearchQuery(req, res)
@@ -881,7 +881,7 @@ export class CdDevService extends CdService {
             })
     }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         const q = this.b.getQuery(req);
         this.logger.logInfo('CdDevService::delete()/q:', q)
         const serviceInput = {
@@ -1199,8 +1199,4 @@ export class CdDevService extends CdService {
     // async getCdDevProjectByIdI(userId: number) {
     //     return await this.db.user.findOne({ where: { user_id: userId } });
     // }
-}
-
-function transformed(q: IQuery) {
-    throw new Error('Function not implemented.');
 }

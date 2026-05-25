@@ -1,11 +1,12 @@
 
 // src/CdCli/sys/dev-mode/dev-mode-commands/index.ts
-import { getSubcommand } from './utils/command-utils.js';
+import { getSubcommand } from './utils/command-utils';
 import repl from 'node:repl';
 import chalk from 'chalk';
 import minimist from 'minimist';
-import CdLog from '../../cd-comm/controllers/cd-logger.controller.js';
-import { CdAiController } from '../../../app/cd-ai/index.js';
+// import CdLog from '../../comm/controllers/cd-logger.controller';
+import { CdAiController } from '../../../app/cd-ai/index';
+import CdLog from '../../comm/controllers/cd-logger.controller';
 
 // Branding utility for reusable prompt designs
 export const Branding = {
@@ -144,7 +145,7 @@ export async function handleInput(input: string) {
   }
 }
 
-export async function executeCommand(command: string) {
+export async function executeCommand(command: string, repoPath?: string): Promise<string | void> {
   CdLog.debug(`DevModeModel::executeCommand()/command:${command}`);
   command = command.replace(/;$/, '');
   const [cmdName, ...args] = command.split(/\s+/);

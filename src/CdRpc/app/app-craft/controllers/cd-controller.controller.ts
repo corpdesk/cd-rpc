@@ -1,7 +1,7 @@
 import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
 import { CdControllerService } from '../services/cd-controller.service';
-import { CdControllerDescriptor } from '../../../sys/dev-descriptor/models/cd-controller-descriptor.model.js';
-import { DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { CdControllerDescriptor } from '../../../sys/dev-descriptor/models/cd-controller-descriptor.model';
+import { DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model';
 
 export class CdControllerController {
   svCdController;

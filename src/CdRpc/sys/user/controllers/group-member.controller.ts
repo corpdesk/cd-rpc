@@ -7,13 +7,11 @@ import { GenericController } from "../../base/generic-controller";
 
 // export class GroupMemberController extends CdController {
 export class GroupMemberController extends GenericController<GroupMemberModel> {
-    b: BaseService;
-    svGroupMember: GroupMemberService;
+    service: GroupMemberService;
 
     constructor() {
         super();
-        this.b = new BaseService();
-        this.svGroupMember = new GroupMemberService();
+        this.service = new GroupMemberService();
     }
 
     /**
@@ -50,7 +48,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
      */
     async Create(req: Request, res: Response) {
         try {
-            await this.svGroupMember.create(req, res);
+            await this.service.create(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupMemberController:Create');
         }
@@ -79,7 +77,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
     //  */
     async Get(req: Request, res: Response) {
         try {
-            await this.svGroupMember.getGroupMember(req, res);
+            await this.service.getGroupMember(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'GroupMemberController:Get');
         }
@@ -87,7 +85,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
 
     // async GetType(req: Request, res: Response) {
     //     try {
-    //         await this.svGroupMember.getGroupMemberTypeCount(req, res);
+    //         await this.service.getGroupMemberTypeCount(req, res);
     //     } catch (e: any) {
     //         this.b.serviceErr(req, res, e, 'GroupMemberController:Get');
     //     }
@@ -119,7 +117,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
     //  */
     async GetCount(req: Request, res: Response) {
         try {
-            await this.svGroupMember.getGroupMemberCount(req, res);
+            await this.service.getGroupMemberCount(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Get');
         }
@@ -155,7 +153,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
         console.log('GroupMemberController::Update()/01');
         try {
             console.log('GroupMemberController::Update()/02');
-            await this.svGroupMember.update(req, res);
+            await this.service.update(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Update');
         }
@@ -184,7 +182,7 @@ export class GroupMemberController extends GenericController<GroupMemberModel> {
     //  */
     async Delete(req: Request, res: Response) {
         try {
-            await this.svGroupMember.delete(req, res);
+            await this.service.delete(req, res);
         } catch (e: any) {
             await this.b.serviceErr(req, res, e, 'ModuleController:Update');
         }

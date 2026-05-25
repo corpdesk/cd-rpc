@@ -8,14 +8,14 @@ import {
   CdControllerDescriptor,
   CdModuleDescriptor,
   CdServiceDescriptor,
-} from '../../../sys/dev-descriptor/index.js';
-import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model.js';
+} from '../../../sys/dev-descriptor/index';
+import { FunctionDescriptor } from '../../../sys/dev-descriptor/models/function-descriptor.model';
 import { CdFxReturn, CdFxStateLevel } from '../../../sys/base/i-base';
-import { cdFx } from '../../../sys/base/cd-fx-return.util.js';
+import { cdFx } from '../../../sys/base/cd-fx-return.util';
 import { GenComponentService } from './gen-component.service';
-import * as recast from 'recast';
-import { namedTypes as n } from 'ast-types';
-import { toCamelCase } from '../../../sys/utils/cd-naming.util.js';
+// import * as recast from 'recast';
+// import { namedTypes as n } from 'ast-types';
+import { toCamelCase } from '../../../sys/utils/cd-naming.util';
 
 export class GenControllerImplementationService {
   private readonly templateLoader = new TemplateLoaderService();

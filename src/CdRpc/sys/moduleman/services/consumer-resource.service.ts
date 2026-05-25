@@ -529,7 +529,7 @@ export class ConsumerResourceService extends GenericService<ConsumerResourceMode
 
     async getConsumerResourcesMap(req: Request, res: Response): Promise<any> {
         // Initialize the service
-        // await this.b.init(req, res);
+        // await this.b.init();
         
         // Register the mapping from the entity to ensure the data is correctly transformed
         this.b.entityAdapter.registerMappingFromEntity(ConsumerResourceViewModel);

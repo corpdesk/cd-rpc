@@ -5,8 +5,8 @@
 
 import { CdFxReturn, IQuery } from '../../../sys/base/i-base';
 // import { GenEntityService } from '../services/cd-module.service';
-import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model.js';
-import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model.js';
+import { CdModuleDescriptor } from '../../../sys/dev-descriptor/models/cd-module-descriptor.model';
+import { DevModeAction, DevModeModel } from '../../../sys/dev-mode/models/dev-mode.model';
 import CdLog from '../../../sys/comm/controllers/cd-logger.controller';
 import { GenServiceService } from '../services/gen-service.service';
 

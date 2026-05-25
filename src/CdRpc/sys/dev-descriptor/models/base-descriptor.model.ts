@@ -1,6 +1,7 @@
 // src/CdCli/sys/dev-descriptor/models/base-descriptor.model.ts
-import { CdObjModel } from "../../moduleman/index.js";
-import { CdFileDescriptor } from "./version-control.model.js";
+// import { CdObjModel } from "../../moduleman/index";
+import { CdObjModel } from "../../moduleman/models/cd-obj.model";
+import { CdFileDescriptor } from "./version-control.model";
 
 // Base Descriptor for General Use
 export interface BaseDescriptor {
